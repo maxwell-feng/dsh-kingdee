@@ -1,5 +1,7 @@
 # Upgrade
 
+> Verified against deepseek-harness **0.1.2-alpha.4** (latest `master`).
+
 How to move **dsh-kingdee** to a newer version.
 
 ## Before you upgrade

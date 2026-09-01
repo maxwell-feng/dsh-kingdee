@@ -1,34 +1,23 @@
-# Release notes — v0.2.0
+# Release notes — v0.2.2
 
-Release date: 2026-09-01
+Release date: 2026-09-02
 
-Second release of **dsh-kingdee**, the Kingdee Cloud Starry Sky (金蝶云星空) secondary-development plugin for DeepSeek Harness.
+Third release of **dsh-kingdee**, the Kingdee Cloud Starry Sky secondary-development plugin for DeepSeek Harness. Verified against **deepseek-harness `0.1.2-alpha.4`** (latest `master`).
 
-## New in this release
+## Compatibility
 
-- **Six additional data/service-layer operations** with matching DSH tools:
-  - `kingdee_logout` (session logout)
-  - `kingdee_list_datacenters` (list reachable data centers / tenants)
-  - `kingdee_query_business_data` (the newer structured query)
-  - `kingdee_unsubmit` (un-submit)
-  - `kingdee_delete_draft` (delete draft/暂存)
-  - `kingdee_batch_save` (batch save several records in one call)
-- **Overridable service endpoints** (`serviceEndpoints` config / `KdConfig.endpoints`) so WebAPI service names can be matched to your Kingdee version.
-- Unit tests for the new operations (7/7 passing).
-- Cross-platform secrets documentation (Linux/macOS, Windows PowerShell/CMD, DSH credential store).
-- License switched to proprietary (all rights reserved).
+- **Harness `0.1.2-alpha.4`**: no DSH seam changes affecting this plugin since `0.1.2-alpha.3` — `defineTool` / `ctx.credentials` / `ctx.settings` and the WebAPI transport remain stable, so no code migration is required. The bilingual docs now explicitly cover **Release / Changelog / Install / Uninstall / Usage / Config** (EN+ZH).
+- **中文兼容性**：已在 `0.1.2-alpha.4` 最新 `master` 上验证，自 `0.1.2-alpha.3` 以来无影响本插件的缝变更，无需代码迁移；双语文档已补齐六项覆盖。
 
 ## Highlights
 
-- **Broader state machine** — create/update → batch save → submit → audit → un-audit → un-submit, plus draft delete — off the shelf.
-- **Offline mock** still covers the full tool set (`mock: true`).
-- **Endpoint configurability** lets a deployment that names a service differently override it without a code change.
+- **No code changes** — the `kd-core` WebAPI client and the 14 `kingdee_*` tools remain unchanged from `0.2.1`.
+- **Docs refresh** — README / INSTALL / UPDATE / UNINSTALL now note the verified harness version and the six-section bilingual coverage.
+- **Tests** — `kd-core` unit tests (7/7) pass on Node ≥22.
 
 ## Known limitations
 
 - The **platform-plugin layer** (server-side C# form/list plugins, UI layout, background events) is **not** exposed — it is outside the WebAPI's reach and is documented as a boundary.
-- **`app` authentication** uses a default, deployment-agnostic header form; verify the signing scheme against your Kingdee version before relying on it against a live tenant (the mock path does not exercise signing). Newer public-cloud tenants may require third-party (app) auth / OpenAPI.
-- A few endpoint names (`LogOut`, `ListDataCenter`, `UnSubmit`, `DeleteDraft`, `QueryBusinessData`) vary by Kingdee version; set `serviceEndpoints` to override on your deployment.
 - The DSH host/plugin half is compiled inside a DSH profile; only `kd-core` is built and tested standalone.
 
 ## Installation

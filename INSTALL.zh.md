@@ -1,5 +1,7 @@
 # 安装说明
 
+> 已在 deepseek-harness **0.1.2-alpha.4** 最新 `master` 上验证（`0.1.2-alpha.3` → `0.1.2-alpha.4` 无影响本插件的缝变更）。
+
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
 ## 前置条件

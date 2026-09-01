@@ -2,6 +2,12 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-09-02
+
+### Changed / 变更
+
+- **Verified against deepseek-harness `0.1.2-alpha.4` (latest `master`).** No DSH seam changes affecting this plugin since `0.1.2-alpha.3` — `defineTool` / `ctx.credentials` / `ctx.settings` contracts and the WebAPI transport remain stable, so no code changes required. Bumped package to `0.2.2` and refreshed bilingual docs (Release / Changelog / Install / Uninstall / Usage / Config). / **已在 deepseek-harness `0.1.2-alpha.4` 最新 `master` 上验证。** 自 `0.1.2-alpha.3` 以来无影响本插件的 DSH 缝变更 —— `defineTool` / `ctx.credentials` / `ctx.settings` 契约及 WebAPI 传输保持稳定，无需代码改动。版本升至 `0.2.2`，并刷新双语文档（发行版 / 更新说明 / 安装 / 卸载 / 使用 / 配置）。
+
 ## [0.2.1] - 2026-09-01
 
 ### Fixed
