@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: README
+    url: https://github.com/maxwell-feng/dsh-kingdee#readme
+    about: 项目说明与快速开始 / Project overview and quick start
+  - name: INSTALL (安装 / 配置)
+    url: https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.md
+    about: 安装与连接配置，含密钥设置 / Setup, credentials, and connection
+  - name: RELEASE (发行说明)
+    url: https://github.com/maxwell-feng/dsh-kingdee/blob/main/docs/RELEASE.md
+    about: 各版本发行说明与已知限制 / Release notes and known limitations
