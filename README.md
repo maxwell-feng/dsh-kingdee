@@ -133,4 +133,4 @@ pnpm install && pnpm run typecheck   # requires the deepseek-harness monorepo (o
 
 ## License
 
-[MIT](./LICENSE)
+This repository is under a **proprietary license** (all rights reserved). It is available for **read/evaluation**. Copying, forking, re-hosting, re-publishing, modifying, or creating derivative works — in whole or in part — is **prohibited** without prior written permission from the owner. See [LICENSE](./LICENSE).

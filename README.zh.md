@@ -133,4 +133,4 @@ pnpm install && pnpm run typecheck   # 需 deepseek-harness 单仓（或 DSH pro
 
 ## 许可证
 
-[MIT](./LICENSE)
+本仓库采用**专有许可证**（保留所有权利），仅供**阅读/评估**。未经所有者书面许可，**禁止**在整体或部分上复制、复刻/fork、再托管、再发布、修改或制作衍生作品。详见 [LICENSE](./LICENSE)。

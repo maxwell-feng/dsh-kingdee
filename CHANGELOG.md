@@ -7,6 +7,7 @@ All notable changes to **dsh-kingdee** are documented here. The format follows [
 ### Changed
 
 - Added cross-platform secrets documentation to `INSTALL.md` / `INSTALL.zh.md` and `README.md` / `README.zh.md` — Linux/macOS `export`, Windows PowerShell `$env:`, Windows CMD `set` / `setx`, and the DSH credential store (`dsh credentials set`).
+- License changed from MIT to a **proprietary (all rights reserved)** license. The repository is read/evaluation-only: copying, forking, re-hosting, re-publishing, modifying, or creating derivative works is prohibited without prior written permission.
 
 ## [0.1.0] - 2026-09-01
 
