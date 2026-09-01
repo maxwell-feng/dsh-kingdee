@@ -24,14 +24,39 @@ dsh plugin add dsh-kingdee
 ## 快速开始
 
 1. 注册插件，在 **Plugins → kingdee** 设置卡片（或 `cordis.yml`）里填连接信息：WebAPI 地址、`acctId`、认证方式。
-2. 把密钥放进环境变量（或凭据库），引用指向配置的引用名：
+2. 把密钥放进环境变量（或凭据库），引用指向配置的引用名。所有系统使用相同的引用名，只是设置方式不同：
 
    ```sh
+   # Linux / macOS (sh)
    export DSH_KINGDEE_USER=your_username
    export DSH_KINGDEE_PASSWORD=your_password
    # 若用 app 模式：
    export DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
+
+   ```powershell
+   # Windows — PowerShell（当前会话）
+   $env:DSH_KINGDEE_USER = "your_username"
+   $env:DSH_KINGDEE_PASSWORD = "your_password"
+   $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"   # app 模式
+   ```
+
+   ```bat
+   REM Windows — 命令提示符（当前会话）
+   set DSH_KINGDEE_USER=your_username
+   set DSH_KINGDEE_PASSWORD=your_password
+   set DSH_KINGDEE_APP_SECRET=your_app_secret
+   ```
+
+   或在任意系统上用 DSH 凭据库（推荐）：
+
+   ```sh
+   dsh credentials set DSH_KINGDEE_USER your_username
+   dsh credentials set DSH_KINGDEE_PASSWORD your_password
+   dsh credentials set DSH_KINGDEE_APP_SECRET your_app_secret
+   ```
+
+   各系统的详细设置（含持久化 `setx` / `[Environment]::SetEnvironmentVariable`）见 [INSTALL.zh.md](./INSTALL.zh.md)。
 
 3. 让 agent 查询：
 

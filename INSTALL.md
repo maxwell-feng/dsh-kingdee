@@ -50,7 +50,9 @@ Set values either in the **Plugins → kingdee** settings card, or in the `confi
 
 ## 3. Provide the secrets
 
-Secrets are **references** (environment-variable names), not literals. Set the values in the environment or in the credentials store; the plugin resolves them **per operation**, so a rotation reaches the very next call with no restart.
+Secrets are **references** (environment-variable names), not literals. Set the values in the environment or in the credentials store; the plugin resolves them **per operation**, so a rotation reaches the very next call with no restart. The same reference names work on every OS — only the way you set an env var differs.
+
+**Linux / macOS** (`sh`):
 
 ```sh
 # user mode
@@ -59,6 +61,47 @@ export DSH_KINGDEE_PASSWORD=your_password
 
 # app mode
 export DSH_KINGDEE_APP_SECRET=your_app_secret
+```
+
+**Windows — PowerShell** (current session, then restart DSH):
+
+```powershell
+# user mode
+$env:DSH_KINGDEE_USER = "your_username"
+$env:DSH_KINGDEE_PASSWORD = "your_password"
+
+# app mode
+$env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
+```
+
+Persist a user-level variable so it survives new shells (PowerShell):
+
+```powershell
+[Environment]::SetEnvironmentVariable('DSH_KINGDEE_USER', 'your_username', 'User')
+[Environment]::SetEnvironmentVariable('DSH_KINGDEE_PASSWORD', 'your_password', 'User')
+[Environment]::SetEnvironmentVariable('DSH_KINGDEE_APP_SECRET', 'your_app_secret', 'User')
+```
+
+**Windows — Command Prompt** (`cmd`):
+
+```bat
+REM current session
+set DSH_KINGDEE_USER=your_username
+set DSH_KINGDEE_PASSWORD=your_password
+set DSH_KINGDEE_APP_SECRET=your_app_secret
+
+REM persistent (new shells)
+setx DSH_KINGDEE_USER your_username
+setx DSH_KINGDEE_PASSWORD your_password
+setx DSH_KINGDEE_APP_SECRET your_app_secret
+```
+
+**DSH credential store** (any OS; the recommended way to avoid shell env var issues):
+
+```sh
+dsh credentials set DSH_KINGDEE_USER your_username
+dsh credentials set DSH_KINGDEE_PASSWORD your_password
+dsh credentials set DSH_KINGDEE_APP_SECRET your_app_secret
 ```
 
 The default reference names are `DSH_KINGDEE_USER`, `DSH_KINGDEE_PASSWORD` and `DSH_KINGDEE_APP_SECRET`. Change them via `userNameRef` / `passwordRef` / `appSecretRef` if you prefer different names.

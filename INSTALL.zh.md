@@ -50,7 +50,9 @@ dsh plugin add dsh-kingdee
 
 ## 三、提供密钥
 
-密钥是**引用**（环境变量名），不是字面值。把值放进环境变量或凭据库即可；插件**每次操作都重新解析**，因此轮换后无需重启即可在下一次调用生效。
+密钥是**引用**（环境变量名），不是字面值。把值放进环境变量或凭据库即可；插件**每次操作都重新解析**，因此轮换后无需重启即可在下一次调用生效。所有系统使用相同的引用名，只是设置环境变量的方式不同。
+
+**Linux / macOS**（`sh`）：
 
 ```sh
 # user 模式
@@ -59,6 +61,47 @@ export DSH_KINGDEE_PASSWORD=your_password
 
 # app 模式
 export DSH_KINGDEE_APP_SECRET=your_app_secret
+```
+
+**Windows — PowerShell**（当前会话，然后重启 DSH）：
+
+```powershell
+# user 模式
+$env:DSH_KINGDEE_USER = "your_username"
+$env:DSH_KINGDEE_PASSWORD = "your_password"
+
+# app 模式
+$env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
+```
+
+写入用户级变量使其在新建 shell 中保留（PowerShell）：
+
+```powershell
+[Environment]::SetEnvironmentVariable('DSH_KINGDEE_USER', 'your_username', 'User')
+[Environment]::SetEnvironmentVariable('DSH_KINGDEE_PASSWORD', 'your_password', 'User')
+[Environment]::SetEnvironmentVariable('DSH_KINGDEE_APP_SECRET', 'your_app_secret', 'User')
+```
+
+**Windows — 命令提示符**（`cmd`）：
+
+```bat
+REM 当前会话
+set DSH_KINGDEE_USER=your_username
+set DSH_KINGDEE_PASSWORD=your_password
+set DSH_KINGDEE_APP_SECRET=your_app_secret
+
+REM 持久化（新建 shell 生效）
+setx DSH_KINGDEE_USER your_username
+setx DSH_KINGDEE_PASSWORD your_password
+setx DSH_KINGDEE_APP_SECRET your_app_secret
+```
+
+**DSH 凭据库**（任意系统；推荐做法，避免 shell 环境变量问题）：
+
+```sh
+dsh credentials set DSH_KINGDEE_USER your_username
+dsh credentials set DSH_KINGDEE_PASSWORD your_password
+dsh credentials set DSH_KINGDEE_APP_SECRET your_app_secret
 ```
 
 默认引用名为 `DSH_KINGDEE_USER`、`DSH_KINGDEE_PASSWORD`、`DSH_KINGDEE_APP_SECRET`。如需改用其它名称，请调整 `userNameRef` / `passwordRef` / `appSecretRef`。

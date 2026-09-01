@@ -24,14 +24,39 @@ See [INSTALL.md](./INSTALL.md) for the full setup, and [UPDATE.md](./UPDATE.md) 
 ## Quick start
 
 1. Register the plugin and set connection details in the **Plugins → kingdee** settings card (or in `cordis.yml`): WebAPI base URL, `acctId`, and the authentication mode.
-2. Put the secrets in the environment (or in the credentials store) under the references you configured:
+2. Put the secrets in the environment (or in the credentials store) under the references you configured. The same reference names work on every OS — only the way you set them differs:
 
    ```sh
+   # Linux / macOS (sh)
    export DSH_KINGDEE_USER=your_username
    export DSH_KINGDEE_PASSWORD=your_password
    # or, for app mode:
    export DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
+
+   ```powershell
+   # Windows — PowerShell (current session)
+   $env:DSH_KINGDEE_USER = "your_username"
+   $env:DSH_KINGDEE_PASSWORD = "your_password"
+   $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"   # app mode
+   ```
+
+   ```bat
+   REM Windows — Command Prompt (current session)
+   set DSH_KINGDEE_USER=your_username
+   set DSH_KINGDEE_PASSWORD=your_password
+   set DSH_KINGDEE_APP_SECRET=your_app_secret
+   ```
+
+   Or, on any OS, use the DSH credential store (recommended):
+
+   ```sh
+   dsh credentials set DSH_KINGDEE_USER your_username
+   dsh credentials set DSH_KINGDEE_PASSWORD your_password
+   dsh credentials set DSH_KINGDEE_APP_SECRET your_app_secret
+   ```
+
+   See [INSTALL.md](./INSTALL.md) for the per-OS details (including persistent `setx` / `[Environment]::SetEnvironmentVariable`).
 
 3. Ask the agent to query something:
 
