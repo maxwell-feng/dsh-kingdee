@@ -1,0 +1,24 @@
+# dsh-kingdee composition layer.
+#
+# Applied when a DSH profile lists the dsh-kingdee bundle (see INSTALL.md).
+# Rows mount the plugin so it can register its typed tool set, wire the
+# credential reference, and expose its settings namespace. Peer packages
+# (@deepseek-ai/dsh-tools, @deepseek-ai/dsh-credentials, @deepseek-ai/dsh-settings)
+# are already present in any DSH composition that ships the web GUI.
+- insert:
+    - id: kingdee
+      name: ./src/index.ts
+      enabled: true
+      config:
+        # Connection and credential references live in the Settings card / config,
+        # not in this patch. The values below are defaults only and are resolved
+        # through the credentials seam (env-var references) at runtime.
+        baseUrl: ""
+        acctId: ""
+        authMode: "user"
+        # Credential references (env-var names), NOT literal secrets.
+        appId: ""
+        appSecretRef: "DSH_KINGDEE_APP_SECRET"
+        userNameRef: "DSH_KINGDEE_USER"
+        passwordRef: "DSH_KINGDEE_PASSWORD"
+        mock: false

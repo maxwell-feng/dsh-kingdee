@@ -1,0 +1,95 @@
+# 安装说明
+
+本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
+
+## 前置条件
+
+- 已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 并自带 Web GUI（具备 `dsh` CLI，且已具备 `tools`、`credentials`、`settings` 这几个 peer 包）。
+- Node ≥ 22（仅核心库/测试需要）。
+- 真实使用需：一个**已启用 WebAPI** 的可达金蝶云星空实例，以及有效账套账号。
+
+## 一、添加 bundle
+
+本包以 DSH **bundle**（一个贡献配置层的 npm 包）形式发布。安装到 profile：
+
+```sh
+dsh plugin add dsh-kingdee
+```
+
+或从源码检出，加进你的 `cordis.yml`（或某一层 `cordis.patch.yml`）：
+
+```yaml
+- insert:
+    - id: kingdee
+      name: ./src/index.ts
+      enabled: true
+      config:
+        baseUrl: "http://your-server/K3Cloud"
+        acctId: "YOUR_ACCT_ID"
+        authMode: "user"
+        appId: ""
+        appSecretRef: "DSH_KINGDEE_APP_SECRET"
+        userNameRef: "DSH_KINGDEE_USER"
+        passwordRef: "DSH_KINGDEE_PASSWORD"
+        mock: false
+```
+
+> `name: ./src/index.ts` 会把 host 半区从源码加载（DSH loader 会编译 TS）。若在 DSH 工具链内构建好插件，请把这一行指向构建后的 `lib` 入口。
+
+## 二、配置连接
+
+在 **Plugins → kingdee** 设置卡片，或上述 `config:` 块中设置这些值：
+
+| 键 | 说明 |
+|---|---|
+| `baseUrl` | WebAPI 基址，如 `http://your-server/K3Cloud` |
+| `acctId` | 账套 id |
+| `authMode` | `user`（账套用户名/密码）或 `app`（appId/appSecret） |
+| `appId` | 应用 id（`app` 模式用） |
+| `organization` | 可选的默认组织（org）id / FNumber，用于查询 |
+
+## 三、提供密钥
+
+密钥是**引用**（环境变量名），不是字面值。把值放进环境变量或凭据库即可；插件**每次操作都重新解析**，因此轮换后无需重启即可在下一次调用生效。
+
+```sh
+# user 模式
+export DSH_KINGDEE_USER=your_username
+export DSH_KINGDEE_PASSWORD=your_password
+
+# app 模式
+export DSH_KINGDEE_APP_SECRET=your_app_secret
+```
+
+默认引用名为 `DSH_KINGDEE_USER`、`DSH_KINGDEE_PASSWORD`、`DSH_KINGDEE_APP_SECRET`。如需改用其它名称，请调整 `userNameRef` / `passwordRef` / `appSecretRef`。
+
+## 四、验证
+
+让 agent 对已知 FormId 发起查询：
+
+```
+在金蝶云星空查询销售订单（SAL_SaleOrder），FBillNo 以 SO-202607 开头。
+```
+
+agent 会加载 `kingdee-bos` 技能并调用 `kingdee_query`。成功返回规范化行；失败返回类型化 `kd/*` 错误而非文本。
+
+## 可选：离线 Mock
+
+没有可达账套时，设置 `mock: true`。工具会改用内置 mock 传输，返回固化的金蝶信封（如一张 `SO-MOCK-1` 单据）：
+
+```sh
+dsh plugin config set kingdee.mock true
+```
+
+或在 `cordis.yml`：
+
+```yaml
+config:
+  mock: true
+```
+
+## 常见问题
+
+- **kingdee/auth-failed** —— 检查 `acctId` / `appId` / `appSecret`，并确认账套已启用 WebAPI。
+- **kingdee/network** —— 确认从 DSH host 能访问 `baseUrl`，且 WebAPI 端点有响应。
+- **kingdee/business-error** —— 账套拒绝了该调用；请读 `message`（例如缺必填字段，或单据状态不允许该操作）。

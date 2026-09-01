@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+lib/
+*.tsbuildinfo
+
+# Test / coverage
+coverage/
+.mwc/
+.nyc_output/
+
+# Local config / secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+cordis.local.yml
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
