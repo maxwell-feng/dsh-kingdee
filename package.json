@@ -1,6 +1,6 @@
 {
   "name": "dsh-kingdee",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Kingdee Cloud Starry Sky (Kingdee ERP) secondary-development plugin for DeepSeek Harness (DSH). Provides typed tools over the Kingdee Cloud WebAPI, credential-safe configuration, a settings card, and a companion domain skill.",
   "type": "module",
   "main": "./lib/kd-core/index.js",

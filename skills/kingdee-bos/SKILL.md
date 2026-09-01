@@ -29,6 +29,14 @@ whenToUse: >-
 | `kingdee_view` | 查看单据详情 | `formId`, `id` |
 | `kingdee_delete` | 删除 | `formId`, `ids[]` |
 | `kingdee_invoke` | 调 BOS 自定义服务 | `serviceName`, `payload?`, `formId?` |
+| `kingdee_logout` | 退出当前会话 | — |
+| `kingdee_list_datacenters` | 列出地址可达的数据中心/账套 | — |
+| `kingdee_query_business_data` | 新版**结构化**查询 | `formId`, `fieldKeys[]`, `filter?`, `topCount?`, `organization?` |
+| `kingdee_unsubmit` | 反提交 | `formId`, `ids[]` |
+| `kingdee_delete_draft` | 删除草稿/暂存单 | `formId`, `ids[]` |
+| `kingdee_batch_save` | 单次批量保存多条 | `formId`, `records[]`, `interaction?` |
+
+> **端点名随版本有差异**：`LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft` 等接口的服务名随星空版本/部署可能不同。若某工具报 `kd/not-found` 或断言到不存在的服务，请在配置 `serviceEndpoints` 中按该账套覆盖对应端点名（见 INSTALL）。
 
 ## 常用单据/基础资料 FormId（示例，按你的账套配置）
 
@@ -55,12 +63,14 @@ whenToUse: >-
 
 ## 单据状态机
 
-`创建(暂存)` → `提交` → `审核` → `反审核` → `作废`。典型约束：
+`创建(暂存)` → `提交` → `审核` → `反审核` → `反提交` → `删除草稿/作废`。典型约束：
 
 - **提交前**：必须完成保存并具有合法编号；缺必填项时提交/审核会失败并返回 `Message`。
 - **审核**：只有已提交的单据可审核；审核后多数单据不可直接编辑/删除。
 - **反审核**：通常在单据状态 `C`（已审核）时执行；有下游单据引用时可能被拒。
-- 调用 `kingdee_save` 时若 `interaction: true` 会**跳过**平台表单插件校验——慎用，仅当你明确要绕过校验时。
+- **反提交**：把已提交但未审核的单据退回；对应 `kingdee_unsubmit`。
+- **删草稿**：删除已保存但未提交的暂存/创建单；对应 `kingdee_delete_draft`，注意别与 `kingdee_delete`（删除已提交单据）混淆。
+- 调用 `kingdee_save` 时若 `interaction: true` 会**跳过**平台表单插件校验——慎用，仅当你明确要绕过校验时。批量可用 `kingdee_batch_save`（多条一次），结构化查询优先用 `kingdee_query_business_data`。
 
 ## 数据/服务层二开流程（推荐序列）
 

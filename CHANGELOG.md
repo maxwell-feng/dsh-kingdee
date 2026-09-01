@@ -2,7 +2,19 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0] - 2026-09-01
+
+### Added
+
+- **New data/service-layer operations** in `kd-core` and matching DSH tools:
+  - `kingdee_logout` — `LoginService.LogOut`, clears the stored session cookie.
+  - `kingdee_list_datacenters` — list the data centers / tenants reachable at the base URL.
+  - `kingdee_query_business_data` — the newer structured `QueryBusinessData` query.
+  - `kingdee_unsubmit` — un-submit a form (reverses a submit).
+  - `kingdee_delete_draft` — delete draft (暂存/created) records.
+  - `kingdee_batch_save` — batch-save several records in one call.
+- **Overridable service endpoints** (`KdConfig.endpoints` / `serviceEndpoints` config) so WebAPI service names can be matched to a specific Kingdee version.
+- Unit tests covering the new operations (7/7 passing).
 
 ### Changed
 

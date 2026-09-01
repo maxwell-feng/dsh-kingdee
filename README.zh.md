@@ -84,6 +84,12 @@ export DSH_KINGDEE_MOCK=true
 | `kingdee_view` | 按 id 查看单条 | `formId`、`id` |
 | `kingdee_delete` | 按 id 删除 | `formId`、`ids[]` |
 | `kingdee_invoke` | 调用 BOS 自定义服务 | `serviceName`、`payload?`、`formId?` |
+| `kingdee_logout` | 退出当前会话 | — |
+| `kingdee_list_datacenters` | 列出该地址可达的数据中心/账套 | — |
+| `kingdee_query_business_data` | 结构化查询（`QueryBusinessData`） | `formId`、`fieldKeys[]`、`filter?`、`topCount?`、`organization?` |
+| `kingdee_unsubmit` | 反提交 | `formId`、`ids[]` |
+| `kingdee_delete_draft` | 删除草稿（暂存） | `formId`、`ids[]` |
+| `kingdee_batch_save` | 单次批量保存多条 | `formId`、`records[]`、`interaction?` |
 
 每个工具返回规范化的规范值；金蝶 `IsSuccess=false` 的消息会转成类型化错误（`kd/business-error`、`kd/auth-failed` 等），而不是让模型去解析文本。
 
@@ -93,7 +99,7 @@ export DSH_KINGDEE_MOCK=true
 src/
 ├─ kd-core/          无框架依赖的金蝶 WebAPI 客户端（纯逻辑）
 │  ├─ auth.ts        user / app 两种认证
-│  ├─ client.ts      八个业务操作 + 会话管理
+│  ├─ client.ts      业务操作集 + 会话管理
 │  ├─ envelope.ts    信封解析与规范化
 │  ├─ errors.ts      类型化错误映射
 │  ├─ transport.ts   传输留缝（真实 HTTP 用 fetch）

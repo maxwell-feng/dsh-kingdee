@@ -7,7 +7,7 @@
  */
 
 import z from '@deepseek-ai/schemastery'
-import type { KdAuthMode, KdConfig } from './kd-core/index.ts'
+import type { KdAuthMode, KdConfig, KdServiceEndpoints } from './kd-core/index.ts'
 
 /** Settings namespace (also the settings-card key on the Client side). */
 export const NAMESPACE = 'kingdee'
@@ -34,6 +34,8 @@ export interface Config {
   timeoutMs?: number
   /** When true, the plugin uses a local mock transport (no real Kingdee connection). */
   mock?: boolean
+  /** Optional service-endpoint overrides for this Kingdee version. */
+  serviceEndpoints?: KdServiceEndpoints
 }
 
 export const Config: z<Config> = z.object({
@@ -47,6 +49,13 @@ export const Config: z<Config> = z.object({
   organization: z.string(),
   timeoutMs: z.number().step(1).min(0).max(300_000).default(30_000),
   mock: z.boolean().default(false),
+  serviceEndpoints: z.object({
+    loginService: z.string().optional(),
+    logOutService: z.string().optional(),
+    dynamicFormService: z.string().optional(),
+    listDataCenterService: z.string().optional(),
+    servicePrefix: z.string().optional(),
+  }).optional(),
 })
 
 /**
@@ -64,6 +73,7 @@ export function buildKdConfig(
     authMode: mode,
     organization: config.organization,
     timeoutMs: config.timeoutMs ?? 30_000,
+    endpoints: config.serviceEndpoints,
   }
 
   if (mode === 'user') {

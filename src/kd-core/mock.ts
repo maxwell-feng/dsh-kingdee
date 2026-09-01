@@ -35,7 +35,8 @@ export function buildMockTransport(options: MockOptions = {}): KdTransport {
         }
       }
 
-      const formId = extractFormId(request.body)
+      const body = request.body as Record<string, unknown> | undefined
+      const formId = extractFormId(body)
       if (options.failingFormIds?.includes(formId ?? '')) {
         return {
           status: 200,
@@ -47,7 +48,7 @@ export function buildMockTransport(options: MockOptions = {}): KdTransport {
         return { status: 200, body: options.overrides[operation] }
       }
 
-      return { status: 200, body: envelopeFor(operation, formId) }
+      return { status: 200, body: envelopeFor(operation, body) }
     },
   }
 }
@@ -57,28 +58,41 @@ function operationOf(url: string): string {
   return service ? service[1] : 'UnknownService'
 }
 
-function extractFormId(body: unknown): string | undefined {
-  if (body && typeof body === 'object') {
-    const obj = body as Record<string, unknown>
-    const form = obj.FormId
-    return typeof form === 'string' ? form : undefined
-  }
-  return undefined
+function extractFormId(body: Record<string, unknown> | undefined): string | undefined {
+  const form = body?.FormId
+  return typeof form === 'string' ? form : undefined
 }
 
-function envelopeFor(operation: string, formId?: string): KdEnvelope {
-  if (operation === 'DynamicFormService.ExecuteBillQuery') {
+function envelopeFor(operation: string, body: Record<string, unknown> | undefined): KdEnvelope {
+  const formId = extractFormId(body)
+  const isBatch = Array.isArray(body?.Data)
+
+  if (operation === 'LoginService.LogOut') {
+    return { Result: 0, IsSuccess: true, Message: '', Data: { loggedOut: true } }
+  }
+  if (operation === 'DataCenterService.List') {
+    return {
+      Result: 0,
+      IsSuccess: true,
+      Message: '',
+      Data: { dataCenters: [{ id: 'A1', number: 'd1', name: 'Mock Tenancy' }] },
+    }
+  }
+  if (operation === 'DynamicFormService.ExecuteBillQuery' || operation === 'DynamicFormService.QueryBusinessData') {
     return {
       Result: 0,
       IsSuccess: true,
       Message: '',
       Data: [
-        { FID: '1', FBillNo: 'SO-MOCK-1', FDocumentStatus: 'Z' },
-        { FID: '2', FBillNo: 'SO-MOCK-2', FDocumentStatus: 'Z' },
+        { FID: '1', FBillNo: `SO-MOCK-1-${formId ?? ''}`, FDocumentStatus: 'Z' },
+        { FID: '2', FBillNo: `SO-MOCK-2-${formId ?? ''}`, FDocumentStatus: 'Z' },
       ],
     }
   }
   if (operation === 'DynamicFormService.Save') {
+    if (isBatch) {
+      return { Result: 0, IsSuccess: true, Message: '', Data: { saved: [{ Id: 'mock-1', Number: `SO-MOCK-b-${formId ?? ''}` }] } }
+    }
     return { Result: 0, IsSuccess: true, Message: '', Data: { Id: 'mock-1', Number: `SO-MOCK-${formId ?? ''}`, FormId: formId ?? '' } }
   }
   if (operation === 'DynamicFormService.Submit') {
@@ -89,6 +103,12 @@ function envelopeFor(operation: string, formId?: string): KdEnvelope {
   }
   if (operation === 'DynamicFormService.UnAudit') {
     return { Result: 0, IsSuccess: true, Message: '', Data: { unaudited: true } }
+  }
+  if (operation === 'DynamicFormService.UnSubmit') {
+    return { Result: 0, IsSuccess: true, Message: '', Data: { unsubmitted: true } }
+  }
+  if (operation === 'DynamicFormService.DeleteDraft') {
+    return { Result: 0, IsSuccess: true, Message: '', Data: { draftDeleted: true } }
   }
   if (operation === 'DynamicFormService.View') {
     return { Result: 0, IsSuccess: true, Message: '', Data: { Id: 'mock-1', FBillNo: 'SO-MOCK-1' } }

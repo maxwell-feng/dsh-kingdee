@@ -17,6 +17,7 @@ export { KdClient } from './client.ts'
 
 export type {
   KdAuthMode,
+  KdBatchSaveParams,
   KdConfig,
   KdEnvelope,
   KdHttpResponse,
@@ -25,6 +26,7 @@ export type {
   KdQueryParams,
   KdRequest,
   KdSaveParams,
+  KdServiceEndpoints,
   KdSubmitParams,
   KdToolResult,
 } from './types.ts'

@@ -5,14 +5,33 @@
  * offline. Everything in `kd-core` is pure data + a transport seam.
  */
 
-/**
- * Authentication mode for the Kingdee Cloud WebAPI.
+/** Authentication mode for the Kingdee Cloud WebAPI.
  *
  * - `user`: authenticates with a 账套 username/password (LoginService.ValidateUser,
  *   keeps the `kdsvc` session cookie for subsequent calls).
  * - `app`: authenticates as a third-party application using `appId`/`appSecret`.
  */
 export type KdAuthMode = 'user' | 'app'
+
+/**
+ * Service endpoint names, overridable per Kingdee version.
+ *
+ * Sky Starry WebAPI service names vary slightly across versions. These defaults
+ * cover the standard K3Cloud surface; set a field here to override it for your
+ * deployment. Only the fields you set replace the default.
+ */
+export interface KdServiceEndpoints {
+  /** `LoginService.ValidateUser` — user/password login. */
+  loginService?: string
+  /** `LoginService.LogOut` — session logout. */
+  logOutService?: string
+  /** `DynamicFormService.*` — the shared dynamic-form service prefix. */
+  dynamicFormService?: string
+  /** Data-center list service (name is version-specific; verify per deployment). */
+  listDataCenterService?: string
+  /** Prefix for custom services: `<prefix>.<serviceName>`. */
+  servicePrefix?: string
+}
 
 /**
  * Connection and authentication configuration for one Kingdee Cloud tenant.
@@ -45,6 +64,8 @@ export interface KdConfig {
   headers?: Record<string, string>
   /** Optional literal cookie sent on every request (used by the DSH transport for session reuse). */
   cookie?: string
+  /** Optional service-endpoint overrides for this Kingdee version. */
+  endpoints?: KdServiceEndpoints
 }
 
 /** One HTTP request the transport performs. */
@@ -102,6 +123,16 @@ export interface KdSaveParams {
   formId: string
   /** The bill payload keyed by Kingdee field keys. */
   data: Record<string, unknown>
+  /** Set `true` to skip the platform interaction (form plugin) validation. */
+  interaction?: boolean
+}
+
+/** Parameters for batch-saving multiple records in one call. */
+export interface KdBatchSaveParams {
+  /** Kingdee form id, e.g. `SAL_SaleOrder`. */
+  formId: string
+  /** The list of bill payloads keyed by Kingdee field keys. */
+  records: Record<string, unknown>[]
   /** Set `true` to skip the platform interaction (form plugin) validation. */
   interaction?: boolean
 }

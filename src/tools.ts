@@ -167,4 +167,116 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       },
     }),
   )
+
+  ctx.tools.register(
+    defineTool({
+      name: 'kingdee_logout',
+      description: 'Log out the current Kingdee Cloud session and clear the stored session cookie.',
+      parameters: {},
+      output: {
+        schema: { type: 'object', properties: {}, additionalProperties: true },
+        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+      },
+      async execute() {
+        return (await getClient()).logout()
+      },
+    }),
+  )
+
+  ctx.tools.register(
+    defineTool({
+      name: 'kingdee_list_datacenters',
+      description: 'List the data centers / tenants reachable at the configured WebAPI base URL.',
+      parameters: {},
+      output: {
+        schema: { type: 'object', properties: {}, additionalProperties: true },
+        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+      },
+      async execute() {
+        return (await getClient()).listDataCenters()
+      },
+    }),
+  )
+
+  ctx.tools.register(
+    defineTool({
+      name: 'kingdee_query_business_data',
+      description: 'Query Kingdee Cloud bills and base data with the newer structured QueryBusinessData endpoint. Returns object-shaped rows.',
+      parameters: {
+        formId: { type: 'string', required: true, description: 'Kingdee form id, e.g. SAL_SaleOrder.' },
+        fieldKeys: { type: 'array', items: { type: 'string' }, required: true, description: 'Field keys to return, e.g. FBillNo, FDocumentStatus.' },
+        filter: { type: 'string', description: `Kingdee filter expression, e.g. FBillNo='SO-20260701'.` },
+        topCount: { type: 'number', description: 'Maximum number of rows to return.' },
+        organization: { type: 'string', description: 'Optional organization (org) id / FNumber.' },
+      },
+      output: {
+        schema: { type: 'array', items: { type: 'object', properties: {}, additionalProperties: true } },
+        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+      },
+      async execute(args) {
+        return (await getClient()).queryBusinessData({
+          formId: args.formId,
+          fieldKeys: args.fieldKeys,
+          filter: args.filter,
+          topCount: args.topCount,
+          organization: args.organization,
+        })
+      },
+    }),
+  )
+
+  ctx.tools.register(
+    defineTool({
+      name: 'kingdee_unsubmit',
+      description: 'Un-submit one or more Kingdee Cloud forms (reverses a submit). Service name may be version-specific.',
+      parameters: {
+        formId: { type: 'string', required: true, description: 'Kingdee form id.' },
+        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to un-submit.' },
+      },
+      output: {
+        schema: { type: 'object', properties: {}, additionalProperties: true },
+        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+      },
+      async execute(args) {
+        return (await getClient()).unsubmit({ formId: args.formId, ids: args.ids })
+      },
+    }),
+  )
+
+  ctx.tools.register(
+    defineTool({
+      name: 'kingdee_delete_draft',
+      description: 'Delete draft (暂存/created) Kingdee Cloud records by id.',
+      parameters: {
+        formId: { type: 'string', required: true, description: 'Kingdee form id.' },
+        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Draft record ids to delete.' },
+      },
+      output: {
+        schema: { type: 'object', properties: {}, additionalProperties: true },
+        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+      },
+      async execute(args) {
+        return (await getClient()).deleteDraft({ formId: args.formId, ids: args.ids })
+      },
+    }),
+  )
+
+  ctx.tools.register(
+    defineTool({
+      name: 'kingdee_batch_save',
+      description: 'Batch-save multiple Kingdee Cloud records in one call.',
+      parameters: {
+        formId: { type: 'string', required: true, description: 'Kingdee form id, e.g. SAL_SaleOrder.' },
+        records: { type: 'array', items: { type: 'object', properties: {}, additionalProperties: true }, required: true, description: 'List of bill payloads keyed by Kingdee field keys.' },
+        interaction: { type: 'boolean', description: 'Set true to skip platform (form plugin) validation.' },
+      },
+      output: {
+        schema: { type: 'object', properties: {}, additionalProperties: true },
+        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+      },
+      async execute(args) {
+        return (await getClient()).batchSave({ formId: args.formId, records: args.records, interaction: args.interaction })
+      },
+    }),
+  )
 }

@@ -1,27 +1,34 @@
-# Release notes — v0.1.0
+# Release notes — v0.2.0
 
 Release date: 2026-09-01
 
-This is the initial release of **dsh-kingdee**, the Kingdee Cloud Starry Sky (金蝶云星空) secondary-development plugin for DeepSeek Harness.
+Second release of **dsh-kingdee**, the Kingdee Cloud Starry Sky (金蝶云星空) secondary-development plugin for DeepSeek Harness.
 
-## What's in this release
+## New in this release
 
-- A framework-free `kd-core` Kingdee Cloud WebAPI client (two auth modes, the full data/service operation set, envelope parsing, typed errors).
-- A DSH plugin registering eight typed tools (`kingdee_query`, `kingdee_save`, `kingdee_submit`, `kingdee_audit`, `kingdee_unaudit`, `kingdee_view`, `kingdee_delete`, `kingdee_invoke`).
-- Credential-safe configuration (secrets resolved per operation via the DSH credential seam).
-- A `kingdee` settings namespace with a browser settings-card scaffold.
-- A companion `kingdee-bos` domain skill (field/enum/status conventions, bill state machine, and the platform-plugin boundary).
-- Unit tests for the core.
+- **Six additional data/service-layer operations** with matching DSH tools:
+  - `kingdee_logout` (session logout)
+  - `kingdee_list_datacenters` (list reachable data centers / tenants)
+  - `kingdee_query_business_data` (the newer structured query)
+  - `kingdee_unsubmit` (un-submit)
+  - `kingdee_delete_draft` (delete draft/暂存)
+  - `kingdee_batch_save` (batch save several records in one call)
+- **Overridable service endpoints** (`serviceEndpoints` config / `KdConfig.endpoints`) so WebAPI service names can be matched to your Kingdee version.
+- Unit tests for the new operations (7/7 passing).
+- Cross-platform secrets documentation (Linux/macOS, Windows PowerShell/CMD, DSH credential store).
+- License switched to proprietary (all rights reserved).
 
 ## Highlights
 
-- **Offline mock.** Set `mock: true` to run the full tool pipeline against canned Kingdee envelopes with no reachable tenant.
-- **Credential-safe by design.** No secrets in config; each call re-resolves `userNameRef` / `passwordRef` / `appSecretRef`.
+- **Broader state machine** — create/update → batch save → submit → audit → un-audit → un-submit, plus draft delete — off the shelf.
+- **Offline mock** still covers the full tool set (`mock: true`).
+- **Endpoint configurability** lets a deployment that names a service differently override it without a code change.
 
 ## Known limitations
 
 - The **platform-plugin layer** (server-side C# form/list plugins, UI layout, background events) is **not** exposed — it is outside the WebAPI's reach and is documented as a boundary.
-- `app` authentication uses a default, deployment-agnostic header form; **verify the signing scheme against your Kingdee version** before relying on it against a live tenant (the mock path does not exercise signing).
+- **`app` authentication** uses a default, deployment-agnostic header form; verify the signing scheme against your Kingdee version before relying on it against a live tenant (the mock path does not exercise signing). Newer public-cloud tenants may require third-party (app) auth / OpenAPI.
+- A few endpoint names (`LogOut`, `ListDataCenter`, `UnSubmit`, `DeleteDraft`, `QueryBusinessData`) vary by Kingdee version; set `serviceEndpoints` to override on your deployment.
 - The DSH host/plugin half is compiled inside a DSH profile; only `kd-core` is built and tested standalone.
 
 ## Installation

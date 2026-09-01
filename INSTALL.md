@@ -47,6 +47,11 @@ Set values either in the **Plugins → kingdee** settings card, or in the `confi
 | `authMode` | `user` (账套 username/password) or `app` (appId/appSecret) |
 | `appId` | Application id (used by `app` mode) |
 | `organization` | Optional default organization (org) id / FNumber for queries |
+| `serviceEndpoints` | Advanced: override WebAPI service names for your Kingdee version (see below) |
+
+### Advanced: override service endpoints
+
+WebAPI service names (e.g. `LogOut`, `ListDataCenter`, `UnSubmit`, `DeleteDraft`, `QueryBusinessData`) can differ slightly by Kingdee version. If a tool reports an unknown service, set the matching override in `serviceEndpoints` (e.g. `dynamicFormService`, `listDataCenterService`, `logOutService`, `servicePrefix`).
 
 ## 3. Provide the secrets
 

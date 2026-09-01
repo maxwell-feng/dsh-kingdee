@@ -84,6 +84,12 @@ export DSH_KINGDEE_MOCK=true
 | `kingdee_view` | View a single record by id | `formId`, `id` |
 | `kingdee_delete` | Delete records by id | `formId`, `ids[]` |
 | `kingdee_invoke` | Invoke a BOS custom service | `serviceName`, `payload?`, `formId?` |
+| `kingdee_logout` | Log out of the current session | — |
+| `kingdee_list_datacenters` | List data centers / tenants at the base URL | — |
+| `kingdee_query_business_data` | Structured query (`QueryBusinessData`) | `formId`, `fieldKeys[]`, `filter?`, `topCount?`, `organization?` |
+| `kingdee_unsubmit` | Un-submit records | `formId`, `ids[]` |
+| `kingdee_delete_draft` | Delete draft (暂存) records | `formId`, `ids[]` |
+| `kingdee_batch_save` | Batch-save several records in one call | `formId`, `records[]`, `interaction?` |
 
 Every tool returns a normalized canonical value; a Kingdee `IsSuccess=false` message becomes a typed error (`kd/business-error`, `kd/auth-failed`, …) instead of prose for the model to parse.
 
@@ -93,7 +99,7 @@ Every tool returns a normalized canonical value; a Kingdee `IsSuccess=false` mes
 src/
 ├─ kd-core/          framework-free Kingdee WebAPI client (pure logic)
 │  ├─ auth.ts        user / app authentication
-│  ├─ client.ts      the eight operations + session management
+│  ├─ client.ts      the operations set + session management
 │  ├─ envelope.ts    envelope parsing & normalization
 │  ├─ errors.ts      typed error mapping
 │  ├─ transport.ts   transport seam (real HTTP via fetch)

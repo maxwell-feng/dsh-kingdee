@@ -93,3 +93,28 @@ test('client maps a fake failure envelope to a KdError', async () => {
     (error: unknown) => error instanceof KdError && error.code === 'kd/business-error',
   )
 })
+
+test('client runs the extended mock operations (data center, structured query, batch, un-submit, draft delete, logout)', async () => {
+  const client = new KdClient(
+    { baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' },
+    buildMockTransport(),
+  )
+
+  const dc = (await client.listDataCenters()) as unknown as { dataCenters: Array<Record<string, unknown>> }
+  assert.ok(Array.isArray(dc.dataCenters))
+
+  const structured = (await client.queryBusinessData({ formId: 'SAL_SaleOrder', fieldKeys: ['FBillNo'] })) as Array<Record<string, unknown>>
+  assert.ok(Array.isArray(structured))
+
+  const batch = (await client.batchSave({ formId: 'SAL_SaleOrder', records: [{ FBillNo: 'B1' }, { FBillNo: 'B2' }] })) as unknown as { saved: unknown[] }
+  assert.ok(batch.saved.length >= 1)
+
+  const unsub = (await client.unsubmit({ formId: 'SAL_SaleOrder', ids: ['mock-1'] })) as Record<string, unknown>
+  assert.equal(unsub.unsubmitted, true)
+
+  const draft = (await client.deleteDraft({ formId: 'SAL_SaleOrder', ids: ['mock-1'] })) as Record<string, unknown>
+  assert.equal(draft.draftDeleted, true)
+
+  const loggedOut = (await client.logout()) as Record<string, unknown>
+  assert.equal(loggedOut.loggedOut, true)
+})

@@ -47,6 +47,11 @@ dsh plugin add dsh-kingdee
 | `authMode` | `user`（账套用户名/密码）或 `app`（appId/appSecret） |
 | `appId` | 应用 id（`app` 模式用） |
 | `organization` | 可选的默认组织（org）id / FNumber，用于查询 |
+| `serviceEndpoints` | 高级：按你的金蝶版本覆盖 WebAPI 服务名（见下） |
+
+### 高级：覆盖服务端点
+
+WebAPI 服务名（如 `LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft`、`QueryBusinessData`）可能随金蝶版本略有差异。若某工具提示未知服务，请在 `serviceEndpoints` 中覆盖对应项（如 `dynamicFormService`、`listDataCenterService`、`logOutService`、`servicePrefix`）。
 
 ## 三、提供密钥
 
