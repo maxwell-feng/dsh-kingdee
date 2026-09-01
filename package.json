@@ -1,6 +1,6 @@
 {
   "name": "dsh-kingdee",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Kingdee Cloud Starry Sky secondary-development plugin for DeepSeek Harness (DSH) — 金蝶云星空二次开发插件（DSH）。Typed tools over the Kingdee Cloud WebAPI, credential-safe config, and a companion domain skill.",
   "type": "module",
   "main": "./lib/index.js",

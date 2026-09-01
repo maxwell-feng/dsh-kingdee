@@ -2,6 +2,12 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-09-01
+
+### Fixed
+
+- Reworked the README feature bullet (EN + zh-CN) so the `kingdee_*` tool list reads correctly when rendered on npm (avoids the long comma-separated inline-code span). The full list is in the Tools table.
+
 ## [0.2.0] - 2026-09-01
 
 ### Added
