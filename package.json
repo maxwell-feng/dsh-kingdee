@@ -1,22 +1,18 @@
 {
   "name": "dsh-kingdee",
   "version": "0.2.0",
-  "description": "Kingdee Cloud Starry Sky (Kingdee ERP) secondary-development plugin for DeepSeek Harness (DSH). Provides typed tools over the Kingdee Cloud WebAPI, credential-safe configuration, a settings card, and a companion domain skill.",
+  "description": "Kingdee Cloud Starry Sky secondary-development plugin for DeepSeek Harness (DSH) — 金蝶云星空二次开发插件（DSH）。Typed tools over the Kingdee Cloud WebAPI, credential-safe config, and a companion domain skill.",
   "type": "module",
-  "main": "./lib/kd-core/index.js",
-  "types": "./lib/kd-core/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/kd-core/index.d.ts",
-      "default": "./lib/kd-core/index.js"
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
     },
     "./kd-core": {
       "types": "./lib/kd-core/index.d.ts",
       "default": "./lib/kd-core/index.js"
-    },
-    "./client": {
-      "types": "./lib/types/client/index.d.ts",
-      "default": "./lib/client.js"
     }
   },
   "files": [
@@ -37,33 +33,23 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --experimental-strip-types --test \"test/**/*.test.ts\""
+    "test": "node --experimental-strip-types --test \"test/**/*.test.ts\"",
+    "prepublishOnly": "npm run build"
   },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
-    },
-    "client": {
-      "platform": "web",
-      "inject": [
-        "@deepseek-ai/dsh-client-ui-settings-plugins"
-      ]
     }
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "*",
     "@deepseek-ai/dsh-tools": "*",
-    "@deepseek-ai/dsh-credentials": "*",
-    "@deepseek-ai/dsh-settings": "*",
     "@deepseek-ai/schemastery": "*"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": { "optional": true },
     "@deepseek-ai/dsh-tools": { "optional": true },
-    "@deepseek-ai/dsh-credentials": { "optional": true },
-    "@deepseek-ai/dsh-settings": { "optional": true },
-    "@deepseek-ai/schemastery": { "optional": true },
-    "@deepseek-ai/dsh-client-ui-settings-plugins": { "optional": true }
+    "@deepseek-ai/schemastery": { "optional": true }
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -73,6 +59,17 @@
     "node": ">=22"
   },
   "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxwell-feng/dsh-kingdee.git"
+  },
+  "homepage": "https://github.com/maxwell-feng/dsh-kingdee#readme",
+  "bugs": {
+    "url": "https://github.com/maxwell-feng/dsh-kingdee/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "deepseek-harness",
     "dsh",

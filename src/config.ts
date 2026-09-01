@@ -38,7 +38,7 @@ export interface Config {
   serviceEndpoints?: KdServiceEndpoints
 }
 
-export const Config: z<Config> = z.object({
+export const Config = z.object({
   baseUrl: z.string(),
   acctId: z.string(),
   authMode: z.union([z.literal('user'), z.literal('app')]).default('user'),

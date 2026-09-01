@@ -7,8 +7,8 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "allowImportingTsExtensions": false
+    "strict": false
   },
-  "include": ["src/kd-core/**/*.ts"],
-  "exclude": ["test/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/client", "test"]
 }

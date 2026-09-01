@@ -21,7 +21,7 @@ dsh plugin add dsh-kingdee
 ```yaml
 - insert:
     - id: kingdee
-      name: ./src/index.ts
+      name: dsh-kingdee
       enabled: true
       config:
         baseUrl: "http://your-server/K3Cloud"
@@ -34,7 +34,7 @@ dsh plugin add dsh-kingdee
         mock: false
 ```
 
-> `name: ./src/index.ts` 会把 host 半区从源码加载（DSH loader 会编译 TS）。若在 DSH 工具链内构建好插件，请把这一行指向构建后的 `lib` 入口。
+> `name: dsh-kingdee` 引用已安装的包（其 `main` 即构建后的 host 入口 `lib/index.js`）。从源码检出开发时改用 `name: ./src/index.ts`——DSH loader 会直接编译 TS。
 
 ## 二、配置连接
 

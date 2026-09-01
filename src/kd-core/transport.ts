@@ -52,9 +52,16 @@ export class HttpTransport implements KdTransport {
     return {
       status: response.status,
       body,
-      headers: Object.fromEntries(
-        [...response.headers.entries()].map(([k, v]) => [k.toLowerCase(), v]) as [string, string][],
-      ) as Record<string, string | string[] | undefined>,
+      headers: collectHeaders(response.headers),
     }
   }
+}
+
+/** Lowercase response headers into a plain object (works across DOM and undici Headers). */
+function collectHeaders(headers: Headers): Record<string, string | string[] | undefined> {
+  const out: Record<string, string | string[] | undefined> = {}
+  headers.forEach((value, key) => {
+    out[key.toLowerCase()] = value
+  })
+  return out
 }

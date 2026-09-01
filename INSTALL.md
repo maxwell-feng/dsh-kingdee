@@ -21,7 +21,7 @@ Or, from a source checkout, add it to your `cordis.yml` (or a `cordis.patch.yml`
 ```yaml
 - insert:
     - id: kingdee
-      name: ./src/index.ts
+      name: dsh-kingdee
       enabled: true
       config:
         baseUrl: "http://your-server/K3Cloud"
@@ -34,7 +34,7 @@ Or, from a source checkout, add it to your `cordis.yml` (or a `cordis.patch.yml`
         mock: false
 ```
 
-> The `name: ./src/index.ts` form loads the host half from source (the DSH loader compiles TS). When you build the plugin inside the DSH toolchain, point the row at the built `lib` entry instead.
+> `name: dsh-kingdee` references the installed package (its `main` is the built host entry `lib/index.js`). When developing from a source checkout, use `name: ./src/index.ts` instead — the DSH loader compiles TS directly.
 
 ## 2. Configure the connection
 

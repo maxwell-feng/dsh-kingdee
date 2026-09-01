@@ -7,7 +7,7 @@
 # are already present in any DSH composition that ships the web GUI.
 - insert:
     - id: kingdee
-      name: ./src/index.ts
+      name: dsh-kingdee
       enabled: true
       config:
         # Connection and credential references live in the Settings card / config,
