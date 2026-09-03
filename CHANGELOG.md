@@ -2,6 +2,19 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2026-09-03
+
+### Changed / 变更
+
+- **Adapted to deepseek-harness `0.1.2-rc.1` per the official plugin development docs** (`docs/user/develop/basic/config|tool|publish`, `docs/cookbook/adding-a-settings-card`). The DSH seams this plugin uses — `defineTool`, `ctx.tools.register`, `ctx.credentials.resolve`, `ctx.settings.installSection` — are unchanged since `0.1.2-alpha.5`, so the tool set and credentials flow are behaviorally identical. / **按官方插件开发文档适配 deepseek-harness `0.1.2-rc.1`**（`docs/user/develop/basic/config|tool|publish`、`docs/cookbook/adding-a-settings-card`）。本插件使用的各缝接口 —— `defineTool`、`ctx.tools.register`、`ctx.credentials.resolve`、`ctx.settings.installSection` —— 自 `0.1.2-alpha.5` 以来未变，工具集与凭据解析行为完全一致。
+
+### Fixed / 修复
+
+- **Replaced the ambient `any` peer declarations (`src/types/peers.d.ts`) with the real published peer packages** at `0.1.2-rc.1` (`@deepseek-ai/dsh-tools`, `dsh-settings`, `dsh-credentials`, `cordis`, `schemastery`). `npm run typecheck` now passes with 0 errors (previously 43 implicit-`any` errors); `apply` no longer compiles against `Context = any`. Credential refs now flow through the branded `credentialRef()` helper exactly as the credential-seam doc prescribes. / **删除 ambient `any` peer 声明（`src/types/peers.d.ts`），改用 npm 上真实的 `0.1.2-rc.1` peer 包**（`@deepseek-ai/dsh-tools`、`dsh-settings`、`dsh-credentials`、`cordis`、`schemastery`）。`npm run typecheck` 由 43 个隐式 `any` 错误清零；`apply` 不再基于 `Context = any` 编译。凭据引用改按凭据缝文档使用带品牌的 `credentialRef()` 辅助函数。
+- **Tool outputs now declare the canonical open-value schema (`type: 'json'`)** matching `defineTool`'s contract: `execute` returns `Promise<JsonValue>` and `render` receives the validated value (pattern from `cordis_inspect_list` / `tool-workflow`). Previously the hand-written `{ type: 'object', additionalProperties: true }` specs never type-checked against the `unknown` returns. / **工具输出统一声明规范开放值 schema（`type: 'json'`）**，`execute` 返回 `Promise<JsonValue>`、`render` 接收校验后的值（对齐 `cordis_inspect_list` / `tool-workflow` 的官方写法）。此前手写的 `{ type: 'object', additionalProperties: true }` 无法通过类型检查。
+- **The settings-card browser half is now actually built and served.** Added the `dsh.client` manifest (`platform: web`, injecting the locale and client-settings packages), the `./client` export, and a self-contained `tsdown.config.ts` that reproduces the client module system's lazy-CJS factory artifact (`window.__ModuleLoader__.load(...)`, `lib/client.js`). The card binds `ctx.settingsScope` (namespace `kingdee`), registers into the `settings.plugin.item` slot, registers its own `settings.kingdee` locale dictionary, and renders its own chrome (no cross-plugin value imports — the bundle-purity gate). / **设置卡片的浏览器半侧现已被真正构建并可加载**：新增 `dsh.client` 清单（`platform: web`，注入 locale 与 client-settings 包）、`./client` 导出，以及自包含的 `tsdown.config.ts`，按客户端模块系统的 lazy-CJS factory 产物格式输出（`window.__ModuleLoader__.load(...)`，`lib/client.js`）。卡片绑定 `ctx.settingsScope`（命名空间 `kingdee`）、注册进 `settings.plugin.item` slot、注册自有 `settings.kingdee` 词典，并自绘卡片外观（无跨插件值导入 —— 通过 bundle 纯净门禁）。
+- **`installSection` hook usage corrected**: `setSource` receives a thunk returning the authoritative config (`() => Config`), per the settings seam contract; the plugin now re-reads through the thunk so a settings edit (or provider detach) reaches the next tool call. Tests 7/7 pass; build emits `lib/` (Node half via tsc, browser half via tsdown). / **修正 `installSection` 钩子用法**：按设置缝契约，`setSource` 接收返回当前权威配置的 thunk（`() => Config`）；插件改为经 thunk 读取，设置页保存（或 provider 卸载）即刻影响下一次工具调用。测试 7/7 通过；构建同时产出 Node 半侧（tsc）与浏览器半侧（tsdown）。
+
 ## [0.2.3] - 2026-09-02
 
 ### Changed / 变更

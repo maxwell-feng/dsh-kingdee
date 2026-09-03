@@ -19,7 +19,7 @@
 dsh plugin add dsh-kingdee
 ```
 
-> 已在 deepseek-harness **0.1.2-alpha.5** 最新 `master` 上验证（`0.1.2-alpha.4` → `0.1.2-alpha.5` 无影响本插件的缝变更）。
+> 已在 deepseek-harness **0.1.2-rc.1** 最新 `master` 上验证（`0.1.2-alpha.5` → `0.1.2-rc.1` 无影响本插件的缝变更）。
 
 完整配置见 [INSTALL.zh.md](./INSTALL.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.md](./CHANGELOG.md)。
 

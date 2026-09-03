@@ -8,6 +8,9 @@
  */
 
 import type { Context } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-credentials'
+import type {} from '@deepseek-ai/dsh-settings'
+import { credentialRef } from '@deepseek-ai/dsh-credentials'
 import { buildMockTransport, HttpTransport, KdClient } from './kd-core/index.ts'
 import { buildKdConfig, Config, NAMESPACE } from './config.ts'
 import type { Config as PluginConfig } from './config.ts'
@@ -17,12 +20,12 @@ export const name = 'dsh-kingdee'
 export const inject = ['tools', 'credentials', 'settings']
 
 export function apply(ctx: Context, config: PluginConfig): void {
-  let live = config
+  let live: () => PluginConfig = () => config
 
   const getClient = async (): Promise<KdClient> => {
-    const credentials = await resolveCredentials(ctx, live)
-    const kdConfig = buildKdConfig(live, credentials)
-    const transport = live.mock ? buildMockTransport() : new HttpTransport(kdConfig.timeoutMs)
+    const credentials = await resolveCredentials(ctx, live())
+    const kdConfig = buildKdConfig(live(), credentials)
+    const transport = live().mock ? buildMockTransport() : new HttpTransport(kdConfig.timeoutMs)
     return new KdClient(kdConfig, transport)
   }
 
@@ -30,6 +33,8 @@ export function apply(ctx: Context, config: PluginConfig): void {
 
   ctx.inject(['settings'], (settingsCtx) => {
     settingsCtx.settings.installSection(ctx, NAMESPACE, Config, config, {
+      // The seam hands a thunk: the authoritative value may be the settings
+      // scope or the composition entry, depending on the provider's lifetime.
       setSource: (current) => {
         live = current
       },
@@ -49,7 +54,7 @@ async function resolveCredentials(
   const resolve = async (ref: string | undefined): Promise<string | undefined> => {
     if (!ref) return undefined
     // CredentialRef is branded; the runtime value is the reference string.
-    const got = await ctx.credentials.resolve(ref as never)
+    const got = await ctx.credentials.resolve(credentialRef(ref))
     return got?.value
   }
 

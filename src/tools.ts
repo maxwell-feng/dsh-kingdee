@@ -4,11 +4,30 @@
  * Each tool is a thin typed wrapper over a {@link KdClient} operation. All business
  * logic lives in `./kd-core`; these wrappers only map the model-facing schema to a
  * canonical output value. Compiled inside a DSH profile (peer packages resolve there).
+ *
+ * Output contract: every Kingdee WebAPI response is an open JSON document, so the
+ * tools declare the canonical open-value schema (`type: 'json'`) — the same shape
+ * `cordis_inspect_list` uses — and render it as JSON text.
  */
 
 import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
+import type { JsonValue } from '@deepseek-ai/dsh-util-values'
 import type { KdClient } from './kd-core/index.ts'
+
+/** Render one canonical value as compact JSON text. */
+function renderJson(_args: unknown, value: JsonValue): Array<{ type: 'text'; text: string }> {
+  return [{ type: 'text', text: JSON.stringify(value) }]
+}
+
+/**
+ * Normalize one kd-core result to the canonical open-value schema. The WebAPI
+ * envelope parser already guarantees lossless JSON; the annotation carries that
+ * guarantee into the tool contract.
+ */
+async function callAsJson(run: Promise<unknown>): Promise<JsonValue> {
+  return await run as JsonValue
+}
 
 /** Register the complete kingdee_* tool set. `getClient` is re-invoked per call so credentials re-resolve. */
 export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdClient>): void {
@@ -24,17 +43,17 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         organization: { type: 'string', description: 'Optional organization (org) id / FNumber.' },
       },
       output: {
-        schema: { type: 'array', items: { type: 'object', properties: {}, additionalProperties: true } },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).executeBillQuery({
+        return callAsJson((await getClient()).executeBillQuery({
           formId: args.formId,
           fieldKeys: args.fieldKeys,
           filter: args.filter,
           topCount: args.topCount,
           organization: args.organization,
-        })
+        }))
       },
     }),
   )
@@ -49,11 +68,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         interaction: { type: 'boolean', description: 'Set true to skip platform (form plugin) validation.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).save({ formId: args.formId, data: args.data, interaction: args.interaction })
+        return callAsJson((await getClient()).save({ formId: args.formId, data: args.data, interaction: args.interaction }))
       },
     }),
   )
@@ -68,11 +87,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers accompanying the ids.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).submit({ formId: args.formId, ids: args.ids, numbers: args.numbers })
+        return callAsJson((await getClient()).submit({ formId: args.formId, ids: args.ids, numbers: args.numbers }))
       },
     }),
   )
@@ -80,17 +99,17 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
   ctx.tools.register(
     defineTool({
       name: 'kingdee_audit',
-      description: 'Audit one or more Kingdee Cloud forms.',
+      description: 'Audit (approve) one or more Kingdee Cloud forms.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
         ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to audit.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).audit({ formId: args.formId, ids: args.ids })
+        return callAsJson((await getClient()).audit({ formId: args.formId, ids: args.ids }))
       },
     }),
   )
@@ -104,11 +123,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to un-audit.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).unaudit({ formId: args.formId, ids: args.ids })
+        return callAsJson((await getClient()).unaudit({ formId: args.formId, ids: args.ids }))
       },
     }),
   )
@@ -122,11 +141,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         id: { type: 'string', required: true, description: 'Record id to view.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).view(args.formId, args.id)
+        return callAsJson((await getClient()).view(args.formId, args.id))
       },
     }),
   )
@@ -140,11 +159,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to delete.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).delete({ formId: args.formId, ids: args.ids })
+        return callAsJson((await getClient()).delete({ formId: args.formId, ids: args.ids }))
       },
     }),
   )
@@ -159,11 +178,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         formId: { type: 'string', description: 'Optional form id the service acts on.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).invokeService({ serviceName: args.serviceName, payload: args.payload, formId: args.formId })
+        return callAsJson((await getClient()).invokeService({ serviceName: args.serviceName, payload: args.payload, formId: args.formId }))
       },
     }),
   )
@@ -174,11 +193,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       description: 'Log out the current Kingdee Cloud session and clear the stored session cookie.',
       parameters: {},
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute() {
-        return (await getClient()).logout()
+        return callAsJson((await getClient()).logout())
       },
     }),
   )
@@ -189,11 +208,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       description: 'List the data centers / tenants reachable at the configured WebAPI base URL.',
       parameters: {},
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute() {
-        return (await getClient()).listDataCenters()
+        return callAsJson((await getClient()).listDataCenters())
       },
     }),
   )
@@ -210,17 +229,17 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         organization: { type: 'string', description: 'Optional organization (org) id / FNumber.' },
       },
       output: {
-        schema: { type: 'array', items: { type: 'object', properties: {}, additionalProperties: true } },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).queryBusinessData({
+        return callAsJson((await getClient()).queryBusinessData({
           formId: args.formId,
           fieldKeys: args.fieldKeys,
           filter: args.filter,
           topCount: args.topCount,
           organization: args.organization,
-        })
+        }))
       },
     }),
   )
@@ -234,11 +253,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to un-submit.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).unsubmit({ formId: args.formId, ids: args.ids })
+        return callAsJson((await getClient()).unsubmit({ formId: args.formId, ids: args.ids }))
       },
     }),
   )
@@ -252,11 +271,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Draft record ids to delete.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).deleteDraft({ formId: args.formId, ids: args.ids })
+        return callAsJson((await getClient()).deleteDraft({ formId: args.formId, ids: args.ids }))
       },
     }),
   )
@@ -271,11 +290,11 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         interaction: { type: 'boolean', description: 'Set true to skip platform (form plugin) validation.' },
       },
       output: {
-        schema: { type: 'object', properties: {}, additionalProperties: true },
-        render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
+        schema: { type: 'json' },
+        render: renderJson,
       },
       async execute(args) {
-        return (await getClient()).batchSave({ formId: args.formId, records: args.records, interaction: args.interaction })
+        return callAsJson((await getClient()).batchSave({ formId: args.formId, records: args.records, interaction: args.interaction }))
       },
     }),
   )

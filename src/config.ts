@@ -38,10 +38,10 @@ export interface Config {
   serviceEndpoints?: KdServiceEndpoints
 }
 
-export const Config = z.object({
+export const Config: z<Config> = z.object({
   baseUrl: z.string(),
   acctId: z.string(),
-  authMode: z.union([z.literal('user'), z.literal('app')]).default('user'),
+  authMode: z.union(['user', 'app'] as const).default('user'),
   appId: z.string(),
   appSecretRef: z.string().default('DSH_KINGDEE_APP_SECRET'),
   userNameRef: z.string().default('DSH_KINGDEE_USER'),
@@ -50,12 +50,12 @@ export const Config = z.object({
   timeoutMs: z.number().step(1).min(0).max(300_000).default(30_000),
   mock: z.boolean().default(false),
   serviceEndpoints: z.object({
-    loginService: z.string().optional(),
-    logOutService: z.string().optional(),
-    dynamicFormService: z.string().optional(),
-    listDataCenterService: z.string().optional(),
-    servicePrefix: z.string().optional(),
-  }).optional(),
+    loginService: z.string(),
+    logOutService: z.string(),
+    dynamicFormService: z.string(),
+    listDataCenterService: z.string(),
+    servicePrefix: z.string(),
+  }),
 })
 
 /**
