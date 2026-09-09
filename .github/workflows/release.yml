@@ -50,21 +50,39 @@ jobs:
   publish:
     name: Publish to npm
     needs: test
-    # Silent skip until the NPM_TOKEN repo secret is configured.
-    if: secrets.NPM_TOKEN != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check for NPM_TOKEN secret
+        id: token
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::NPM_TOKEN repo secret is not configured - skipping npm publish"
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - uses: pnpm/action-setup@v4
+        if: steps.token.outputs.present == 'true'
         with:
           version: 11
+
       - uses: actions/setup-node@v4
+        if: steps.token.outputs.present == 'true'
         with:
           node-version: "24"
           cache: pnpm
+
       - name: Install dependencies
+        if: steps.token.outputs.present == 'true'
         run: pnpm install --frozen-lockfile
+
       - name: Publish (prepublishOnly runs build)
+        if: steps.token.outputs.present == 'true'
         run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
