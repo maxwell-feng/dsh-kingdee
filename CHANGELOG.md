@@ -2,6 +2,17 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-09-09
+
+### Changed / 变更
+
+- **Adapted to deepseek-harness `0.1.5-alpha.1` per the official plugin development docs.** Upgraded all `@deepseek-ai/dsh-*` devDependencies to `0.1.5-alpha.1`. The runtime seams (`defineTool`, `ctx.tools.register`, `ctx.credentials.resolve`, `ctx.settings.installSection`) continue to work seamlessly. / **按官方插件开发规范全面适配 deepseek-harness `0.1.5-alpha.1`**。将所有 `@deepseek-ai/dsh-*` 开发依赖版本更新至 `0.1.5-alpha.1`。各核心运行时缝接口（`defineTool`、`ctx.tools.register`、`ctx.credentials.resolve`、`ctx.settings.installSection`）无缝兼容。
+- **Refreshed bilingual documentation** (`README.md`, `README.zh.md`, `INSTALL.md`, `INSTALL.zh.md`, `UPDATE.md`, `UPDATE.zh.md`, `UNINSTALL.md`, `UNINSTALL.zh.md`) to mark verification against DeepSeek Harness `0.1.5-alpha.1`. / **全面刷新双语文档**，明确标注针对 DeepSeek Harness `0.1.5-alpha.1` 的验证。
+
+### Added / 新增
+
+- **Added standalone bilingual configuration documentation (`CONFIG.md` / `CONFIG.zh.md`)** detailing all configuration keys, authentication modes, credential-safe resolution, service endpoint overrides, profile definitions, and Web UI settings cards. Included `CONFIG.md` and `CONFIG.zh.md` in published package distribution files. / **新增独立双语配置说明文档（`CONFIG.md` / `CONFIG.zh.md`）**，详细列出全部配置项、两种认证模式（`user`/`app`）、凭据安全解析机制、服务端点自定义覆盖、静态 Profile 声明与 Web 界面配置。在发布包 `files` 清单中包含该文档。
+
 ## [0.2.4] - 2026-09-03
 
 ### Changed / 变更

@@ -19,9 +19,9 @@
 dsh plugin add dsh-kingdee
 ```
 
-> Verified against deepseek-harness **0.1.2-rc.1** (latest `master`; `0.1.2-alpha.5` → `0.1.2-rc.1` no DSH seam changes affecting this plugin).
+> Verified against deepseek-harness **0.1.5-alpha.1** (latest `master`).
 
-See [INSTALL.md](./INSTALL.md) for the full setup, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
+See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
 
 ## Quick start
 

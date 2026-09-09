@@ -1,6 +1,6 @@
 # Installation
 
-> Verified against deepseek-harness **0.1.2-rc.1** (latest `master`; `0.1.2-alpha.5` → `0.1.2-rc.1` no DSH seam changes affecting this plugin).
+> Verified against deepseek-harness **0.1.5-alpha.1** (latest `master`). For full configuration details, see [CONFIG.md](./CONFIG.md).
 
 This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harness (DSH) profile.
 

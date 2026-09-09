@@ -1,6 +1,6 @@
 # 安装说明
 
-> 已在 deepseek-harness **0.1.2-rc.1** 最新 `master` 上验证（`0.1.2-alpha.5` → `0.1.2-rc.1` 无影响本插件的缝变更）。
+> 已在 deepseek-harness **0.1.5-alpha.1** 最新 `master` 上验证。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
