@@ -40,6 +40,8 @@ jobs:
           files: |
             README.md
             INSTALL.md
+            CONFIG.md
+            CONFIG.zh.md
             UPDATE.md
             UNINSTALL.md
             CHANGELOG.md
