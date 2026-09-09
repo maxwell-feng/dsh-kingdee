@@ -14,7 +14,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | `baseUrl` | `string` | `""` | 普通 | 金蝶云星空 WebAPI 基址，例如 `http://192.168.1.100/K3Cloud`。 |
 | `acctId` | `string` | `""` | 普通 | 金蝶账套 ID（数据中心 ID / Data Center ID）。 |
-| `authMode` | `'user' \| 'app'` | `"user"` | 普通 | 认证模式。`"user"` 为账套用户名/密码认证；`"app"` 为第三方应用授权（AppId + AppSecret）认证。 |
+| `authMode` | `'user' / 'app'` | `"user"` | 普通 | 认证模式。`"user"` 为账套用户名/密码认证；`"app"` 为第三方应用授权（AppId + AppSecret）认证。 |
 | `appId` | `string` | `""` | 普通 | 应用 ID，仅在 `authMode: "app"` 时生效。 |
 | `appSecretRef` | `string` | `"DSH_KINGDEE_APP_SECRET"` | `credential-ref` | 存放 AppSecret 密钥的凭据引用名（环境变量名）。 |
 | `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | 存放账套用户名的凭据引用名（环境变量名）。 |

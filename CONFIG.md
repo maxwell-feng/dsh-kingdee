@@ -14,7 +14,7 @@ Plugin configuration is strictly validated at runtime using `@deepseek-ai/schema
 | :--- | :--- | :--- | :--- | :--- |
 | `baseUrl` | `string` | `""` | Normal | Kingdee Cloud WebAPI base URL, e.g. `http://192.168.1.100/K3Cloud`. |
 | `acctId` | `string` | `""` | Normal | Kingdee data center / account ID (`acctId`). |
-| `authMode` | `'user' \| 'app'` | `"user"` | Normal | Authentication mode. `"user"` uses account username/password; `"app"` uses AppId + AppSecret. |
+| `authMode` | `'user' / 'app'` | `"user"` | Normal | Authentication mode. `"user"` uses account username/password; `"app"` uses AppId + AppSecret. |
 | `appId` | `string` | `""` | Normal | Application ID, required when `authMode` is `"app"`. |
 | `appSecretRef` | `string` | `"DSH_KINGDEE_APP_SECRET"` | `credential-ref` | Credential reference (env var name) holding the `app` secret. |
 | `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | Credential reference (env var name) holding the account username. |
