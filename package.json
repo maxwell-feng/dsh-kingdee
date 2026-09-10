@@ -98,7 +98,7 @@
   "engines": {
     "node": ">=22"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maxwell-feng/dsh-kingdee.git"
