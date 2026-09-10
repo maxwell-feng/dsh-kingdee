@@ -1,27 +1,21 @@
-# Proprietary License — All Rights Reserved
-
-> 专有许可证 · 保留所有权利（本仓库禁止复刻）
+MIT License
 
 Copyright (c) 2026 maxwell-feng
 
-This work is proprietary. **All rights reserved.**
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-## Terms / 条款
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-1. **No rights granted.** The copyright holder grants you **no rights** to copy, reproduce, modify, merge, publish, distribute, sublicense, sell, or create **derivative works** of this software, in whole or in part, unless you have received prior **written permission** from the copyright holder. Forking, copying, re-hosting, or re-publishing this repository or any part of it is **prohibited** without that written permission.
-
-   未获版权方书面许可，禁止复制、再分发、修改、转授权、商用或制作衍生作品。**禁止**在未经书面许可的情况下复刻 / fork / 再托管 / 再发布本仓库或其任何部分。
-
-2. **Read-only access.** You may view and read the source, documentation, and release artifacts for **evaluation only**.
-
-   源码、文档与发行物仅供**评估**阅读。
-
-3. **Prohibited uses.** Any use, reproduction, or derivation of this work, in whole or in part, without the prior written permission of the copyright holder is strictly prohibited.
-
-   未经书面许可，任何对本文档全部或部分的使用、复制或演绎均被严格禁止。
-
-4. **No warranty.** THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-5. **Contact.** Requests for permission to reuse, integrate as a dependency, or partner should be directed to the repository owner (maxwell-feng).
-
-   如需复用、集成或合作授权，请联系仓库所有者（maxwell-feng）。
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
