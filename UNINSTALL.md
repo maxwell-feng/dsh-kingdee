@@ -1,5 +1,7 @@
 # Uninstall
 
+English | [中文](UNINSTALL.zh.md)
+
 How to remove **dsh-kingdee** from a DSH profile.
 
 ## 1. Disable the plugin

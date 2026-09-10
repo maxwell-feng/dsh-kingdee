@@ -1,6 +1,8 @@
 # 安装说明
 
-> 已在 deepseek-harness **0.1.5-alpha.1** 最新 `master` 上验证。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
+[English](INSTALL.md) | 中文
+
+> 已在 deepseek-harness **0.1.5-rc.1** 最新 `master` 上验证。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 

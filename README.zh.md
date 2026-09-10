@@ -1,5 +1,7 @@
 # dsh-kingdee
 
+[English](README.md) | 中文
+
 > 面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）的金蝶云星空二次开发插件。
 
 `dsh-kingdee` 让 DSH agent 通过金蝶云星空的 **WebAPI** 对账套做一等公民、凭据安全的操作：提供一套类型化工具，用于查询、保存、提交、审核、反审核、查看、删除单据与基础资料，以及调用 BOS 自定义服务。配套的领域技能（`kingdee-bos`）讲解字段/枚举/状态机约定，以及数据层与平台插件层的边界。
@@ -19,9 +21,9 @@
 dsh plugin add dsh-kingdee
 ```
 
-> 已在 deepseek-harness **0.1.5-alpha.1** 最新 `master` 上验证。
+> 已在 deepseek-harness **0.1.5-rc.1** 最新 `master` 上验证。
 
-详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.md](./CHANGELOG.md)。
+详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ## 快速开始
 
@@ -134,6 +136,7 @@ pnpm install && pnpm run typecheck   # 需 deepseek-harness 单仓（或 DSH pro
 ## 文档
 
 - [INSTALL.zh.md](./INSTALL.zh.md) —— 安装与配置
+- [USAGE.zh.md](./USAGE.zh.md) —— 工具说明（含入参与示例）
 - [UPDATE.zh.md](./UPDATE.zh.md) —— 升级
 - [UNINSTALL.zh.md](./UNINSTALL.zh.md) —— 卸载
 - [CHANGELOG.md](./CHANGELOG.md) —— 版本历史

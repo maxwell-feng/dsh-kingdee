@@ -1,5 +1,7 @@
 # dsh-kingdee
 
+English | [中文](README.zh.md)
+
 > Kingdee Cloud Starry Sky (金蝶云星空) secondary-development plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH).
 
 `dsh-kingdee` gives the DSH agent a first-class, credential-safe way to act on a Kingdee Cloud Starry Sky tenant through its **WebAPI**: typed tools for querying, saving, submitting, auditing, un-auditing, viewing and deleting bills/base data, and for invoking BOS custom services. A companion domain skill (`kingdee-bos`) teaches the field/enum/status conventions and the boundary between the data layer and the platform-plugin layer.
@@ -19,9 +21,9 @@
 dsh plugin add dsh-kingdee
 ```
 
-> Verified against deepseek-harness **0.1.5-alpha.1** (latest `master`).
+> Verified against deepseek-harness **0.1.5-rc.1** (latest `master`).
 
-See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
+See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, [USAGE.md](./USAGE.md) for the tool reference, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
 
 ## Quick start
 
@@ -134,6 +136,7 @@ pnpm install && pnpm run typecheck   # requires the deepseek-harness monorepo (o
 ## Documentation
 
 - [INSTALL.md](./INSTALL.md) — installation and configuration
+- [USAGE.md](./USAGE.md) — tool reference with parameters and examples
 - [UPDATE.md](./UPDATE.md) — upgrading
 - [UNINSTALL.md](./UNINSTALL.md) — removal
 - [CHANGELOG.md](./CHANGELOG.md) — release history

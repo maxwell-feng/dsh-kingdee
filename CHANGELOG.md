@@ -2,6 +2,17 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-09-10
+
+### Changed / 变更
+
+- **Adapted to deepseek-harness `0.1.5-rc.1` per the official plugin development docs.** Upgraded all `@deepseek-ai/dsh-*` devDependencies to `0.1.5-rc.1` and the `@deepseek-ai/dsh-credentials` / `@deepseek-ai/dsh-tools` peer ranges to `^0.1.5-rc.1`. Verified each consumed contract still exists in `rc.1` (`credentialRef`, `defineTool`, `ctx.tools.register`, `ctx.credentials.resolve`, `ctx.settings.installSection`, the `dsh-client-locale` / `dsh-client-ui-settings` client injects, `JsonValue`); the `alpha.1→rc.1` diff for these packages is version-bumps only, so the tool set and credentials flow are behaviorally identical. / **按官方插件开发规范全面适配 deepseek-harness `0.1.5-rc.1`**。将所有 `@deepseek-ai/dsh-*` 开发依赖更新至 `0.1.5-rc.1`，并将 `@deepseek-ai/dsh-credentials` / `@deepseek-ai/dsh-tools` peer 范围升至 `^0.1.5-rc.1`。逐项核验本插件消费的契约在 `rc.1` 中依然存在（`credentialRef`、`defineTool`、`ctx.tools.register`、`ctx.credentials.resolve`、`ctx.settings.installSection`、客户端 `dsh-client-locale` / `dsh-client-ui-settings` 注入、`JsonValue`）；这些包的 `alpha.1→rc.1` 差异仅为版本号，工具集与凭据解析行为完全一致。
+- **Refreshed bilingual documentation** (`README.md`, `README.zh.md`, `INSTALL.md`, `INSTALL.zh.md`, `UPDATE.md`, `UPDATE.zh.md`, `UNINSTALL.md`, `UNINSTALL.zh.md`) to mark verification against DeepSeek Harness `0.1.5-rc.1`, added the `English | 中文` switcher line under each H1, and cross-linked the new usage guide. / **全面刷新双语文档**，明确标注针对 DeepSeek Harness `0.1.5-rc.1` 的验证，在每个一级标题下补齐 `English | 中文` 切换行，并互链新增的使用说明。
+
+### Added / 新增
+
+- **Added standalone bilingual usage documentation (`USAGE.md` / `USAGE.zh.md`)** documenting all 14 `kingdee_*` tools with parameters (required / type / description) and examples, cross-checked against `src/tools.ts`. Included `USAGE.md` and `USAGE.zh.md` in published package distribution files. / **新增独立双语使用说明文档（`USAGE.md` / `USAGE.zh.md`）**，列出全部 14 个 `kingdee_*` 工具的入参（是否必填 / 类型 / 说明）与示例，并与 `src/tools.ts` 逐项核对。在发布包 `files` 清单中包含该文档。
+
 ## [0.3.0] - 2026-09-09
 
 ### Changed / 变更

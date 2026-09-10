@@ -1,5 +1,7 @@
 # 卸载说明
 
+[English](UNINSTALL.md) | 中文
+
 如何从 DSH profile 移除 **dsh-kingdee**。
 
 ## 一、禁用插件

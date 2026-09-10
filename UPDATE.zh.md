@@ -1,6 +1,8 @@
 # 更新说明
 
-> 已在 deepseek-harness **0.1.5-alpha.1** 最新 `master` 上验证。
+[English](UPDATE.md) | 中文
+
+> 已在 deepseek-harness **0.1.5-rc.1** 最新 `master` 上验证。
 
 如何将 **dsh-kingdee** 升级到更新版本。
 

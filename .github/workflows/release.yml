@@ -39,10 +39,16 @@ jobs:
           body_path: docs/RELEASE.md
           files: |
             README.md
+            README.zh.md
             INSTALL.md
+            INSTALL.zh.md
+            USAGE.md
+            USAGE.zh.md
             CONFIG.md
             CONFIG.zh.md
             UPDATE.md
+            UPDATE.zh.md
             UNINSTALL.md
+            UNINSTALL.zh.md
             CHANGELOG.md
             LICENSE
