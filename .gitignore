@@ -3,7 +3,7 @@ node_modules/
 .pnpm-store/
 
 # Build output
-lib/
+lib/**/*.map
 *.tsbuildinfo
 *.tgz
 
