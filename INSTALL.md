@@ -2,7 +2,7 @@
 
 English | [中文](INSTALL.zh.md)
 
-> Verified against deepseek-harness **0.1.5-rc.1** (latest `master`). For full configuration details, see [CONFIG.md](./CONFIG.md).
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`). For full configuration details, see [CONFIG.md](./CONFIG.md).
 
 This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harness (DSH) profile.
 

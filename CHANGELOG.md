@@ -2,6 +2,16 @@
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-09-11
+
+### Changed / 变更
+
+- **Adapted to DeepSeek Harness `0.1.5-rc.2` and manifest specification modernization / 适配 DeepSeek Harness 0.1.5-rc.2 与插件清单规范现代化**:
+  - Added `manifestVersion: 1` under `package.json.dsh` conforming to `@deepseek-ai/dsh-package-manifest`.
+  - Added explicit host engine compatibility in `package.json.engines`: `"dsh": "^0.1.5-rc.2"`.
+  - Upgraded `@deepseek-ai/dsh-*` peerDependencies and devDependencies to `0.1.5-rc.2`.
+  - Refreshed all bilingual documentation (`README.md`, `README.zh.md`, `INSTALL.md`, `INSTALL.zh.md`, `UPDATE.md`, `UPDATE.zh.md`, `USAGE.md`, `USAGE.zh.md`, `CONFIG.md`, `CONFIG.zh.md`, `UNINSTALL.md`, `UNINSTALL.zh.md`) for `0.1.5-rc.2` verification.
+
 ## [0.4.0] - 2026-09-10
 
 ### Changed / 变更

@@ -2,7 +2,7 @@
 
 [English](USAGE.md) | 中文
 
-> 已在 deepseek-harness **0.1.5-rc.1** 最新 `master` 上验证。
+> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证。
 
 本文档列出本插件注册的全部 `kingdee_*` 工具（见 `src/tools.ts`）。agent 在会话中调用这些工具；每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
 

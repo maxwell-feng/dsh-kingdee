@@ -2,7 +2,7 @@
 
 English | [中文](UPDATE.zh.md)
 
-> Verified against deepseek-harness **0.1.5-rc.1** (latest `master`).
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`).
 
 How to move **dsh-kingdee** to a newer version.
 

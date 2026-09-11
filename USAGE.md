@@ -2,7 +2,7 @@
 
 English | [中文](USAGE.zh.md)
 
-> Verified against deepseek-harness **0.1.5-rc.1** (latest `master`).
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`).
 
 This guide documents every `kingdee_*` tool the plugin registers (see `src/tools.ts`). The agent calls these tools in a chat session; each one is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 

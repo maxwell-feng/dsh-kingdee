@@ -21,7 +21,7 @@ English | [中文](README.zh.md)
 dsh plugin add dsh-kingdee
 ```
 
-> Verified against deepseek-harness **0.1.5-rc.1** (latest `master`).
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`).
 
 See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, [USAGE.md](./USAGE.md) for the tool reference, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
 
