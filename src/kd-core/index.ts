@@ -8,7 +8,7 @@
 export { buildAppAuthHeader, businessHeaders, buildLoginPayload, validateConfig } from './auth.ts'
 export { assertSuccess, KdError, toKdError } from './errors.ts'
 export type { KdErrorCode } from './errors.ts'
-export { extractKdsvcCookie, extractSessionCookie, joinUrl, parseEnvelope, parseEnvelopeFromText } from './envelope.ts'
+export { extractKdsvcCookie, extractSessionCookie, joinUrl, parseEnvelope } from './envelope.ts'
 export { assertSafePublicUrl, isPrivateOrLocalHost } from './security.ts'
 export { HttpTransport } from './transport.ts'
 export type { KdTransport } from './transport.ts'
@@ -29,5 +29,4 @@ export type {
   KdSaveParams,
   KdServiceEndpoints,
   KdSubmitParams,
-  KdToolResult,
 } from './types.ts'

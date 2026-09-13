@@ -11,7 +11,6 @@ import {
   KdClient,
   KdError,
   parseEnvelope,
-  parseEnvelopeFromText,
   validateConfig,
 } from '../src/kd-core/index.ts'
 
@@ -28,12 +27,6 @@ test('parseEnvelope handles a success and a failure envelope', () => {
   const failed = parseEnvelope({ Result: 1, IsSuccess: false, Message: 'nope', Data: null })
   assert.equal(failed.IsSuccess, false)
   assert.equal(failed.Message, 'nope')
-})
-
-test('parseEnvelopeFromText parses JSON and tolerates garbage', () => {
-  assert.equal(parseEnvelopeFromText('{"Result":0,"IsSuccess":true}').IsSuccess, true)
-  assert.equal(parseEnvelopeFromText('not json').IsSuccess, false)
-  assert.match(parseEnvelopeFromText('not json').Message ?? '', /Failed to parse/)
 })
 
 test('buildLoginPayload and validateConfig enforce per-mode requirements and SSRF safety', () => {

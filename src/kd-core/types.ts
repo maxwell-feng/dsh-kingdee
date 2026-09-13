@@ -174,14 +174,3 @@ export interface KdInvokeParams {
   /** Optional form id the service acts on. */
   formId?: string
 }
-
-/** The normalized value the DSH tools expose to the model. */
-export interface KdToolResult<T = unknown> {
-  ok: boolean
-  /** Raw numeric Kingdee result code. */
-  result: number | null
-  /** Normalized payload; `null` when the call was not successful. */
-  data: T | null
-  /** Human-readable Kingdee message (the error text when `ok` is false). */
-  message: string | null
-}

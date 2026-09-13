@@ -6,7 +6,7 @@
  * so DSH tool output stays structured instead of forcing the model to parse prose.
  */
 /** Categorical error codes surfaced by the DSH tools. */
-export type KdErrorCode = 'kd/business-error' | 'kd/auth-failed' | 'kd/not-found' | 'kd/invalid-config' | 'kd/network' | 'kd/timeout' | 'kd/unknown';
+export type KdErrorCode = 'kd/business-error' | 'kd/auth-failed' | 'kd/invalid-config' | 'kd/network' | 'kd/timeout' | 'kd/unknown';
 /** A typed Kingdee failure. `code` is stable and narrows `details` for branching. */
 export declare class KdError extends Error {
     readonly code: KdErrorCode;

@@ -23,20 +23,6 @@ export function parseEnvelope(body: unknown): KdEnvelope {
   }
 }
 
-/** Normalize a JSON parse error into an envelope-friendly failure. */
-export function parseEnvelopeFromText(text: string): KdEnvelope {
-  try {
-    return parseEnvelope(JSON.parse(text))
-  } catch (error) {
-    return {
-      Result: null,
-      IsSuccess: false,
-      Message: `Failed to parse Kingdee response: ${error instanceof Error ? error.message : String(error)}`,
-      Data: null,
-    }
-  }
-}
-
 /** Join a base URL with an endpoint path, keeping exactly one slash between them. */
 export function joinUrl(baseUrl: string, path: string): string {
   const base = baseUrl.replace(/\/+$/, '')

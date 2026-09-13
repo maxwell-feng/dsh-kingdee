@@ -10,7 +10,6 @@
 export type KdErrorCode =
   | 'kd/business-error'
   | 'kd/auth-failed'
-  | 'kd/not-found'
   | 'kd/invalid-config'
   | 'kd/network'
   | 'kd/timeout'
