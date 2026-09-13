@@ -4,6 +4,16 @@ English | [中文](CHANGELOG.zh.md)
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-09-13
+
+### Removed / 移除
+
+- **Cleaned up dead code and unused legacy interfaces / 清理死代码与未使用的遗留接口**:
+  - Removed unused legacy `KdToolResult` interface in `src/kd-core/types.ts` and its re-export from `src/kd-core/index.ts` (tool outputs are unified on the canonical open-value `JsonValue` schema). / 移除 `types.ts` 中废弃未被引用的 `KdToolResult` 接口定义及核心导出（工具输出全面统一为 `JsonValue` 开放值模型）。
+  - Removed redundant utility function `parseEnvelopeFromText` in `src/kd-core/envelope.ts` and its isolated unit test (response parsing is safely handled at the transport seam). / 移除 `envelope.ts` 中无内部引用的辅助函数 `parseEnvelopeFromText` 及其单测（网络层已内联处理响应解析）。
+  - Removed dead error code `kd/not-found` from `KdErrorCode` union type in `src/kd-core/errors.ts` (Kingdee WebAPI returns business errors or empty records rather than not-found). / 移除 `errors.ts` 中从未被触发抛出的死枚举联合 `'kd/not-found'`。
+  - Pruned legacy multi-version exclusion rules in `pnpm-workspace.yaml`, pinning directly to `0.1.5-rc.2`. / 精简 `pnpm-workspace.yaml` 中的旧版本白名单声明，统一锁定至 `0.1.5-rc.2`。
+
 ## [0.6.0] - 2026-09-13
 
 ### Added / 新增

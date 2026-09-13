@@ -4,6 +4,17 @@
 
 **dsh-kingdee** 的所有关键版本演进记录均归档于此。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，并严格遵循 [语义化版本规范](https://semver.org/lang/zh-CN/)。
 
+## [0.6.1] - 2026-09-13
+
+### 移除与代码精简
+
+- **清理死代码与未使用的遗留接口**：
+  - 彻底移除 `src/kd-core/types.ts` 中废弃未被引用的 `KdToolResult` 接口定义及核心导出（工具输出全面统一为 `@deepseek-ai/dsh-util-values` 规范的 `JsonValue` 开放值模型）；
+  - 移除 `src/kd-core/envelope.ts` 中内部未引用的 `parseEnvelopeFromText` 函数及其单测；
+  - 移除 `src/kd-core/errors.ts` 中从未被业务或捕获层消费的死错误码 `'kd/not-found'`；
+  - 精简 `pnpm-workspace.yaml` 中的历史多版本白名单规则，统一锁定为 `0.1.5-rc.2`；
+  - 进一步优化包体积，提升运行效率与类型纯净度。
+
 ## [0.6.0] - 2026-09-13
 
 ### 新增

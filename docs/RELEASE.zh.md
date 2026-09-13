@@ -1,8 +1,8 @@
-# 发行说明 — v0.6.0
+# 发行说明 — v0.6.1
 
 发布日期：2026-09-13
 
-**dsh-kingdee**（面向 DeepSeek Harness 的金蝶云星空二次开发插件）发布 v0.6.0 版本，全面适配 **金蝶云·星空 V9.0 企业版**（Kingdee Cloud Starry Sky V9.0 Enterprise Edition，并向下兼容 V8.x 及 V9.1），并经 **deepseek-harness `0.1.5-rc.2`** 验证。
+**dsh-kingdee**（面向 DeepSeek Harness 的金蝶云星空二次开发插件）发布 v0.6.1 版本，全面适配 **金蝶云·星空 V9.0 企业版**（Kingdee Cloud Starry Sky V9.0 Enterprise Edition，并向下兼容 V8.x 及 V9.1），落实 **SSRF 深度安全基线** 并完成死代码清理，已在 **deepseek-harness `0.1.5-rc.2`** 上通过全量验证。
 
 ## 兼容性
 
@@ -12,7 +12,7 @@
 
 ## 更新说明
 
-- **升级**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.6.0`）。
+- **升级**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.6.1`）。
 - **环境要求**：harness `^0.1.5-rc.2`，Node ≥22。
 - **安装**：`dsh plugin add dsh-kingdee` —— bundle 补丁自动注册 `kingdee` loader 行。
 - **卸载**：`dsh plugin remove dsh-kingdee`。
@@ -23,6 +23,9 @@
 
 - **全面适配金蝶云·星空 V9.0 企业版** —— 深度支持官方标准 `kdservice-sessionid` 会话 Cookie；对齐大表防扫表与稳定游标分页（`orderString`、`limit`、`startRow`）；支持以单据编号（`numbers`）直接驱动审批、反审、删除与查看；支持保存时自动提审。
 - **企业级 SSRF 深度安全基线** —— 纯 TypeScript 实现严格的 http/https 协议白名单，自动拦截对 `localhost`、环回地址、私网保留网段的非授权请求。
+- **死代码清理与代码极致精简** —— 彻底清理废弃模型 `KdToolResult`、未引用的 `parseEnvelopeFromText` 以及死错误码 `'kd/not-found'`，精简包体积与类型复杂度。
+- **全套中英双语文档体系** —— 更新日志（CHANGELOG）、安装说明（INSTALL）、升级指南（UPDATE）、使用文档（USAGE）、配置说明（CONFIG）、卸载指南（UNINSTALL）及项目主页全面保持中英双语对照。
+- **严格测试与构建** —— 单元测试全量通过，TypeScript 类型检查零错误。
 - **全套中英双语文档体系** —— 更新日志（CHANGELOG）、安装说明（INSTALL）、升级指南（UPDATE）、使用文档（USAGE）、配置说明（CONFIG）、卸载指南（UNINSTALL）及项目主页全面保持中英双语对照。
 - **严格测试与构建** —— 9 项单元测试全量通过，TypeScript 类型检查零错误。
 
