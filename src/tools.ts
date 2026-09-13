@@ -39,7 +39,10 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         formId: { type: 'string', required: true, description: 'Kingdee form id, e.g. SAL_SaleOrder.' },
         fieldKeys: { type: 'array', items: { type: 'string' }, required: true, description: 'Field keys to return, e.g. FBillNo, FDocumentStatus.' },
         filter: { type: 'string', description: `Kingdee filter expression, e.g. FBillNo='SO-20260701'.` },
-        topCount: { type: 'number', description: 'Maximum number of rows to return.' },
+        orderString: { type: 'string', description: 'Order expression, e.g. FCreateDate DESC, FBillNo ASC. Crucial for stable pagination.' },
+        topCount: { type: 'number', description: 'Maximum number of rows to return (TopRowCount).' },
+        limit: { type: 'number', description: 'Page size limit for query pagination.' },
+        startRow: { type: 'number', description: 'Starting row offset for query pagination.' },
         organization: { type: 'string', description: 'Optional organization (org) id / FNumber.' },
       },
       output: {
@@ -51,7 +54,10 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
           formId: args.formId,
           fieldKeys: args.fieldKeys,
           filter: args.filter,
+          orderString: args.orderString,
           topCount: args.topCount,
+          limit: args.limit,
+          startRow: args.startRow,
           organization: args.organization,
         }))
       },
@@ -66,13 +72,19 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         formId: { type: 'string', required: true, description: 'Kingdee form id, e.g. SAL_SaleOrder.' },
         data: { type: 'object', properties: {}, additionalProperties: true, required: true, description: 'Bill payload keyed by Kingdee field keys.' },
         interaction: { type: 'boolean', description: 'Set true to skip platform (form plugin) validation.' },
+        isAutoSubmitAndAudit: { type: 'boolean', description: 'Set true to automatically submit and audit the record upon save.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).save({ formId: args.formId, data: args.data, interaction: args.interaction }))
+        return callAsJson((await getClient()).save({
+          formId: args.formId,
+          data: args.data,
+          interaction: args.interaction,
+          isAutoSubmitAndAudit: args.isAutoSubmitAndAudit,
+        }))
       },
     }),
   )
@@ -83,8 +95,8 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       description: 'Submit one or more Kingdee Cloud forms.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to submit.' },
-        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers accompanying the ids.' },
+        ids: { type: 'array', items: { type: 'string' }, description: 'Record ids to submit (either ids or numbers must be provided).' },
+        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers accompanying or replacing the ids.' },
       },
       output: {
         schema: { type: 'json' },
@@ -102,14 +114,15 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       description: 'Audit (approve) one or more Kingdee Cloud forms.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to audit.' },
+        ids: { type: 'array', items: { type: 'string' }, description: 'Record ids to audit (either ids or numbers must be provided).' },
+        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers (e.g. SO-20260901) to audit.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).audit({ formId: args.formId, ids: args.ids }))
+        return callAsJson((await getClient()).audit({ formId: args.formId, ids: args.ids, numbers: args.numbers }))
       },
     }),
   )
@@ -120,14 +133,15 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       description: 'Un-audit one or more Kingdee Cloud forms.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to un-audit.' },
+        ids: { type: 'array', items: { type: 'string' }, description: 'Record ids to un-audit (either ids or numbers must be provided).' },
+        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers to un-audit.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).unaudit({ formId: args.formId, ids: args.ids }))
+        return callAsJson((await getClient()).unaudit({ formId: args.formId, ids: args.ids, numbers: args.numbers }))
       },
     }),
   )
@@ -135,17 +149,18 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
   ctx.tools.register(
     defineTool({
       name: 'kingdee_view',
-      description: 'View a single Kingdee Cloud record by id.',
+      description: 'View a single Kingdee Cloud record by id or bill number.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        id: { type: 'string', required: true, description: 'Record id to view.' },
+        id: { type: 'string', description: 'Record id to view (either id or number is required).' },
+        number: { type: 'string', description: 'Record bill number to view (e.g. SO-20260901).' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).view(args.formId, args.id))
+        return callAsJson((await getClient()).view(args.formId, args.id, args.number))
       },
     }),
   )
@@ -153,17 +168,18 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
   ctx.tools.register(
     defineTool({
       name: 'kingdee_delete',
-      description: 'Delete one or more Kingdee Cloud records by id.',
+      description: 'Delete one or more Kingdee Cloud records by id or bill number.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to delete.' },
+        ids: { type: 'array', items: { type: 'string' }, description: 'Record ids to delete (either ids or numbers must be provided).' },
+        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers to delete.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).delete({ formId: args.formId, ids: args.ids }))
+        return callAsJson((await getClient()).delete({ formId: args.formId, ids: args.ids, numbers: args.numbers }))
       },
     }),
   )
@@ -225,7 +241,10 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         formId: { type: 'string', required: true, description: 'Kingdee form id, e.g. SAL_SaleOrder.' },
         fieldKeys: { type: 'array', items: { type: 'string' }, required: true, description: 'Field keys to return, e.g. FBillNo, FDocumentStatus.' },
         filter: { type: 'string', description: `Kingdee filter expression, e.g. FBillNo='SO-20260701'.` },
-        topCount: { type: 'number', description: 'Maximum number of rows to return.' },
+        orderString: { type: 'string', description: 'Order expression, e.g. FCreateDate DESC, FBillNo ASC. Crucial for stable pagination.' },
+        topCount: { type: 'number', description: 'Maximum number of rows to return (TopRowCount).' },
+        limit: { type: 'number', description: 'Page size limit for query pagination.' },
+        startRow: { type: 'number', description: 'Starting row offset for query pagination.' },
         organization: { type: 'string', description: 'Optional organization (org) id / FNumber.' },
       },
       output: {
@@ -237,7 +256,10 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
           formId: args.formId,
           fieldKeys: args.fieldKeys,
           filter: args.filter,
+          orderString: args.orderString,
           topCount: args.topCount,
+          limit: args.limit,
+          startRow: args.startRow,
           organization: args.organization,
         }))
       },
@@ -250,14 +272,15 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
       description: 'Un-submit one or more Kingdee Cloud forms (reverses a submit). Service name may be version-specific.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Record ids to un-submit.' },
+        ids: { type: 'array', items: { type: 'string' }, description: 'Record ids to un-submit (either ids or numbers must be provided).' },
+        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional bill numbers to un-submit.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).unsubmit({ formId: args.formId, ids: args.ids }))
+        return callAsJson((await getClient()).unsubmit({ formId: args.formId, ids: args.ids, numbers: args.numbers }))
       },
     }),
   )
@@ -265,17 +288,18 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
   ctx.tools.register(
     defineTool({
       name: 'kingdee_delete_draft',
-      description: 'Delete draft (暂存/created) Kingdee Cloud records by id.',
+      description: 'Delete draft (暂存/created) Kingdee Cloud records by id or bill number.',
       parameters: {
         formId: { type: 'string', required: true, description: 'Kingdee form id.' },
-        ids: { type: 'array', items: { type: 'string' }, required: true, description: 'Draft record ids to delete.' },
+        ids: { type: 'array', items: { type: 'string' }, description: 'Draft record ids to delete (either ids or numbers must be provided).' },
+        numbers: { type: 'array', items: { type: 'string' }, description: 'Optional draft bill numbers to delete.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).deleteDraft({ formId: args.formId, ids: args.ids }))
+        return callAsJson((await getClient()).deleteDraft({ formId: args.formId, ids: args.ids, numbers: args.numbers }))
       },
     }),
   )
@@ -288,13 +312,19 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
         formId: { type: 'string', required: true, description: 'Kingdee form id, e.g. SAL_SaleOrder.' },
         records: { type: 'array', items: { type: 'object', properties: {}, additionalProperties: true }, required: true, description: 'List of bill payloads keyed by Kingdee field keys.' },
         interaction: { type: 'boolean', description: 'Set true to skip platform (form plugin) validation.' },
+        isAutoSubmitAndAudit: { type: 'boolean', description: 'Set true to automatically submit and audit the records upon save.' },
       },
       output: {
         schema: { type: 'json' },
         render: renderJson,
       },
       async execute(args) {
-        return callAsJson((await getClient()).batchSave({ formId: args.formId, records: args.records, interaction: args.interaction }))
+        return callAsJson((await getClient()).batchSave({
+          formId: args.formId,
+          records: args.records,
+          interaction: args.interaction,
+          isAutoSubmitAndAudit: args.isAutoSubmitAndAudit,
+        }))
       },
     }),
   )

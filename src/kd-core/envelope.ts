@@ -44,12 +44,18 @@ export function joinUrl(baseUrl: string, path: string): string {
   return `${base}/${endpoint}`
 }
 
-/** Extract the `kdsvc` session cookie value from a response's `Set-Cookie` header, if present. */
+/** Extract the session cookie value (kdservice-sessionid or kdsvc) from a response's `Set-Cookie` header, if present. */
 export function extractKdsvcCookie(headers: Record<string, string | string[] | undefined> | undefined): string | undefined {
+  return extractSessionCookie(headers)
+}
+
+/** Extract the session cookie value (kdservice-sessionid or kdsvc) from a response's `Set-Cookie` header, if present. */
+export function extractSessionCookie(headers: Record<string, string | string[] | undefined> | undefined): string | undefined {
   if (!headers) return undefined
   const values = headers['set-cookie']
   const merged = Array.isArray(values) ? values.join('; ') : values
   if (!merged) return undefined
-  const match = /kdsvc=([^;]+)/i.exec(merged)
+  // Prefer standard Kingdee Starry Sky session cookie: kdservice-sessionid, with fallback to kdsvc_sessionid and kdsvc
+  const match = merged.match(/(?:kdservice-sessionid|kdsvc_sessionid|kdsvc)=([^;]+)/i)
   return match ? match[1] : undefined
 }

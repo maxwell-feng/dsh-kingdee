@@ -1,42 +1,43 @@
-# Release notes — v0.4.0
+# Release notes — v0.6.0
 
-Release date: 2026-09-10
+Release date: 2026-09-13
 
-Seventh release of **dsh-kingdee**, the Kingdee Cloud Starry Sky secondary-development plugin for DeepSeek Harness. Fully adapted to **deepseek-harness `0.1.5-rc.1`** (latest `master`) per the official plugin development docs.
+Eighth release of **dsh-kingdee**, the Kingdee Cloud Starry Sky secondary-development plugin for DeepSeek Harness. Fully adapted to **Kingdee Cloud Starry Sky V9.0 Enterprise Edition** (金蝶云·星空 V9.0 企业版, as well as V8.x / V9.1) and verified on **deepseek-harness `0.1.5-rc.2`**.
 
 ## Compatibility / 兼容性
 
-- **Harness `0.1.5-rc.1`**: Verified on `0.1.5-rc.1` latest `master`. No breaking DSH seam changes affecting this plugin — `defineTool` / `ctx.credentials` / `ctx.settings` and the WebAPI transport remain stable.
-- **中文兼容性**：已按官方规范全面适配并在 `0.1.5-rc.1` 最新 `master` 上完成验证。核心运行时缝接口稳定兼容，无需行为迁移。
+- **Kingdee Cloud Starry Sky V9.0 Enterprise Edition**: Full support for standard `kdservice-sessionid` session cookies, query pagination (`orderString`, `limit`, `startRow`), document numbers (`numbers`) for workflow actions, and auto-submit/audit (`isAutoSubmitAndAudit`).
+- **Harness `0.1.5-rc.2`**: Verified on `0.1.5-rc.2` latest `master`. No breaking DSH seam changes affecting this plugin — `defineTool` / `ctx.credentials` / `ctx.settings` and the WebAPI transport remain stable.
+- **中文兼容性**：全面适配金蝶云·星空 V9.0 企业版（及 V8.x/V9.1），并在 deepseek-harness `0.1.5-rc.2` 最新 `master` 上完成全量验证。
 
 ## Update notes / 更新说明
 
-- **Update**: `dsh plugin update dsh-kingdee` (or `dsh plugin add dsh-kingdee@0.4.0`).
-  **升级**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.4.0`）。
-- **Requirements**: harness `0.1.5-rc.1`, Node ≥22.
-  **环境要求**：harness `0.1.5-rc.1`，Node ≥22。
+- **Update**: `dsh plugin update dsh-kingdee` (or `dsh plugin add dsh-kingdee@0.6.0`).
+  **升级**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.6.0`）。
+- **Requirements**: harness `^0.1.5-rc.2`, Node ≥22.
+  **环境要求**：harness `^0.1.5-rc.2`，Node ≥22。
 - **Install**: `dsh plugin add dsh-kingdee` — bundle patch self-registers the `kingdee` loader row.
   **安装**：`dsh plugin add dsh-kingdee` —— bundle 补丁自动注册 `kingdee` loader 行。
 - **Uninstall**: `dsh plugin remove dsh-kingdee`.
   **卸载**：`dsh plugin remove dsh-kingdee`。
-- **Usage**: Configure connection in the **Plugins → kingdee** settings card, set credential environment variables (`DSH_KINGDEE_USER` / `DSH_KINGDEE_PASSWORD` / `DSH_KINGDEE_APP_SECRET`), then invoke `kingdee_*` tools in chat sessions. See [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.md) / [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.zh.md) for the full tool reference.
-  **使用**：在 **Plugins → kingdee** 设置卡片配置连接，配置凭据环境变量，然后在会话中调用 `kingdee_*` 工具。完整工具说明见 [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.zh.md)。
-- **Config**: See [CONFIG.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/CONFIG.md) / [CONFIG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/CONFIG.zh.md) for full configuration reference.
-  **配置**：详细配置见 [CONFIG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/CONFIG.zh.md)。支持 `baseUrl`、`acctId`、`authMode`（`user` | `app`）、`appId`、凭据引用、`organization`、`timeoutMs`、`mock`、可选 `serviceEndpoints`。
+- **Usage**: Configure connection in the **Plugins → kingdee** settings card, set credential environment variables (`DSH_KINGDEE_USER` / `DSH_KINGDEE_PASSWORD` / `DSH_KINGDEE_APP_SECRET`), then invoke `kingdee_*` tools in chat sessions. See [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/USAGE.md) / [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/USAGE.zh.md) for the full tool reference.
+  **使用**：在 **Plugins → kingdee** 设置卡片配置连接，配置凭据环境变量，然后在会话中调用 `kingdee_*` 工具。完整工具说明见 [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/USAGE.zh.md)。
+- **Config**: See [CONFIG.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CONFIG.md) / [CONFIG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CONFIG.zh.md) for full configuration reference.
+  **配置**：详细配置见 [CONFIG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CONFIG.zh.md)。支持 `baseUrl`、`acctId`、`authMode`（`user` | `app`）、`appId`、凭据引用、`organization`、`timeoutMs`、`mock`、可选 `serviceEndpoints`。
 
 ## Highlights
 
-- **Full compatibility with DeepSeek Harness `0.1.5-rc.1`** — devDependencies updated to `0.1.5-rc.1`, peer ranges for `dsh-credentials` / `dsh-tools` raised to `^0.1.5-rc.1`. Runtime seams (`defineTool`, `ctx.tools.register`, `ctx.credentials.resolve`, `ctx.settings.installSection`) verified.
-- **Standalone bilingual usage guide** — added [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.md) and [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.zh.md) covering all 14 `kingdee_*` tools with parameters and examples.
-- **Refreshed all documentation** — installation, update, uninstall, and usage guides updated with latest version verification.
-- **Robust test & build verification** — 7 unit tests passed, 0 type errors.
+- **Kingdee Cloud Starry Sky V9.0 Enterprise Edition Adaptation** — Extracting and forwarding standard `kdservice-sessionid` session cookies alongside `kdsvc`; adding `orderString`, `limit`, and `startRow` for large table queries; and enabling `numbers` array direct actuation on audit, unaudit, delete, unsubmit, delete-draft, and view.
+- **Enterprise SSRF Defenses** — Pure TypeScript protocol and host boundary checks enforcing `http:` / `https:` and rejecting loopback (`127.0.0.0/8`, `::1`), private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16`), and reserved IP addresses.
+- **Full Bilingual Documentation** — Refreshed and synchronized documentation across `CHANGELOG`, `INSTALL`, `UPDATE`, `USAGE`, `CONFIG`, `UNINSTALL`, and `README`.
+- **Robust Verification** — 9 native test suites passing, 0 TypeScript compilation errors.
 
 ## 亮点（中文）
 
-- **全面适配 DeepSeek Harness `0.1.5-rc.1`** —— 将 `@deepseek-ai/dsh-*` devDependencies 统一升级至 `0.1.5-rc.1`，`dsh-credentials` / `dsh-tools` peer 范围升至 `^0.1.5-rc.1`，核心运行时缝接口均经过严格验证。
-- **新增独立双语使用说明文档** —— 提供独立的 [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.zh.md) 与 [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.md)，覆盖全部 14 个 `kingdee_*` 工具的入参与示例。
-- **文档体系全面同步** —— 更新使用说明（`README.md` / `README.zh.md`）、安装说明（`INSTALL.md` / `INSTALL.zh.md`）、升级说明（`UPDATE.md` / `UPDATE.zh.md`）和卸载说明（`UNINSTALL.md` / `UNINSTALL.zh.md`）。
-- **测试与构建全部通过** —— 单元测试 7/7 通过，TypeScript 类型检查通过，打包生成规范 tarball 资产。
+- **全面适配金蝶云·星空 V9.0 企业版** —— 深度支持官方标准 `kdservice-sessionid` 会话 Cookie；对齐大表防扫表与稳定游标分页（`orderString`、`limit`、`startRow`）；支持以单据编号（`numbers`）直接驱动审批、反审、删除与查看；支持保存时自动提审。
+- **企业级 SSRF 深度安全基线** —— 纯 TypeScript 实现严格的 http/https 协议白名单，自动拦截对 `localhost`、环回地址、私网保留网段的非授权请求。
+- **全套中英双语文档体系** —— 更新日志（CHANGELOG）、安装说明（INSTALL）、升级指南（UPDATE）、使用文档（USAGE）、配置说明（CONFIG）、卸载指南（UNINSTALL）及项目主页全面保持中英双语对照。
+- **严格测试与构建** —— 9 项单元测试全量通过，TypeScript 类型检查零错误。
 
 ## Known Limitations / 已知限制
 

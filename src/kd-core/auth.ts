@@ -15,6 +15,7 @@
  */
 
 import type { KdAuthMode, KdConfig } from './types.ts'
+import { assertSafePublicUrl } from './security.ts'
 
 /** Payload for `LoginService.ValidateUser` (user mode). */
 export function buildLoginPayload(config: KdConfig): Record<string, unknown> {
@@ -29,6 +30,7 @@ export function buildLoginPayload(config: KdConfig): Record<string, unknown> {
 /** Validate the parts a mode needs before an authenticated call. */
 export function validateConfig(config: KdConfig): void {
   if (!config.baseUrl) throw new Error('KdConfig.baseUrl is required')
+  assertSafePublicUrl(config.baseUrl)
   if (!config.acctId) throw new Error('KdConfig.acctId is required')
 
   if ((config.authMode ?? 'user') === 'user') {
@@ -43,7 +45,7 @@ export function validateConfig(config: KdConfig): void {
 /**
  * Headers attached to business (non-login) requests.
  *
- * - user mode: forwards the session `kdsvc` cookie.
+ * - user mode: forwards the session `kdservice-sessionid` and `kdsvc` cookies.
  * - app mode: emits a signed `KDAuthentication` header (see the module note).
  */
 export function businessHeaders(config: KdConfig, sessionCookie?: string): Record<string, string> {
@@ -52,7 +54,10 @@ export function businessHeaders(config: KdConfig, sessionCookie?: string): Recor
 
   if (mode === 'user') {
     const cookie = sessionCookie ?? config.cookie
-    if (cookie) base.Cookie = `kdsvc=${cookie}`
+    if (cookie) {
+      // Forward both standard kdservice-sessionid and fallback kdsvc for maximum compatibility
+      base.Cookie = `kdservice-sessionid=${cookie}; kdsvc=${cookie}`
+    }
     return base
   }
 

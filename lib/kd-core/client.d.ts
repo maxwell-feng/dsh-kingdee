@@ -45,11 +45,11 @@ export declare class KdClient {
     unaudit(params: KdIdListParams): Promise<unknown>;
     /** Un-submit a submitted form (name may be version-specific). */
     unsubmit(params: KdIdListParams): Promise<unknown>;
-    /** Delete draft (暂存/created) records by id. */
+    /** Delete draft (暂存/created) records by id or number. */
     deleteDraft(params: KdIdListParams): Promise<unknown>;
-    /** View a single record by id. */
-    view(formId: string, id: string): Promise<unknown>;
-    /** Delete records by id. */
+    /** View a single record by id or bill number. */
+    view(formId: string, id?: string, number?: string): Promise<unknown>;
+    /** Delete records by id or bill number. */
     delete(params: KdIdListParams): Promise<unknown>;
     /** Invoke a BOS custom service. */
     invokeService(params: KdInvokeParams): Promise<unknown>;

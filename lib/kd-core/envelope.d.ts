@@ -8,6 +8,8 @@ export declare function parseEnvelope(body: unknown): KdEnvelope;
 export declare function parseEnvelopeFromText(text: string): KdEnvelope;
 /** Join a base URL with an endpoint path, keeping exactly one slash between them. */
 export declare function joinUrl(baseUrl: string, path: string): string;
-/** Extract the `kdsvc` session cookie value from a response's `Set-Cookie` header, if present. */
+/** Extract the session cookie value (kdservice-sessionid or kdsvc) from a response's `Set-Cookie` header, if present. */
 export declare function extractKdsvcCookie(headers: Record<string, string | string[] | undefined> | undefined): string | undefined;
+/** Extract the session cookie value (kdservice-sessionid or kdsvc) from a response's `Set-Cookie` header, if present. */
+export declare function extractSessionCookie(headers: Record<string, string | string[] | undefined> | undefined): string | undefined;
 //# sourceMappingURL=envelope.d.ts.map

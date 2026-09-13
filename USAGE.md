@@ -2,7 +2,7 @@
 
 English | [中文](USAGE.zh.md)
 
-> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`).
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`) and adapted for **Kingdee Cloud Starry Sky V9.0 Enterprise Edition** (金蝶云·星空 V9.0 企业版).
 
 This guide documents every `kingdee_*` tool the plugin registers (see `src/tools.ts`). The agent calls these tools in a chat session; each one is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 
@@ -12,6 +12,7 @@ This guide documents every `kingdee_*` tool the plugin registers (see `src/tools
 - A Kingdee `IsSuccess=false` response becomes a typed error (`kd/business-error`, `kd/auth-failed`, `kd/not-found`, `kd/invalid-config`, `kd/network`, `kd/timeout`, `kd/unknown`) instead of prose.
 - Credentials re-resolve per operation through the DSH credential seam, so a rotation reaches the next call with no restart.
 - `formId` is the Kingdee form id (e.g. `SAL_SaleOrder`).
+- In Kingdee V9.0, operations such as audit, unaudit, delete, unsubmit, and delete_draft accept either `ids` or `numbers` (bill numbers such as `SO-20260901`).
 
 ## kingdee_query
 
@@ -22,14 +23,20 @@ Query Kingdee Cloud bills and base data (`DynamicFormService.ExecuteBillQuery`).
 | `formId` | yes | `string` | Kingdee form id, e.g. `SAL_SaleOrder`. |
 | `fieldKeys` | yes | `string[]` | Field keys to return, e.g. `FBillNo`, `FDocumentStatus`. |
 | `filter` | no | `string` | Kingdee filter expression, e.g. `FBillNo='SO-20260701'`. |
-| `topCount` | no | `number` | Maximum number of rows to return. |
+| `orderString` | no | `string` | Order expression, e.g. `FCreateDate DESC, FBillNo ASC`. Recommended for stable cursor pagination. |
+| `topCount` | no | `number` | Maximum number of rows to return (TopRowCount). |
+| `limit` | no | `number` | Page size limit for query pagination. |
+| `startRow` | no | `number` | Starting row offset for query pagination. |
 | `organization` | no | `string` | Optional organization (org) id / FNumber. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "fieldKeys": ["FBillNo", "FDocumentStatus"],
-  "filter": "FBillNo='SO-20260701'"
+  "fieldKeys": ["FBillNo", "FDocumentStatus", "FDate"],
+  "filter": "FDate >= '2026-01-01'",
+  "orderString": "FDate DESC",
+  "limit": 50,
+  "startRow": 0
 }
 ```
 
@@ -42,7 +49,10 @@ Query Kingdee Cloud bills and base data with the newer structured `QueryBusiness
 | `formId` | yes | `string` | Kingdee form id, e.g. `SAL_SaleOrder`. |
 | `fieldKeys` | yes | `string[]` | Field keys to return, e.g. `FBillNo`, `FDocumentStatus`. |
 | `filter` | no | `string` | Kingdee filter expression, e.g. `FBillNo='SO-20260701'`. |
-| `topCount` | no | `number` | Maximum number of rows to return. |
+| `orderString` | no | `string` | Order expression, e.g. `FCreateDate DESC, FBillNo ASC`. Recommended for stable cursor pagination. |
+| `topCount` | no | `number` | Maximum number of rows to return (TopRowCount). |
+| `limit` | no | `number` | Page size limit for query pagination. |
+| `startRow` | no | `number` | Starting row offset for query pagination. |
 | `organization` | no | `string` | Optional organization (org) id / FNumber. |
 
 ```json
@@ -50,7 +60,8 @@ Query Kingdee Cloud bills and base data with the newer structured `QueryBusiness
   "formId": "SAL_SaleOrder",
   "fieldKeys": ["FBillNo", "FDocumentStatus"],
   "filter": "FBillNo='SO-20260701'",
-  "topCount": 20
+  "orderString": "FBillNo ASC",
+  "limit": 20
 }
 ```
 
@@ -63,11 +74,13 @@ Save a Kingdee Cloud form (create or update a bill / base record). Returns the c
 | `formId` | yes | `string` | Kingdee form id, e.g. `SAL_SaleOrder`. |
 | `data` | yes | `object` | Bill payload keyed by Kingdee field keys. |
 | `interaction` | no | `boolean` | Set true to skip platform (form plugin) validation. |
+| `isAutoSubmitAndAudit` | no | `boolean` | Set true to automatically submit and audit the record upon save. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "data": { "FBillNo": "SO-20260701" }
+  "data": { "FBillNo": "SO-20260701" },
+  "isAutoSubmitAndAudit": true
 }
 ```
 
@@ -80,11 +93,13 @@ Batch-save multiple Kingdee Cloud records in one call.
 | `formId` | yes | `string` | Kingdee form id, e.g. `SAL_SaleOrder`. |
 | `records` | yes | `object[]` | List of bill payloads keyed by Kingdee field keys. |
 | `interaction` | no | `boolean` | Set true to skip platform (form plugin) validation. |
+| `isAutoSubmitAndAudit` | no | `boolean` | Set true to automatically submit and audit the records upon save. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "records": [{ "FBillNo": "SO-20260701" }, { "FBillNo": "SO-20260702" }]
+  "records": [{ "FBillNo": "SO-20260701" }, { "FBillNo": "SO-20260702" }],
+  "isAutoSubmitAndAudit": false
 }
 ```
 
@@ -95,13 +110,13 @@ Submit one or more Kingdee Cloud forms.
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `ids` | yes | `string[]` | Record ids to submit. |
-| `numbers` | no | `string[]` | Optional bill numbers accompanying the ids. |
+| `ids` | no | `string[]` | Record ids to submit (either `ids` or `numbers` required). |
+| `numbers` | no | `string[]` | Optional bill numbers (e.g. `SO-20260701`) accompanying or replacing the ids. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "ids": ["100001"]
+  "numbers": ["SO-20260701"]
 }
 ```
 
@@ -112,12 +127,13 @@ Un-submit one or more Kingdee Cloud forms (reverses a submit). Service name may 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `ids` | yes | `string[]` | Record ids to un-submit. |
+| `ids` | no | `string[]` | Record ids to un-submit (either `ids` or `numbers` required). |
+| `numbers` | no | `string[]` | Optional bill numbers to un-submit. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "ids": ["100001"]
+  "numbers": ["SO-20260701"]
 }
 ```
 
@@ -128,12 +144,13 @@ Audit (approve) one or more Kingdee Cloud forms.
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `ids` | yes | `string[]` | Record ids to audit. |
+| `ids` | no | `string[]` | Record ids to audit (either `ids` or `numbers` required). |
+| `numbers` | no | `string[]` | Optional bill numbers (e.g. `SO-20260701`) to audit. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "ids": ["100001"]
+  "numbers": ["SO-20260701"]
 }
 ```
 
@@ -144,60 +161,64 @@ Un-audit one or more Kingdee Cloud forms.
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `ids` | yes | `string[]` | Record ids to un-audit. |
+| `ids` | no | `string[]` | Record ids to un-audit (either `ids` or `numbers` required). |
+| `numbers` | no | `string[]` | Optional bill numbers to un-audit. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "ids": ["100001"]
+  "numbers": ["SO-20260701"]
 }
 ```
 
 ## kingdee_view
 
-View a single Kingdee Cloud record by id.
+View a single Kingdee Cloud record by id or bill number.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `id` | yes | `string` | Record id to view. |
+| `id` | no | `string` | Record id to view (either `id` or `number` required). |
+| `number` | no | `string` | Record bill number to view (e.g. `SO-20260701`). |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "id": "100001"
+  "number": "SO-20260701"
 }
 ```
 
 ## kingdee_delete
 
-Delete one or more Kingdee Cloud records by id.
+Delete one or more Kingdee Cloud records by id or bill number.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `ids` | yes | `string[]` | Record ids to delete. |
+| `ids` | no | `string[]` | Record ids to delete (either `ids` or `numbers` required). |
+| `numbers` | no | `string[]` | Optional bill numbers to delete. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "ids": ["100001"]
+  "numbers": ["SO-20260701"]
 }
 ```
 
 ## kingdee_delete_draft
 
-Delete draft (暂存/created) Kingdee Cloud records by id.
+Delete draft (暂存/created) Kingdee Cloud records by id or bill number.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
 | `formId` | yes | `string` | Kingdee form id. |
-| `ids` | yes | `string[]` | Draft record ids to delete. |
+| `ids` | no | `string[]` | Draft record ids to delete (either `ids` or `numbers` required). |
+| `numbers` | no | `string[]` | Optional draft bill numbers to delete. |
 
 ```json
 {
   "formId": "SAL_SaleOrder",
-  "ids": ["100001"]
+  "numbers": ["SO-20260701"]
 }
 ```
 

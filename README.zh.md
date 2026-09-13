@@ -7,6 +7,8 @@
 `dsh-kingdee` 让 DSH agent 通过金蝶云星空的 **WebAPI** 对账套做一等公民、凭据安全的操作：提供一套类型化工具，用于查询、保存、提交、审核、反审核、查看、删除单据与基础资料，以及调用 BOS 自定义服务。配套的领域技能（`kingdee-bos`）讲解字段/枚举/状态机约定，以及数据层与平台插件层的边界。
 
 - **凭据安全** —— 密钥以环境变量引用存放，经 DSH 凭据缝解析，绝不写在明文配置里。
+- **全面适配金蝶云·星空 V9.0 企业版** —— 深度支持官方标准 `kdservice-sessionid` 会话 Cookie、大表防扫表稳定游标分页（`orderString`、`limit`、`startRow`）、单据编号（`numbers`）直接驱动审批/反审/删除/反提交业务流程，以及保存时自动提审（`isAutoSubmitAndAudit`）。
+- **SSRF 深度安全基线** —— 纯 TypeScript 实现严格的协议白名单（仅限 `http:` / `https:`）与网络边界拦截，自动屏蔽 `localhost`、环回及私有保留网段请求。
 - **类型化工具** —— 通过 `kingdee_*` 工具完成查询、保存、提交、审核、反审核、查看、删除与调用 BOS 自定义服务，具体见下方工具表。
 - **完整状态机** —— 创建/更新 → 提交 → 审核 → 反审核，开箱即用。
 - **离线 Mock** —— 配置 `mock: true` 即切换到本地固化传输，无需可连通账套即可演示与测试。
@@ -21,9 +23,9 @@
 dsh plugin add dsh-kingdee
 ```
 
-> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证。
+> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证，并适配金蝶云·星空 V9.0 企业版。
 
-详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.md](./CHANGELOG.md)。
+详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 
 ## 快速开始
 

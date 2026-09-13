@@ -6,6 +6,7 @@
  */
 
 import type { KdHttpResponse, KdRequest } from './types.ts'
+import { assertSafePublicUrl } from './security.ts'
 
 /** Boundary the Kingdee client talks to. Implement it with a real fetch or a mock. */
 export interface KdTransport {
@@ -21,6 +22,9 @@ export class HttpTransport implements KdTransport {
   }
 
   async request(request: KdRequest): Promise<KdHttpResponse> {
+    // Enforce SSRF defense and protocol policy before outbound network dispatch
+    assertSafePublicUrl(request.url)
+
     const headers: Record<string, string> = { 'Content-Type': 'application/json', ...request.headers }
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), this.timeoutMs)

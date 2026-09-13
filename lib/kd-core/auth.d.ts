@@ -21,7 +21,7 @@ export declare function validateConfig(config: KdConfig): void;
 /**
  * Headers attached to business (non-login) requests.
  *
- * - user mode: forwards the session `kdsvc` cookie.
+ * - user mode: forwards the session `kdservice-sessionid` and `kdsvc` cookies.
  * - app mode: emits a signed `KDAuthentication` header (see the module note).
  */
 export declare function businessHeaders(config: KdConfig, sessionCookie?: string): Record<string, string>;

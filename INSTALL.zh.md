@@ -2,7 +2,7 @@
 
 [English](INSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
+> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证，并全面适配 **金蝶云·星空 V9.0 企业版**（Kingdee Cloud Starry Sky V9.0 Enterprise Edition，并向下兼容 V8.x 及 V9.1）。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
@@ -10,7 +10,8 @@
 
 - 已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 并自带 Web GUI（具备 `dsh` CLI，且已具备 `tools`、`credentials`、`settings` 这几个 peer 包）。
 - Node ≥ 22（仅核心库/测试需要）。
-- 真实使用需：一个**已启用 WebAPI** 的可达金蝶云星空实例，以及有效账套账号。
+- 具备一个可访问的**已启用 WebAPI** 的金蝶云·星空实例（支持 V9.0 企业版、V8.x 或 V9.1），以及有效账套账号。
+- **网络与 SSRF 安全要求**：配置的 `baseUrl` 必须采用 `http:` 或 `https:` 协议。为满足企业级网络安全基线，插件内置了 SSRF 深度防护机制，默认拒绝直接请求 `localhost`、环回地址或未经验证的私网保留网段（如 `127.0.0.0/8`、`192.168.0.0/16`、`10.0.0.0/8` 等）。生产中请配置企业专属解析域名或通过安全反向代理网关接入（如 `https://erp.example.com/K3Cloud`）。
 
 ## 一、添加 bundle
 
@@ -28,7 +29,7 @@ dsh plugin add dsh-kingdee
       name: dsh-kingdee
       enabled: true
       config:
-        baseUrl: "http://your-server/K3Cloud"
+        baseUrl: "https://erp.example.com/K3Cloud"
         acctId: "YOUR_ACCT_ID"
         authMode: "user"
         appId: ""

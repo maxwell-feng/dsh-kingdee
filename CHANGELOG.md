@@ -1,6 +1,27 @@
 # Changelog
 
+English | [中文](CHANGELOG.zh.md)
+
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.6.0] - 2026-09-13
+
+### Added / 新增
+
+- **Kingdee Cloud Starry Sky V9.0 Enterprise Edition Adaptation / 适配金蝶云·星空 V9.0 企业版**:
+  - **Standard Session Cookie (`kdservice-sessionid`)**: Supported extracting and forwarding Kingdee Cloud Starry Sky V9.0 official standard session cookie `kdservice-sessionid` alongside backward-compatible `kdsvc`. / 支持金蝶云·星空 V9.0 企业版官方标准响应头 `kdservice-sessionid` 的提取与双向回传，并保持对旧版 `kdsvc` 的双向兼容。
+  - **Query Pagination & Sorting (`orderString`, `limit`, `startRow`)**: Added `OrderString`, `Limit`, and `StartRow` to `ExecuteBillQuery` and `QueryBusinessData` to comply with Kingdee V9.0 anti-table-scan best practices and guarantee stable cursor pagination. / 为 `ExecuteBillQuery` 与 `QueryBusinessData` 补全 `OrderString`（排序）、`Limit`（分页大小）与 `StartRow`（分页偏移），对齐金蝶星空 V9.0 企业版防大表全量扫表规范并保障稳定游标分页。
+  - **Bill Number Direct Operations (`numbers`)**: Exposed `numbers` array parameter for `kingdee_audit`, `kingdee_unaudit`, `kingdee_delete`, `kingdee_unsubmit`, and `kingdee_delete_draft`, enabling AI agents to act directly using document numbers (e.g., `SO-20260901`) without pre-resolving internal surrogate `FID`s. / 为审批、反审、删除、反提交、暂存删除等工具暴露 `numbers` 参数，支持 AI 代理直接按单据编号（如 `SO-20260901`）驱动业务流程，无需提前查询底层内部自增 `FID`。
+  - **View by Bill Number**: Enhanced `kingdee_view` to accept `number` parameter as an alternative to `id`. / 增强 `kingdee_view`，支持直接传入单据编号 `number` 查单。
+  - **Save with Auto-Submit & Audit (`isAutoSubmitAndAudit`)**: Added `isAutoSubmitAndAudit` parameter to `kingdee_save` and `kingdee_batch_save` matching Kingdee V9.0 one-step save-submit-audit capability. / 在单据保存与批量保存中支持 `isAutoSubmitAndAudit` 参数，实现一键保存并自动提审。
+
+### Security / 安全
+
+- **SSRF Defenses and Strict Host Validation / SSRF 防御与严格主机校验**:
+  - Implemented zero-dependency protocol and host safety assertions in `src/kd-core/security.ts`. / 在 `src/kd-core/security.ts` 中实现了纯 TypeScript 零依赖的协议与主机安全断言。
+  - **Protocol Whitelist**: Only `http:` and `https:` protocols are permitted; all other protocols (`file:`, `ftp:`, `gopher:`, etc.) are strictly rejected. / 协议强制白名单：仅允许 `http:` 与 `https:`，严禁 `file:`、`ftp:`、`gopher:` 等危险协议。
+  - **Network Boundary Checks**: Automatically blocks requests targeting `localhost`, loopback addresses (`127.0.0.0/8`, `::1`), RFC1918 private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local (`169.254.0.0/16`), CGNAT (`100.64.0.0/10`), IPv6 Link-Local (`fe80::/10`), and Unique Local Addresses (`fc00::/7`). / 自动拦截并拒绝指向 `localhost`、环回地址、RFC1918 私网网段、链路本地网段、运营商 NAT 网段及 IPv6 唯一本地地址的请求，防止内网横向探测与 SSRF 风险。
+  - Integrated pre-flight validation in both configuration verification (`validateConfig`) and outbound HTTP dispatch (`HttpTransport.request`). / 在配置校验与网络实际发起层分别强制执行前置拦截。
 
 ## [0.5.0] - 2026-09-11
 

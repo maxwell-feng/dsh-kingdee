@@ -31,7 +31,7 @@ export function buildMockTransport(options: MockOptions = {}): KdTransport {
         return {
           status: 200,
           body: { Result: 0, IsSuccess: true, Message: '', Data: '' },
-          headers: { 'set-cookie': `kdsvc=${sessionCookie}` },
+          headers: { 'set-cookie': `kdservice-sessionid=${sessionCookie}; kdsvc=${sessionCookie}` },
         }
       }
 

@@ -2,7 +2,7 @@
 
 English | [中文](INSTALL.zh.md)
 
-> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`). For full configuration details, see [CONFIG.md](./CONFIG.md).
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`) and adapted for **Kingdee Cloud Starry Sky V9.0 Enterprise Edition** (金蝶云·星空 V9.0 企业版, as well as V8.x / V9.1). For full configuration details, see [CONFIG.md](./CONFIG.md).
 
 This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harness (DSH) profile.
 
@@ -10,7 +10,8 @@ This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harne
 
 - A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) install with the web GUI (the `dsh` CLI, and the `tools`, `credentials` and `settings` peers available).
 - Node ≥ 22 (only needed for the core library / tests).
-- For real usage: a reachable Kingdee Cloud Starry Sky instance with the **WebAPI enabled**, plus a valid account.
+- A reachable Kingdee Cloud Starry Sky instance (V9.0 Enterprise Edition, V8.x, or V9.1) with the **WebAPI enabled**, plus a valid account.
+- **Network & SSRF Safety**: Target `baseUrl` must use `http:` or `https:`. Per enterprise SSRF security defenses, direct requests targeting `localhost` or unresolvable private IP ranges (`127.0.0.0/8`, `10.0.0.0/8`, `192.168.0.0/16`, `172.16.0.0/12`) are blocked by default. Use a designated enterprise domain or public gateway endpoint (e.g. `https://erp.example.com/K3Cloud`).
 
 ## 1. Add the bundle
 
@@ -28,7 +29,7 @@ Or, from a source checkout, add it to your `cordis.yml` (or a `cordis.patch.yml`
       name: dsh-kingdee
       enabled: true
       config:
-        baseUrl: "http://your-server/K3Cloud"
+        baseUrl: "https://erp.example.com/K3Cloud"
         acctId: "YOUR_ACCT_ID"
         authMode: "user"
         appId: ""

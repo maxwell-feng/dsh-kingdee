@@ -102,10 +102,16 @@ export interface KdQueryParams {
     fieldKeys: string[];
     /** Kingdee filter expression, e.g. `FBillNo='SO-20260701'`. */
     filter?: string;
-    /** Maximum rows to return. */
+    /** Maximum rows to return (maps to TopRowCount / TopCount). */
     topCount?: number;
-    /** Row offset for paging. */
+    /** Row offset for paging (maps to StartRowIndex / StartRow). */
     startRowIndex?: number;
+    /** Page size limit for query pagination. */
+    limit?: number;
+    /** Page start row offset. */
+    startRow?: number;
+    /** Order clause, e.g. `FCreateDate DESC, FBillNo ASC`. Crucial for stable paging. */
+    orderString?: string;
     /** Optional organization (org) id / FNumber. */
     organization?: string;
 }
@@ -117,6 +123,8 @@ export interface KdSaveParams {
     data: Record<string, unknown>;
     /** Set `true` to skip the platform interaction (form plugin) validation. */
     interaction?: boolean;
+    /** Set `true` to automatically submit and audit the record upon save. */
+    isAutoSubmitAndAudit?: boolean;
 }
 /** Parameters for batch-saving multiple records in one call. */
 export interface KdBatchSaveParams {
@@ -126,19 +134,23 @@ export interface KdBatchSaveParams {
     records: Record<string, unknown>[];
     /** Set `true` to skip the platform interaction (form plugin) validation. */
     interaction?: boolean;
+    /** Set `true` to automatically submit and audit the records upon save. */
+    isAutoSubmitAndAudit?: boolean;
 }
-/** Parameters for operations that address one or more existing records by id. */
+/** Parameters for operations that address one or more existing records by id or number. */
 export interface KdIdListParams {
     /** Kingdee form id, e.g. `SAL_SaleOrder`. */
     formId: string;
-    /** The ids of the records to act on. */
-    ids: string[];
+    /** The ids of the records to act on. Either ids or numbers must be provided. */
+    ids?: string[];
+    /** Optional list of bill numbers accompanying or replacing the ids (e.g. `SO-20260901`). */
+    numbers?: string[];
 }
 /** Parameters for `Submit` (submission with an optional bill-number list). */
 export interface KdSubmitParams {
     formId: string;
-    ids: string[];
-    /** Optional list of bill numbers accompanying the ids. */
+    ids?: string[];
+    /** Optional list of bill numbers accompanying or replacing the ids. */
     numbers?: string[];
 }
 /** Parameters for invoking a BOS custom service. */

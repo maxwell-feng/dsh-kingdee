@@ -142,6 +142,7 @@ export class KdClient {
   async save(params: KdSaveParams): Promise<unknown> {
     const body: Record<string, unknown> = { FormId: params.formId, Data: params.data }
     if (params.interaction !== undefined) body.Interaction = params.interaction
+    if (params.isAutoSubmitAndAudit !== undefined) body.IsAutoSubmitAndAudit = params.isAutoSubmitAndAudit
     return this.post(`${this.ep.dynamicFormService}.Save`, body)
   }
 
@@ -149,44 +150,64 @@ export class KdClient {
   async batchSave(params: KdBatchSaveParams): Promise<unknown> {
     const body: Record<string, unknown> = { FormId: params.formId, Data: params.records }
     if (params.interaction !== undefined) body.Interaction = params.interaction
+    if (params.isAutoSubmitAndAudit !== undefined) body.IsAutoSubmitAndAudit = params.isAutoSubmitAndAudit
     return this.post(`${this.ep.dynamicFormService}.Save`, body)
   }
 
   /** Submit a form. */
   async submit(params: KdSubmitParams): Promise<unknown> {
-    const body: Record<string, unknown> = { FormId: params.formId, Ids: params.ids.join(',') }
-    if (params.numbers !== undefined) body.Numbers = params.numbers.join(',')
+    const body: Record<string, unknown> = { FormId: params.formId }
+    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
     return this.post(`${this.ep.dynamicFormService}.Submit`, body)
   }
 
   /** Audit a form. */
   async audit(params: KdIdListParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.Audit`, { FormId: params.formId, Ids: params.ids.join(',') })
+    const body: Record<string, unknown> = { FormId: params.formId }
+    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
+    return this.post(`${this.ep.dynamicFormService}.Audit`, body)
   }
 
   /** Un-audit a form. */
   async unaudit(params: KdIdListParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.UnAudit`, { FormId: params.formId, Ids: params.ids.join(',') })
+    const body: Record<string, unknown> = { FormId: params.formId }
+    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
+    return this.post(`${this.ep.dynamicFormService}.UnAudit`, body)
   }
 
   /** Un-submit a submitted form (name may be version-specific). */
   async unsubmit(params: KdIdListParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.UnSubmit`, { FormId: params.formId, Ids: params.ids.join(',') })
+    const body: Record<string, unknown> = { FormId: params.formId }
+    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
+    return this.post(`${this.ep.dynamicFormService}.UnSubmit`, body)
   }
 
-  /** Delete draft (暂存/created) records by id. */
+  /** Delete draft (暂存/created) records by id or number. */
   async deleteDraft(params: KdIdListParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.DeleteDraft`, { FormId: params.formId, Ids: params.ids.join(',') })
+    const body: Record<string, unknown> = { FormId: params.formId }
+    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
+    return this.post(`${this.ep.dynamicFormService}.DeleteDraft`, body)
   }
 
-  /** View a single record by id. */
-  async view(formId: string, id: string): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.View`, { FormId: formId, Id: id })
+  /** View a single record by id or bill number. */
+  async view(formId: string, id?: string, number?: string): Promise<unknown> {
+    const body: Record<string, unknown> = { FormId: formId }
+    if (id) body.Id = id
+    if (number) body.Number = number
+    return this.post(`${this.ep.dynamicFormService}.View`, body)
   }
 
-  /** Delete records by id. */
+  /** Delete records by id or bill number. */
   async delete(params: KdIdListParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.Delete`, { FormId: params.formId, Ids: params.ids.join(',') })
+    const body: Record<string, unknown> = { FormId: params.formId }
+    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
+    return this.post(`${this.ep.dynamicFormService}.Delete`, body)
   }
 
   /** Invoke a BOS custom service. */
@@ -204,8 +225,14 @@ function queryBody(params: KdQueryParams): Record<string, unknown> {
     FieldKeys: params.fieldKeys.join(','),
   }
   if (params.filter !== undefined) body.FilterString = params.filter
-  if (params.topCount !== undefined) body.TopCount = params.topCount
+  if (params.orderString !== undefined) body.OrderString = params.orderString
+  if (params.topCount !== undefined) {
+    body.TopRowCount = params.topCount
+    body.TopCount = params.topCount
+  }
+  if (params.limit !== undefined) body.Limit = params.limit
   if (params.startRowIndex !== undefined) body.StartRowIndex = params.startRowIndex
+  if (params.startRow !== undefined) body.StartRow = params.startRow
   if (params.organization !== undefined) body.Organization = params.organization
   return body
 }

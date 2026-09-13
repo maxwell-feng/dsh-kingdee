@@ -2,7 +2,9 @@
 
 [English](CONFIG.md) | 简体中文
 
-本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、环境变量以及配置文件配置方法。
+> 全面适配 **金蝶云·星空 V9.0 企业版**（Kingdee Cloud Starry Sky V9.0 Enterprise Edition，并向下兼容 V8.x 及 V9.1），并经 DeepSeek Harness **0.1.5-rc.2** 验证。
+
+本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 
 ---
 
@@ -12,9 +14,9 @@
 
 | 配置字段 | 类型 | 默认值 | 敏感级别 | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
-| `baseUrl` | `string` | `""` | 普通 | 金蝶云星空 WebAPI 基址，例如 `http://192.168.1.100/K3Cloud`。 |
+| `baseUrl` | `string` | `""` | 普通 | 金蝶云星空 WebAPI 基址，例如 `https://erp.example.com/K3Cloud`。必须采用 `http:` 或 `https:` 协议。直连 `localhost` 或私网 IP 会被 SSRF 安全策略拒绝。 |
 | `acctId` | `string` | `""` | 普通 | 金蝶账套 ID（数据中心 ID / Data Center ID）。 |
-| `authMode` | `'user' / 'app'` | `"user"` | 普通 | 认证模式。`"user"` 为账套用户名/密码认证；`"app"` 为第三方应用授权（AppId + AppSecret）认证。 |
+| `authMode` | `'user' / 'app'` | `"user"` | 普通 | 认证模式。`"user"` 为账套用户名/密码认证（兼容官方标准 `kdservice-sessionid` 与 `kdsvc`）；`"app"` 为第三方应用授权（AppId + AppSecret）认证。 |
 | `appId` | `string` | `""` | 普通 | 应用 ID，仅在 `authMode: "app"` 时生效。 |
 | `appSecretRef` | `string` | `"DSH_KINGDEE_APP_SECRET"` | `credential-ref` | 存放 AppSecret 密钥的凭据引用名（环境变量名）。 |
 | `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | 存放账套用户名的凭据引用名（环境变量名）。 |
@@ -26,16 +28,32 @@
 
 ### 1.1 服务端点高级覆盖 (`serviceEndpoints`)
 
-某些特殊定制或旧版本金蝶云星空实例的服务名可能有所调整，可通过此项覆盖：
-- `loginService`: 登录端点路径
-- `logOutService`: 登出端点路径
-- `dynamicFormService`: 动态表单服务路径
-- `listDataCenterService`: 数据中心列表端点路径
-- `servicePrefix`: 服务统一前缀
+针对特殊二开版本或定制路由的金蝶部署：
+- `loginService`: 登录端点路径（默认 `Kingdee.BOS.WebApi.ServicesStub.LoginService.ValidateUser`）
+- `logOutService`: 登出端点路径（默认 `Kingdee.BOS.WebApi.ServicesStub.LoginService.LogOut`）
+- `dynamicFormService`: 动态表单服务路径（默认 `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`）
+- `listDataCenterService`: 数据中心列表端点路径（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`）
+- `servicePrefix`: 服务统一前缀（默认 `Kingdee.BOS.WebApi.ServicesStub`）
 
 ---
 
-## 2. 凭据安全配置（推荐）
+## 2. 网络与 SSRF 安全基线
+
+为防范服务端请求伪造（SSRF）与内网未经授权横向扫描：
+1. **协议白名单**：仅允许 `http:` 与 `https:` 请求，禁止其他协议。
+2. **安全拦截范围**：插件自动拒绝指向以下地址的请求：
+   - `localhost` 以及 `*.localhost` 域名
+   - IPv4 环回地址（`127.0.0.0/8`）及 IPv6 环回地址（`::1`）
+   - RFC1918 私有 IP 网段（`10.0.0.0/8`、`172.16.0.0/12`、`192.168.0.0/16`）
+   - 链路本地地址（`169.254.0.0/16`、`fe80::/10`）
+   - 运营商级 NAT 地址（`100.64.0.0/10`）
+   - IPv6 唯一本地地址（`fc00::/7`）
+   - 广播、组播及保留网段
+3. **域名推荐**：金蝶服务器请配置企业正规域名，或通过安全反向代理/API 网关对外提供 WebAPI 接入服务（如 `https://erp.example.com/K3Cloud`）。
+
+---
+
+## 3. 凭据安全配置（推荐）
 
 为了确保凭据安全，**严禁将账套密码或 AppSecret 明文写在配置文件或代码中**。`dsh-kingdee` 遵循 DeepSeek Harness 的凭据缝（Credentials Seam）规范，在每次请求时动态解析环境变量。修改环境变量后无需重启 DSH 即可在下次调用时立即生效。
 

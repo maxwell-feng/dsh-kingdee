@@ -7,6 +7,8 @@ English | [中文](README.zh.md)
 `dsh-kingdee` gives the DSH agent a first-class, credential-safe way to act on a Kingdee Cloud Starry Sky tenant through its **WebAPI**: typed tools for querying, saving, submitting, auditing, un-auditing, viewing and deleting bills/base data, and for invoking BOS custom services. A companion domain skill (`kingdee-bos`) teaches the field/enum/status conventions and the boundary between the data layer and the platform-plugin layer.
 
 - **credential-safe** — secrets are environment-variable references resolved through the DSH credential seam, never literal config.
+- **Kingdee V9.0 Enterprise Edition ready** — fully adapted for Kingdee Cloud Starry Sky V9.0 Enterprise Edition (and V8.x/V9.1), supporting official standard `kdservice-sessionid` session cookies, stable cursor pagination (`orderString`, `limit`, `startRow`), direct bill number (`numbers`) workflow actions, and auto-submit/audit (`isAutoSubmitAndAudit`).
+- **SSRF network defense** — strict protocol whitelist (http/https only) and host boundary verification blocking localhost, loopback, private subnets, and reserved network segments.
 - **typed tools** — query, save, submit, audit, un-audit, view, delete and invoke BOS custom services through the `kingdee_*` tools. Each one is listed below in the Tools table.
 - **full state machine** — create/update → submit → audit → un-audit flow, off the shelf.
 - **offline mock** — a `mock: true` flag swaps in a local transport so you can demo and test the pipeline without a reachable tenant.
