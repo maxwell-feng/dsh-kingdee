@@ -48,11 +48,11 @@ Eighth release of **dsh-kingdee**, the Kingdee Cloud Starry Sky secondary-develo
 
 ## Installation / 安装说明
 
-See [INSTALL.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/INSTALL.md) / [INSTALL.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/INSTALL.zh.md). Upgrade and removal are in [UPDATE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/UPDATE.md) and [UNINSTALL.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/UNINSTALL.md).
+See [INSTALL.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/INSTALL.md) / [INSTALL.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/INSTALL.zh.md). Upgrade and removal are in [UPDATE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/UPDATE.md) and [UNINSTALL.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/UNINSTALL.md).
 
 ## Links / 相关链接
 
 - Homepage / 主页: https://github.com/maxwell-feng/dsh-kingdee
-- Usage Guide / 使用文档: [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.md) | [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/USAGE.zh.md)
-- Config Guide / 配置文档: [CONFIG.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/CONFIG.md) | [CONFIG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/CONFIG.zh.md)
-- Changelog / 变更日志: [CHANGELOG.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.4.0/CHANGELOG.md)
+- Usage Guide / 使用文档: [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/USAGE.md) | [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/USAGE.zh.md)
+- Config Guide / 配置文档: [CONFIG.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CONFIG.md) | [CONFIG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CONFIG.zh.md)
+- Changelog / 变更日志: [CHANGELOG.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CHANGELOG.md) | [CHANGELOG.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.6.0/CHANGELOG.zh.md)

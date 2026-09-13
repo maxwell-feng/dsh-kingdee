@@ -2,6 +2,8 @@
 
 [English](UNINSTALL.md) | 中文
 
+> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证，并全面适配 **金蝶云·星空 V9.0 企业版**。
+
 如何从 DSH profile 移除 **dsh-kingdee**。
 
 ## 一、禁用插件

@@ -2,6 +2,8 @@
 
 English | [中文](UNINSTALL.zh.md)
 
+> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`) and adapted for **Kingdee Cloud Starry Sky V9.0 Enterprise Edition** (金蝶云·星空 V9.0 企业版).
+
 How to remove **dsh-kingdee** from a DSH profile.
 
 ## 1. Disable the plugin

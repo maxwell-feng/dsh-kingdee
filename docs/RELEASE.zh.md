@@ -38,25 +38,12 @@
 ## 相关链接
 
 - 主页：https://github.com/maxwell-feng/dsh-kingdee
-- 使用文档：[USAGE.zh.md](../USAGE.zh.md) / [USAGE.md](../USAGE.md)
-- 配置文档：[CONFIG.zh.md](../CONFIG.zh.md) / [CONFIG.md](../CONFIG.md)
-- 变更日志：[CHANGELOG.zh.md](../CHANGELOG.zh.md) / [CHANGELOG.md](../CHANGELOG.md)
-- 安装文档：[INSTALL.zh.md](../INSTALL.zh.md) / [INSTALL.md](../INSTALL.md)
-- 升级文档：[UPDATE.zh.md](../UPDATE.zh.md) / [UPDATE.md](../UPDATE.md)
-- 卸载文档：[UNINSTALL.zh.md](../UNINSTALL.zh.md) / [UNINSTALL.md](../UNINSTALL.md)
-
-## 已知限制
-
-- **平台插件层**（服务器端 C# 表单/列表插件、界面布局、后台事件）**不在** WebAPI 范围内，需在 BOS 集成开发环境中开发，已在文档中明确边界。
-- `./client` 产物遵循文档化的 factory 格式；共享的 `clientBundle` tsdown preset 位于 harness 仓库内部且未发布，本包自行复现该产物。
-
-## 安装与维护
-
-详见 [INSTALL.zh.md](../INSTALL.zh.md)。升级和卸载参见 [UPDATE.zh.md](../UPDATE.zh.md) 与 [UNINSTALL.zh.md](../UNINSTALL.zh.md)。
-
-## 相关链接
-
-- 主页：https://github.com/maxwell-feng/dsh-kingdee
+- 使用文档：[USAGE.zh.md](../USAGE.zh.md) | [USAGE.md](../USAGE.md)
+- 配置文档：[CONFIG.zh.md](../CONFIG.zh.md) | [CONFIG.md](../CONFIG.md)
+- 变更日志：[CHANGELOG.zh.md](../CHANGELOG.zh.md) | [CHANGELOG.md](../CHANGELOG.md)
+- 安装文档：[INSTALL.zh.md](../INSTALL.zh.md) | [INSTALL.md](../INSTALL.md)
+- 升级文档：[UPDATE.zh.md](../UPDATE.zh.md) | [UPDATE.md](../UPDATE.md)
+- 卸载文档：[UNINSTALL.zh.md](../UNINSTALL.zh.md) | [UNINSTALL.md](../UNINSTALL.md)
 - 使用文档：[USAGE.zh.md](../USAGE.zh.md)
 - 配置文档：[CONFIG.zh.md](../CONFIG.zh.md)
 - 变更日志：[CHANGELOG.md](../CHANGELOG.md)
