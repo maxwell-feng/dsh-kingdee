@@ -1,0 +1,47 @@
+name: OIDC probe (temporary)
+
+# Temporary diagnostic: determine whether GitHub Actions issues an OIDC id-token
+# to a workflow in this repository. If it does, the npm publish failure is a
+# trusted-publisher configuration problem on npmjs.com rather than a workflow
+# permission problem here. Deleted after use.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report OIDC environment
+        run: |
+          if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "OIDC_ID_TOKEN_REQUEST_URL: present"
+          else
+            echo "OIDC_ID_TOKEN_REQUEST_URL: ABSENT"
+          fi
+          if [ -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]; then
+            echo "OIDC_ID_TOKEN_REQUEST_TOKEN: present"
+          else
+            echo "OIDC_ID_TOKEN_REQUEST_TOKEN: ABSENT"
+          fi
+      - name: Attempt a real id-token exchange
+        run: |
+          set -euo pipefail
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "RESULT: no id-token endpoint exposed to this workflow"
+            exit 0
+          fi
+          code=$(curl -sS -o /tmp/tok.json -w '%{http_code}' \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org")
+          echo "exchange HTTP status: ${code}"
+          if [ "${code}" = "200" ]; then
+            echo "RESULT: id-token exchange SUCCEEDED (OIDC works here)"
+          else
+            echo "RESULT: id-token exchange FAILED"
+            head -c 500 /tmp/tok.json || true
+          fi
