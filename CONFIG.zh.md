@@ -2,7 +2,7 @@
 
 [English](CONFIG.md) | 简体中文
 
-> 全面适配 **金蝶云·星空 V9.0 企业版**（Kingdee Cloud Starry Sky V9.0 Enterprise Edition，并向下兼容 V8.x 及 V9.1），并经 DeepSeek Harness **0.1.5-rc.2** 验证。
+> 面向 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.1.6-alpha.1** 验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.1` profile 中作为 `# == dsh-kingdee` 层正常生效）。**未进行真实账套联调验证。**
 
 本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 
@@ -16,11 +16,12 @@
 | :--- | :--- | :--- | :--- | :--- |
 | `baseUrl` | `string` | `""` | 普通 | 金蝶云星空 WebAPI 基址，例如 `https://erp.example.com/K3Cloud`。必须采用 `http:` 或 `https:` 协议。直连 `localhost` 或私网 IP 会被 SSRF 安全策略拒绝。 |
 | `acctId` | `string` | `""` | 普通 | 金蝶账套 ID（数据中心 ID / Data Center ID）。 |
-| `authMode` | `'user' / 'app'` | `"user"` | 普通 | 认证模式。`"user"` 为账套用户名/密码认证（兼容官方标准 `kdservice-sessionid` 与 `kdsvc`）；`"app"` 为第三方应用授权（AppId + AppSecret）认证。 |
+| `authMode` | `'user' / 'app'` | `"user"` | 普通 | 认证模式。`"user"` 以账套用户名/密码经 `AuthService.ValidateUser` 登录；`"app"` 以第三方应用经 `AuthService.LoginByAppSecret` 登录，除 `appId` + `appSecret` 外**还**必须提供 `userNameRef`（集成用户）。金蝶对 2022-11-29 之后开通的公有云账套拒绝账号密码登录，此类账套必须使用 `"app"`。两种模式都不会伪造 `KDAuthentication` 请求头。 |
 | `appId` | `string` | `""` | 普通 | 应用 ID，仅在 `authMode: "app"` 时生效。 |
 | `appSecretRef` | `string` | `"DSH_KINGDEE_APP_SECRET"` | `credential-ref` | 存放 AppSecret 密钥的凭据引用名（环境变量名）。 |
-| `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | 存放账套用户名的凭据引用名（环境变量名）。 |
-| `passwordRef` | `string` | `"DSH_KINGDEE_PASSWORD"` | `credential-ref` | 存放账套密码的凭据引用名（环境变量名）。 |
+| `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | 凭据引用名（环境变量名）：`user` 模式下为账套用户名，`app` 模式下为集成用户（两种模式均必填）。 |
+| `passwordRef` | `string` | `"DSH_KINGDEE_PASSWORD"` | `credential-ref` | 存放账套密码的凭据引用名（环境变量名，仅 `user` 模式使用，`app` 模式不用）。 |
+| `lcid` | `number` | `2052` | 普通 | 发送给两个登录服务的区域 id。`2052` 即 zh-CN，也是金蝶自身默认值。 |
 | `organization` | `string` | `undefined` | 普通 | 可选。默认组织编码（FNumber）或组织 ID，将自动应用于单据保存与查询。 |
 | `timeoutMs` | `number` | `30000` | 普通 | WebAPI 请求超时时间（毫秒），支持范围 0 ~ 300000。 |
 | `mock` | `boolean` | `false` | 普通 | 本地 Mock 开关。开启后使用内置模拟传输器，无需连接真实金蝶服务器即可测试和演示。 |
@@ -28,12 +29,13 @@
 
 ### 1.1 服务端点高级覆盖 (`serviceEndpoints`)
 
-针对特殊二开版本或定制路由的金蝶部署：
-- `loginService`: 登录端点路径（默认 `Kingdee.BOS.WebApi.ServicesStub.LoginService.ValidateUser`）
-- `logOutService`: 登出端点路径（默认 `Kingdee.BOS.WebApi.ServicesStub.LoginService.LogOut`）
-- `dynamicFormService`: 动态表单服务路径（默认 `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`）
-- `listDataCenterService`: 数据中心列表端点路径（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`）
-- `servicePrefix`: 服务统一前缀（默认 `Kingdee.BOS.WebApi.ServicesStub`）
+针对特殊二开版本或定制路由的金蝶部署（默认值来自 `src/kd-core/client.ts`）：
+- `loginService`：账套用户名/密码登录 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser`）
+- `loginByAppSecretService`：第三方应用登录 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`）
+- `logOutService`：登出 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LogOut`）
+- `dynamicFormService`：动态表单服务前缀，不含末尾操作名（默认 `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`）
+- `listDataCenterService`：数据中心列表 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`；该服务名随版本而异，见第 5 节的证据说明）
+- `stubSuffix`：追加到所有生成 stub 路径末尾的后缀（默认 `.common.kdsvc`；若覆盖值已带该后缀则不再重复追加）
 
 ---
 
@@ -77,15 +79,19 @@ $env:DSH_KINGDEE_PASSWORD = "your_password"
 
 ### 2.2 应用授权模式 (`authMode: "app"`)
 
-在主机上配置以下环境变量：
+`app` 模式以第三方应用经 `AuthService.LoginByAppSecret` 登录。除应用凭据外还需要**集成用户**名，因此也要设置 `DSH_KINGDEE_USER`：
 
 ```bash
 # Linux / macOS / Android Termux
+export DSH_KINGDEE_USER="your_integration_user"
 export DSH_KINGDEE_APP_SECRET="your_app_secret"
 
 # Windows PowerShell
+$env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
+
+> **登录响应结构。** 两个登录 stub 返回的是它们**自己**的结构 `{"LoginResultType": 1}`，**不是**其他所有操作返回的 `Result` / `IsSuccess` 业务信封。客户端单独判定登录结果（`kd-core` 的 `parseLoginOutcome`）：存在数字型 `LoginResultType` 时以它为准（`1` 为成功，其余抛 `kd/auth-failed`）；没有 `LoginResultType` 时回退到业务信封。
 
 ---
 
@@ -104,6 +110,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
         authMode: "user"
         userNameRef: "DSH_KINGDEE_USER"
         passwordRef: "DSH_KINGDEE_PASSWORD"
+        lcid: 2052
         organization: "100"
         timeoutMs: 30000
         mock: false
@@ -122,6 +129,9 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
         authMode: "app"
         appId: "your_app_id"
         appSecretRef: "DSH_KINGDEE_APP_SECRET"
+        # 第三方应用所代理的集成用户（app 模式必填）
+        userNameRef: "DSH_KINGDEE_USER"
+        lcid: 2052
         organization: "100"
         timeoutMs: 30000
         mock: false
@@ -134,5 +144,31 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 在 DeepSeek Harness Web 界面中：
 1. 打开左侧导航栏的 **Settings（设置）**。
 2. 进入 **Plugins → kingdee** 设置卡片。
-3. 可视化修改 `baseUrl`、`acctId`、`authMode`、`organization`、`timeoutMs` 等字段。
+3. 可视化修改 `baseUrl`、`acctId`、`authMode`、`appId`、`lcid`、`organization`、`timeoutMs` 及凭据引用名等字段。
 4. 修改后点击保存，配置立即更新。
+
+---
+
+## 5. 金蝶 V9.1 符合性
+
+`dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition；补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
+
+**V9.1 没有破坏性 WebAPI 变更。** 没有重命名或移除的操作、没有 Cookie 改名、没有 URL 约定变化、也没有新增必填请求头。本插件使用的经典 `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` 会话协议保持不变。
+
+V9.1 在接口层的增量：
+
+- `Delete` 现在返回正确的 `FNumber` —— 自 `9.1.0.20250807` 起 `SuccessEntitys[].Number` 可直接采信；
+- 多文件附件（文件服务）字段可仅凭文件 ID 赋值；
+- 服务端新增了 WebAPI 请求体日志；
+- 在线文档补充了幂等性校验指引；
+- WebAPI 限流增加了白名单；
+- 报表 Stub / API 自定义接口做了安全加固；
+- 外部用户访问控制被收紧。
+
+对本插件的运维影响：
+
+- 由于服务端会记录请求体，请尽可能优先使用 `app`（第三方）模式，而不是账号密码模式；
+- 由于权限被收紧，缺少查询权限可能表现为**空结果而不是报错** —— 请针对每个 `FormId` 先跑一次探针查询验证，而不要直接相信空结果集；
+- 请把插件所在主机的出口 IP 加入 WebAPI 限流白名单。
+
+**证据诚实性说明。** 登录服务所用的具名请求键（`acctID` / `username` / `appid` / `appsecret` / `lcid`）、`Limit` 行数上限（约 2000）以及 `listDataCenterService` 默认服务名，均为**社区验证结论，并非金蝶官方发布**的契约。每个账套的权威来源是产品本身：以管理员登录 → 公共设置 → 动态服务定义 → WebAPI，选择业务对象与操作，直接查看该操作的参数说明与示例调用。

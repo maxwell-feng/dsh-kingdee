@@ -1,30 +1,36 @@
 /**
- * The Kingdee Cloud WebAPI client.
+ * The Kingdee Cloud WebAPI client (V9.1).
  *
  * Owns session management and the operations used by the DSH tools: login/logout,
  * query (legacy + structured), save (single + batch), submit, audit, un-audit,
- * un-submit, delete, delete-draft, view, data-center listing, and custom-service
+ * un-submit, delete, delete-draft, view, data-center listing, and custom-stub
  * invocation. Every operation funnels through the transport seam; a failed
  * envelope throws a {@link KdError} so tool output stays structured.
  *
- * Service endpoint names vary slightly across Kingdee versions, so they are
- * overridable through `KdConfig.endpoints`; the defaults cover the standard
- * K3Cloud surface.
+ * Stub paths follow the documented V9.1 convention
+ * `/K3Cloud/{stub path}.common.kdsvc`, where the stub path is either
+ * `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.<Operation>` or, for a
+ * BOS custom service, `{namespace}.{class}.{method},{assembly}`. Service names
+ * vary across versions and deployments, so they stay overridable through
+ * `KdConfig.endpoints`; the defaults cover the standard K3Cloud surface.
  */
 
-import { businessHeaders, buildLoginPayload, validateConfig } from './auth.ts'
+import { buildAppSecretLoginPayload, buildLoginPayload, businessHeaders, validateConfig } from './auth.ts'
 import { assertSuccess, KdError, toKdError } from './errors.ts'
-import { extractKdsvcCookie, joinUrl, parseEnvelope } from './envelope.ts'
+import { extractKdsvcCookie, joinUrl, parseEnvelope, parseLoginOutcome } from './envelope.ts'
 import type { KdBatchSaveParams, KdConfig, KdIdListParams, KdInvokeParams, KdQueryParams, KdSaveParams, KdSubmitParams } from './types.ts'
 import type { KdTransport } from './transport.ts'
 
 /** Default K3Cloud WebAPI endpoints. Override individual fields via `KdConfig.endpoints`. */
 const DEFAULT_ENDPOINTS = {
-  loginService: 'Kingdee.BOS.WebApi.ServicesStub.LoginService.ValidateUser',
-  logOutService: 'Kingdee.BOS.WebApi.ServicesStub.LoginService.LogOut',
+  loginService: 'Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser',
+  loginByAppSecretService: 'Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret',
+  logOutService: 'Kingdee.BOS.WebApi.ServicesStub.AuthService.LogOut',
   dynamicFormService: 'Kingdee.BOS.WebApi.ServicesStub.DynamicFormService',
+  // Name is version-specific and not confirmed against a live tenant; override it
+  // from 公共设置 → 动态服务定义 → WebAPI when listing data centers fails.
   listDataCenterService: 'Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List',
-  servicePrefix: 'Kingdee.BOS.WebApi.ServicesStub',
+  stubSuffix: '.common.kdsvc',
 }
 
 type ResolvedEndpoints = typeof DEFAULT_ENDPOINTS
@@ -46,13 +52,36 @@ export class KdClient {
     return this.cfg.baseUrl
   }
 
-  /** Authenticate as needed (user mode) and return the session cookie, or `undefined` for app mode. */
+  /**
+   * Append the documented `.common.kdsvc` stub suffix, tolerating an endpoint
+   * override that already carries it.
+   */
+  private stub(path: string): string {
+    const suffix = this.ep.stubSuffix
+    return suffix && !path.endsWith(suffix) ? `${path}${suffix}` : path
+  }
+
+  /** Build a `DynamicFormService.<operation>` stub path. */
+  private form(operation: string): string {
+    return this.stub(`${this.ep.dynamicFormService}.${operation}`)
+  }
+
+  /**
+   * Authenticate and return the session value.
+   *
+   * Both modes call their login stub and capture the `kdservice-sessionid`
+   * cookie; `user` mode calls `ValidateUser`, `app` mode calls
+   * `LoginByAppSecret` because Kingdee refuses account/password login on
+   * public-cloud tenants opened after 2022-11-29.
+   */
   async login(): Promise<string | undefined> {
     validateConfig(this.cfg)
-    if ((this.cfg.authMode ?? 'user') !== 'user') return undefined
+    const mode = this.cfg.authMode ?? 'user'
 
-    const url = joinUrl(this.baseUrl, this.ep.loginService)
-    const payload = buildLoginPayload(this.cfg)
+    const endpoint = mode === 'user' ? this.ep.loginService : this.ep.loginByAppSecretService
+    const payload = mode === 'user' ? buildLoginPayload(this.cfg) : buildAppSecretLoginPayload(this.cfg)
+    const url = joinUrl(this.baseUrl, this.stub(endpoint))
+
     const response = await this.transport.request({
       method: 'POST',
       url,
@@ -63,18 +92,24 @@ export class KdClient {
     const cookie = extractKdsvcCookie(response.headers)
     if (cookie) this.sessionCookie = cookie
 
-    const env = parseEnvelope(response.body)
-    assertSuccess(env)
+    // The login services answer with `LoginResultType`, not the business envelope.
+    const outcome = parseLoginOutcome(response.body)
+    if (!outcome.ok) {
+      throw new KdError('kd/auth-failed', outcome.message ?? 'Kingdee Cloud login failed', {
+        loginResultType: outcome.loginResultType,
+        mode,
+      })
+    }
     return this.sessionCookie
   }
 
   /** Log out of the current session and clear the stored session cookie. */
   async logout(): Promise<unknown> {
     await this.ensureSession()
-    const url = joinUrl(this.baseUrl, this.ep.logOutService)
+    const url = joinUrl(this.baseUrl, this.stub(this.ep.logOutService))
     const headers = businessHeaders(this.cfg, this.sessionCookie)
     const body: Record<string, unknown> = { acctID: this.cfg.acctId }
-    if (this.cfg.userName) body.userName = this.cfg.userName
+    if (this.cfg.userName) body.username = this.cfg.userName
     if (this.cfg.password) body.password = this.cfg.password
 
     try {
@@ -91,7 +126,7 @@ export class KdClient {
 
   /** List the data centers / tenants reachable at this base URL (service name may be version-specific). */
   async listDataCenters(): Promise<unknown> {
-    const url = joinUrl(this.baseUrl, this.ep.listDataCenterService)
+    const url = joinUrl(this.baseUrl, this.stub(this.ep.listDataCenterService))
     const headers = { 'Content-Type': 'application/json', ...(this.cfg.headers ?? {}) }
     try {
       const response = await this.transport.request({ method: 'POST', url, headers, body: {} })
@@ -104,9 +139,8 @@ export class KdClient {
     }
   }
 
-  /** Ensure a session exists for user mode before a business call. */
+  /** Ensure a session exists before a business call. */
   private async ensureSession(): Promise<void> {
-    if ((this.cfg.authMode ?? 'user') !== 'user') return
     if (this.sessionCookie) return
     await this.login()
   }
@@ -130,12 +164,12 @@ export class KdClient {
 
   /** ExecuteBillQuery — query bills and base data (legacy, returns table-shaped rows). */
   async executeBillQuery(params: KdQueryParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.ExecuteBillQuery`, queryBody(params))
+    return this.post(this.form('ExecuteBillQuery'), queryBody(params))
   }
 
   /** QueryBusinessData — newer structured query with richer, object-shaped results. */
   async queryBusinessData(params: KdQueryParams): Promise<unknown> {
-    return this.post(`${this.ep.dynamicFormService}.QueryBusinessData`, queryBody(params))
+    return this.post(this.form('QueryBusinessData'), queryBody(params))
   }
 
   /** Save a form (create or update a bill / base record). */
@@ -143,7 +177,7 @@ export class KdClient {
     const body: Record<string, unknown> = { FormId: params.formId, Data: params.data }
     if (params.interaction !== undefined) body.Interaction = params.interaction
     if (params.isAutoSubmitAndAudit !== undefined) body.IsAutoSubmitAndAudit = params.isAutoSubmitAndAudit
-    return this.post(`${this.ep.dynamicFormService}.Save`, body)
+    return this.post(this.form('Save'), body)
   }
 
   /** Batch-save multiple records in one call. */
@@ -151,7 +185,7 @@ export class KdClient {
     const body: Record<string, unknown> = { FormId: params.formId, Data: params.records }
     if (params.interaction !== undefined) body.Interaction = params.interaction
     if (params.isAutoSubmitAndAudit !== undefined) body.IsAutoSubmitAndAudit = params.isAutoSubmitAndAudit
-    return this.post(`${this.ep.dynamicFormService}.Save`, body)
+    return this.post(this.form('Save'), body)
   }
 
   /** Submit a form. */
@@ -159,39 +193,27 @@ export class KdClient {
     const body: Record<string, unknown> = { FormId: params.formId }
     if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
     if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
-    return this.post(`${this.ep.dynamicFormService}.Submit`, body)
+    return this.post(this.form('Submit'), body)
   }
 
   /** Audit a form. */
   async audit(params: KdIdListParams): Promise<unknown> {
-    const body: Record<string, unknown> = { FormId: params.formId }
-    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
-    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
-    return this.post(`${this.ep.dynamicFormService}.Audit`, body)
+    return this.post(this.form('Audit'), idListBody(params))
   }
 
   /** Un-audit a form. */
   async unaudit(params: KdIdListParams): Promise<unknown> {
-    const body: Record<string, unknown> = { FormId: params.formId }
-    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
-    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
-    return this.post(`${this.ep.dynamicFormService}.UnAudit`, body)
+    return this.post(this.form('UnAudit'), idListBody(params))
   }
 
   /** Un-submit a submitted form (name may be version-specific). */
   async unsubmit(params: KdIdListParams): Promise<unknown> {
-    const body: Record<string, unknown> = { FormId: params.formId }
-    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
-    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
-    return this.post(`${this.ep.dynamicFormService}.UnSubmit`, body)
+    return this.post(this.form('UnSubmit'), idListBody(params))
   }
 
   /** Delete draft (暂存/created) records by id or number. */
   async deleteDraft(params: KdIdListParams): Promise<unknown> {
-    const body: Record<string, unknown> = { FormId: params.formId }
-    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
-    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
-    return this.post(`${this.ep.dynamicFormService}.DeleteDraft`, body)
+    return this.post(this.form('DeleteDraft'), idListBody(params))
   }
 
   /** View a single record by id or bill number. */
@@ -199,23 +221,40 @@ export class KdClient {
     const body: Record<string, unknown> = { FormId: formId }
     if (id) body.Id = id
     if (number) body.Number = number
-    return this.post(`${this.ep.dynamicFormService}.View`, body)
+    return this.post(this.form('View'), body)
   }
 
-  /** Delete records by id or bill number. */
+  /**
+   * Delete records by id or bill number.
+   *
+   * V9.1 corrected the `FNumber` this operation returns; the value in
+   * `SuccessEntitys[].Number` can be trusted as-is from 9.1.0.20250807 on, and
+   * only older builds need a follow-up query to resolve the number.
+   */
   async delete(params: KdIdListParams): Promise<unknown> {
-    const body: Record<string, unknown> = { FormId: params.formId }
-    if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
-    if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
-    return this.post(`${this.ep.dynamicFormService}.Delete`, body)
+    return this.post(this.form('Delete'), idListBody(params))
   }
 
-  /** Invoke a BOS custom service. */
+  /**
+   * Invoke a BOS custom service.
+   *
+   * A custom stub replaces the dynamic-form segment entirely, so it is posted
+   * at `/K3Cloud/{serviceName}.common.kdsvc` rather than under
+   * `DynamicFormService`.
+   */
   async invokeService(params: KdInvokeParams): Promise<unknown> {
     const body: Record<string, unknown> = { ...(params.payload ?? {}) }
     if (params.formId !== undefined) body.FormId = params.formId
-    return this.post(`${this.ep.servicePrefix}.${params.serviceName}`, body)
+    return this.post(this.stub(params.serviceName), body)
   }
+}
+
+/** Build the shared `FormId` + `Ids`/`Numbers` body used by the workflow operations. */
+function idListBody(params: KdIdListParams): Record<string, unknown> {
+  const body: Record<string, unknown> = { FormId: params.formId }
+  if (params.ids && params.ids.length > 0) body.Ids = params.ids.join(',')
+  if (params.numbers && params.numbers.length > 0) body.Numbers = params.numbers.join(',')
+  return body
 }
 
 /** Build the common query body shared by ExecuteBillQuery and QueryBusinessData. */

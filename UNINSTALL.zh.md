@@ -2,17 +2,22 @@
 
 [English](UNINSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证，并全面适配 **金蝶云·星空 V9.0 企业版**。
+> 已在 deepseek-harness **0.1.6-alpha.1** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.1` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何从 DSH profile 移除 **dsh-kingdee**。
 
 ## 一、禁用插件
 
-通常第一步是移除 bundle 而保留配置；插件会从工具集与设置页消失。
+通常第一步是移除 bundle 而保留配置；插件会从工具集与设置页消失。没有专门的禁用子命令 —— 请在 profile 的 `cordis.patch.yml` 里把该行的 `enabled` 置为 `false`（随包发布的 bundle 补丁中该值为 `true`）：
 
-```sh
-dsh plugin disable dsh-kingdee
+```yaml
+- insert:
+    - id: kingdee
+      name: dsh-kingdee
+      enabled: false
 ```
+
+停止并重新启动 DSH 进程使其生效。
 
 ## 二、移除 bundle
 
@@ -34,21 +39,17 @@ dsh plugin remove dsh-kingdee
 
 ## 四、删除密钥
 
-密钥存放在插件之外（环境变量或凭据库）。请删除，避免留下任何值：
+密钥存放在插件之外（环境变量，或 DSH 凭据库 `$DSH_HOME/.credentials.yaml` / 设置界面中只写不读的字段）。请删除，避免留下任何值：
 
 ```sh
 unset DSH_KINGDEE_USER DSH_KINGDEE_PASSWORD DSH_KINGDEE_APP_SECRET
-# 或从凭据库移除
-dsh credentials unset DSH_KINGDEE_USER
-dsh credentials unset DSH_KINGDEE_PASSWORD
-dsh credentials unset DSH_KINGDEE_APP_SECRET
 ```
+
+若你把值存进了 DSH 凭据库而不是 shell 环境变量，请在凭据库里删除同名引用 —— 凭据库没有 CLI 子命令，请在设置界面删除对应条目，或直接编辑 `$DSH_HOME/.credentials.yaml`。
 
 ## 五、重启
 
-```sh
-dsh restart
-```
+停止并重新启动 DSH 进程（重新启动 `dsh` 应用 / 你的 DSH host）；没有 restart 子命令。
 
 重启后，`kingdee_*` 工具会从 agent 的工具集中消失。
 

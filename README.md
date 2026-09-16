@@ -7,7 +7,8 @@ English | [中文](README.zh.md)
 `dsh-kingdee` gives the DSH agent a first-class, credential-safe way to act on a Kingdee Cloud Starry Sky tenant through its **WebAPI**: typed tools for querying, saving, submitting, auditing, un-auditing, viewing and deleting bills/base data, and for invoking BOS custom services. A companion domain skill (`kingdee-bos`) teaches the field/enum/status conventions and the boundary between the data layer and the platform-plugin layer.
 
 - **credential-safe** — secrets are environment-variable references resolved through the DSH credential seam, never literal config.
-- **Kingdee V9.0 Enterprise Edition ready** — fully adapted for Kingdee Cloud Starry Sky V9.0 Enterprise Edition (and V8.x/V9.1), supporting official standard `kdservice-sessionid` session cookies, stable cursor pagination (`orderString`, `limit`, `startRow`), direct bill number (`numbers`) workflow actions, and auto-submit/audit (`isAutoSubmitAndAudit`).
+- **Kingdee V9.1 Enterprise Edition ready** — fully adapted for Kingdee Cloud Starry Sky V9.1 Enterprise Edition (金蝶云·星空 V9.1 企业版), backward-compatible with V9.0 / V8.x, supporting the official `kdservice-sessionid` session (sent as both a request header and a cookie), stable cursor pagination (`orderString`, `limit`, `startRow`), direct bill number (`numbers`) workflow actions, and auto-submit/audit (`isAutoSubmitAndAudit`).
+- **two real login paths** — a 账套 username/password against `AuthService.ValidateUser`, or a third-party application against `AuthService.LoginByAppSecret` (the mode Kingdee requires on public-cloud tenants opened after 2022-11-29). Both attach the same `kdservice-sessionid` session; no fabricated auth header is used, and the login responses are classified by their own `LoginResultType` shape rather than the business envelope.
 - **SSRF network defense** — strict protocol whitelist (http/https only) and host boundary verification blocking localhost, loopback, private subnets, and reserved network segments.
 - **typed tools** — query, save, submit, audit, un-audit, view, delete and invoke BOS custom services through the `kingdee_*` tools. Each one is listed below in the Tools table.
 - **full state machine** — create/update → submit → audit → un-audit flow, off the shelf.
@@ -23,7 +24,7 @@ English | [中文](README.zh.md)
 dsh plugin add dsh-kingdee
 ```
 
-> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`).
+> Verified against deepseek-harness **0.1.6-alpha.1**: `pnpm run typecheck` clean, **15** unit tests passing (`pnpm test`), and the bundle patch applying as a `# == dsh-kingdee` layer when installed into a real `0.1.6-alpha.1` profile (`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`). **No live-tenant verification was performed.**
 
 See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, [USAGE.md](./USAGE.md) for the tool reference, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
 
@@ -36,7 +37,7 @@ See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) 
    # Linux / macOS (sh)
    export DSH_KINGDEE_USER=your_username
    export DSH_KINGDEE_PASSWORD=your_password
-   # or, for app mode:
+   # app mode: DSH_KINGDEE_USER holds the 集成用户, and is required
    export DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
 
@@ -44,7 +45,7 @@ See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) 
    # Windows — PowerShell (current session)
    $env:DSH_KINGDEE_USER = "your_username"
    $env:DSH_KINGDEE_PASSWORD = "your_password"
-   $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"   # app mode
+   $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"   # app mode (USER = 集成用户)
    ```
 
    ```bat
@@ -54,13 +55,7 @@ See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) 
    set DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
 
-   Or, on any OS, use the DSH credential store (recommended):
-
-   ```sh
-   dsh credentials set DSH_KINGDEE_USER your_username
-   dsh credentials set DSH_KINGDEE_PASSWORD your_password
-   dsh credentials set DSH_KINGDEE_APP_SECRET your_app_secret
-   ```
+   Or store the value in the DSH credential store instead of the shell environment: set it once in the DSH settings UI (credential values are write-only — the page only ever sees a redacted descriptor), or edit `$DSH_HOME/.credentials.yaml` directly. The reference name is what the plugin config carries; the value never enters a config file.
 
    See [INSTALL.md](./INSTALL.md) for the per-OS details (including persistent `setx` / `[Environment]::SetEnvironmentVariable`).
 
@@ -72,11 +67,14 @@ See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) 
 
    The agent loads the `kingdee-bos` skill and calls `kingdee_query` with `formId=SAL_SaleOrder`.
 
-To try it without a real tenant, set `mock: true` in the plugin config — the tools then return canned Kingdee envelopes.
+To try it without a real tenant, set `mock: true` in the plugin config — the tools then return canned Kingdee envelopes. The settings card exposes the non-secret connection fields but not `mock`, so this one is set in configuration:
 
-```sh
-export DSH_KINGDEE_MOCK=true
+```yaml
+config:
+  mock: true
 ```
+
+See [INSTALL.md](./INSTALL.md#optional-offline-mock) for the full snippet.
 
 ## Tools
 
@@ -98,6 +96,30 @@ export DSH_KINGDEE_MOCK=true
 | `kingdee_batch_save` | Batch-save several records in one call | `formId`, `records[]`, `interaction?` |
 
 Every tool returns a normalized canonical value; a Kingdee `IsSuccess=false` message becomes a typed error (`kd/business-error`, `kd/auth-failed`, …) instead of prose for the model to parse.
+
+## Kingdee V9.1 conformance
+
+`dsh-kingdee` targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版; patch PT-163015 → product version `9.1.0.20250807`) and stays backward-compatible with V9.0 / V8.x.
+
+**V9.1 has no breaking WebAPI changes.** No renamed or removed operation, no cookie rename, no URL-convention change, and no new required header. The classic `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` session protocol this plugin speaks is unchanged.
+
+What V9.1 did change at the interface layer:
+
+- `Delete` now returns a correct `FNumber` — `SuccessEntitys[].Number` can be trusted as-is from `9.1.0.20250807` on.
+- Multi-file attachment (文件服务) fields may be assigned by file ID alone.
+- WebAPI request-body logging was added server-side.
+- The online documentation gained 幂等性校验 (idempotency) guidance.
+- WebAPI rate limiting gained a whitelist.
+- 报表 Stub / API 自定义接口 were security-hardened.
+- External-user access control was tightened.
+
+Operational consequences:
+
+- Because the server now logs request bodies, prefer the `app` (third-party) mode over account/password where possible.
+- Because permissions were tightened, a missing query permission can surface as an **empty result rather than an error** — validate a probe query per `FormId` instead of trusting an empty row set.
+- Put the plugin host's egress IP on the WebAPI rate-limit whitelist.
+
+**Evidence honesty.** The login services' named request keys (`acctID` / `username` / `appid` / `appsecret` / `lcid`), the `Limit` row cap (~2000) and the `listDataCenterService` default name are **community-attested, not officially published** by Kingdee. The authoritative per-tenant source is the product itself: sign in as an administrator, then open 公共设置 → 动态服务定义 → WebAPI, pick the business object and operation, and read that operation's parameter list and sample call.
 
 ## Architecture
 
@@ -123,7 +145,7 @@ skills/
 
 ## Build & test
 
-The framework-free core is verified by unit tests that run with the Node built-in test runner (Node ≥ 22, TS type-stripping). No DSH install is needed for the core:
+The framework-free core is verified by **15** unit tests that run with the Node built-in test runner (Node ≥ 22, TS type-stripping). No DSH install is needed for the core:
 
 ```sh
 pnpm test        # node --test "test/**/*.test.ts"
@@ -134,6 +156,13 @@ The DSH host/plugin half (`src/index.ts`, `tools.ts`, `config.ts`, `client/`) im
 ```sh
 pnpm install && pnpm run typecheck   # requires the deepseek-harness monorepo (or a DSH profile) for peers
 ```
+
+## Known Limitations
+
+- **Public-cloud OpenAPI gateway not implemented.** An increasing number of Kingdee public-cloud tenants require the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) with API-signature authentication (`LoginByApiSignHeaders`). This plugin does **not** implement that path — it speaks the classic `kdsvc` session protocol only. On such a tenant a classic session cannot be established at all, so every operation fails at login; a tenant/gateway that still exposes the classic WebAPI is required.
+- **The platform-plugin layer is out of reach.** Server-side C# form/list plugins, UI layout and background events belong to the BOS 集成开发环境 and are **not** accessible through the WebAPI (see the scope note above).
+- **The `./client` bundle reproduces its artifact.** The shared `clientBundle` tsdown preset lives inside the harness repository and is not published, so this package emits the documented factory format itself.
+- **No live-tenant verification.** Everything documented here is verified against the type checker, the unit-test suite and a real `0.1.6-alpha.1` profile install — not against a running Kingdee tenant.
 
 ## Documentation
 

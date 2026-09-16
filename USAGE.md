@@ -2,17 +2,19 @@
 
 English | [中文](USAGE.zh.md)
 
-> Verified against deepseek-harness **0.1.5-rc.2** (latest `master`) and adapted for **Kingdee Cloud Starry Sky V9.0 Enterprise Edition** (金蝶云·星空 V9.0 企业版).
+> Verified against deepseek-harness **0.1.6-alpha.1** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.1` profile: `dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 This guide documents every `kingdee_*` tool the plugin registers (see `src/tools.ts`). The agent calls these tools in a chat session; each one is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 
 ## Conventions
 
 - Every tool returns a normalized canonical value rendered as compact JSON text (output schema `type: 'json'`).
-- A Kingdee `IsSuccess=false` response becomes a typed error (`kd/business-error`, `kd/auth-failed`, `kd/not-found`, `kd/invalid-config`, `kd/network`, `kd/timeout`, `kd/unknown`) instead of prose.
+- A Kingdee `IsSuccess=false` response becomes a typed error (`kd/business-error`, `kd/auth-failed`, `kd/invalid-config`, `kd/network`, `kd/timeout`, `kd/unknown`) instead of prose.
 - Credentials re-resolve per operation through the DSH credential seam, so a rotation reaches the next call with no restart.
+- Authentication is implicit: the first operation logs in when no session is held, and the session is then attached to every business call as **both** a bare `kdservice-sessionid` request header **and** a `Cookie` (`kdservice-sessionid=…; kdsvc=…`). No `KDAuthentication` header is used.
+- The login stubs answer with their own `{"LoginResultType": 1}` shape, **not** the `Result`/`IsSuccess` business envelope; the client classifies that outcome separately, so a non-`1` value surfaces as `kd/auth-failed`.
 - `formId` is the Kingdee form id (e.g. `SAL_SaleOrder`).
-- In Kingdee V9.0, operations such as audit, unaudit, delete, unsubmit, and delete_draft accept either `ids` or `numbers` (bill numbers such as `SO-20260901`).
+- In Kingdee V9.1, operations such as audit, unaudit, delete, unsubmit, and delete_draft accept either `ids` or `numbers` (bill numbers such as `SO-20260901`). From product version `9.1.0.20250807` on, `Delete` also returns a trustworthy `Number` in its success entities.
 
 ## kingdee_query
 
@@ -224,17 +226,17 @@ Delete draft (暂存/created) Kingdee Cloud records by id or bill number.
 
 ## kingdee_invoke
 
-Invoke a Kingdee Cloud BOS custom service registered via the WebAPI.
+Invoke a Kingdee Cloud BOS custom service registered via the WebAPI. The custom service path **replaces** the dynamic-form segment of the stub URL, so a custom stub is not addressed through `DynamicFormService`.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
-| `serviceName` | yes | `string` | Custom service name (endpoint suffix after `Kingdee.BOS.WebApi.ServicesStub.`). |
-| `payload` | no | `object` | Service payload. |
+| `serviceName` | yes | `string` | Custom service stub path in the form `{namespace}.{class}.{method},{assembly}`, e.g. `GetCust.GetCust.ExecuteService,GetCust`. The `.common.kdsvc` suffix is appended automatically. |
+| `payload` | no | `object` | Service payload, handed to the stub as its business parameter object. |
 | `formId` | no | `string` | Optional form id the service acts on. |
 
 ```json
 {
-  "serviceName": "MyCustomService",
+  "serviceName": "GetCust.GetCust.ExecuteService,GetCust",
   "formId": "SAL_SaleOrder",
   "payload": {}
 }

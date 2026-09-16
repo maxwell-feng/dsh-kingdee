@@ -6,29 +6,39 @@
  */
 /** Authentication mode for the Kingdee Cloud WebAPI.
  *
- * - `user`: authenticates with a 账套 username/password (LoginService.ValidateUser,
- *   keeps the `kdsvc` session cookie for subsequent calls).
- * - `app`: authenticates as a third-party application using `appId`/`appSecret`.
+ * - `user`: authenticates with a 账套 username/password (`AuthService.ValidateUser`),
+ *   then reuses the `kdservice-sessionid` session for subsequent calls.
+ * - `app`: authenticates as a third-party application via
+ *   `AuthService.LoginByAppSecret` using `acctId`/`username`/`appId`/`appSecret`.
+ *   This is the mode Kingdee requires for public-cloud tenants opened after
+ *   2022-11-29, where account/password login is no longer accepted.
  */
 export type KdAuthMode = 'user' | 'app';
 /**
  * Service endpoint names, overridable per Kingdee version.
  *
- * Sky Starry WebAPI service names vary slightly across versions. These defaults
- * cover the standard K3Cloud surface; set a field here to override it for your
- * deployment. Only the fields you set replace the default.
+ * Sky Starry WebAPI service names and stub paths vary slightly across versions
+ * and deployments. These defaults follow the documented V9.1 convention, where
+ * every stub URL ends in `.common.kdsvc`; set a field here to override it for
+ * your deployment. Only the fields you set replace the default.
+ *
+ * The authoritative per-tenant list lives in the product itself: sign in as an
+ * administrator, then open 公共设置 → 动态服务定义 → WebAPI, pick the business
+ * object and operation, and read the parameter help and sample call.
  */
 export interface KdServiceEndpoints {
-    /** `LoginService.ValidateUser` — user/password login. */
+    /** `AuthService.ValidateUser` — 账套 username/password login (`user` mode). */
     loginService?: string;
-    /** `LoginService.LogOut` — session logout. */
+    /** `AuthService.LoginByAppSecret` — third-party application login (`app` mode). */
+    loginByAppSecretService?: string;
+    /** `AuthService.LogOut` — session logout. */
     logOutService?: string;
-    /** `DynamicFormService.*` — the shared dynamic-form service prefix. */
+    /** `DynamicFormService` — the shared dynamic-form service prefix (no trailing operation). */
     dynamicFormService?: string;
     /** Data-center list service (name is version-specific; verify per deployment). */
     listDataCenterService?: string;
-    /** Prefix for custom services: `<prefix>.<serviceName>`. */
-    servicePrefix?: string;
+    /** Suffix appended to every generated stub path. The documented value is `.common.kdsvc`. */
+    stubSuffix?: string;
 }
 /**
  * Connection and authentication configuration for one Kingdee Cloud tenant.
@@ -49,10 +59,12 @@ export interface KdConfig {
     appId?: string;
     /** Application secret used by `app` auth mode. */
     appSecret?: string;
-    /** 账套 username used by `user` auth mode. */
+    /** 账套 username used by `user` auth mode, and the 集成用户 used by `app` auth mode. */
     userName?: string;
     /** 账套 password used by `user` auth mode. */
     password?: string;
+    /** Optional locale id sent to the login service. Kingdee's default is `2052` (zh-CN). */
+    lcid?: number;
     /** Optional default organization id / FNumber applied to query operations. */
     organization?: string;
     /** Optional default request timeout in milliseconds. */
@@ -155,9 +167,15 @@ export interface KdSubmitParams {
 }
 /** Parameters for invoking a BOS custom service. */
 export interface KdInvokeParams {
-    /** Registered custom service name as exposed by Kingdee WebAPI. */
+    /**
+     * The custom service stub path, in the documented V9.1 form
+     * `{namespace}.{class}.{method},{assembly}` — for example
+     * `GetCust.GetCust.ExecuteService,GetCust`. The `.common.kdsvc` suffix is
+     * added for you. This replaces the dynamic-form segment in the URL, so a
+     * custom stub is NOT addressed through `DynamicFormService`.
+     */
     serviceName: string;
-    /** Optional service payload. */
+    /** Optional service payload; handed to the stub as its business parameter object. */
     payload?: Record<string, unknown>;
     /** Optional form id the service acts on. */
     formId?: string;

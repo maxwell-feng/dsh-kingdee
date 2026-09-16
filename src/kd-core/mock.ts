@@ -27,10 +27,11 @@ export function buildMockTransport(options: MockOptions = {}): KdTransport {
     async request(request: KdRequest): Promise<KdHttpResponse> {
       const operation = operationOf(request.url)
 
-      if (operation === 'LoginService.ValidateUser') {
+      if (operation === 'AuthService.ValidateUser' || operation === 'AuthService.LoginByAppSecret') {
         return {
           status: 200,
-          body: { Result: 0, IsSuccess: true, Message: '', Data: '' },
+          // The login services answer with their own shape, not the business envelope.
+          body: { LoginResultType: 1 },
           headers: { 'set-cookie': `kdservice-sessionid=${sessionCookie}; kdsvc=${sessionCookie}` },
         }
       }
@@ -53,9 +54,18 @@ export function buildMockTransport(options: MockOptions = {}): KdTransport {
   }
 }
 
+/**
+ * Reduce a stub URL to its operation name: the text after the last
+ * `ServicesStub.`, with the `.common.kdsvc` suffix removed, so
+ * `.../DynamicFormService.Save.common.kdsvc` yields `DynamicFormService.Save`.
+ * A custom BOS stub does not sit under `ServicesStub` and yields
+ * `UnknownService`, which the generic envelope below answers.
+ */
 function operationOf(url: string): string {
-  const service = /Kingdee\.BOS\.WebApi\.ServicesStub\.([^/?]+)/.exec(url)
-  return service ? service[1] : 'UnknownService'
+  const marker = 'ServicesStub.'
+  const path = (url.split('?')[0] ?? url).replace(/\.common\.kdsvc$/, '')
+  const at = path.lastIndexOf(marker)
+  return at === -1 ? 'UnknownService' : path.slice(at + marker.length)
 }
 
 function extractFormId(body: Record<string, unknown> | undefined): string | undefined {
@@ -67,7 +77,7 @@ function envelopeFor(operation: string, body: Record<string, unknown> | undefine
   const formId = extractFormId(body)
   const isBatch = Array.isArray(body?.Data)
 
-  if (operation === 'LoginService.LogOut') {
+  if (operation === 'AuthService.LogOut') {
     return { Result: 0, IsSuccess: true, Message: '', Data: { loggedOut: true } }
   }
   if (operation === 'DataCenterService.List') {

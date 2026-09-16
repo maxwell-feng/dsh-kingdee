@@ -1,37 +1,47 @@
 /**
- * Authentication building for the Kingdee Cloud WebAPI.
+ * Authentication building for the Kingdee Cloud WebAPI (V9.1).
  *
- * Two modes are supported:
+ * Two modes are supported, both of which establish a session that every later
+ * call reuses through the `kdservice-sessionid` session:
  *
- * - `user`: a 账套 username/password. The client calls
- *   `LoginService.ValidateUser`, captures the `kdsvc` session cookie, and reuses it
- *   on every business call via a `Cookie` header.
- * - `app`: a third-party application (`appId`/`appSecret`). The exact signing
- *   scheme is deployment-specific; this module abstracts it behind
- *   {@link buildAppAuthHeader}. Default production behavior attaches the
- *   `KDAuthentication<token>` header form. **Verify this against your Kingdee
- *   version before relying on `app` mode against a live tenant** — the mock path
- *   does not exercise signing.
+ * - `user`: a 账套 username/password against `AuthService.ValidateUser`.
+ * - `app`: a third-party application against `AuthService.LoginByAppSecret`,
+ *   sending `acctId` + 集成用户 + `appId` + `appSecret`.
+ *
+ * `app` is the mode Kingdee requires for public-cloud tenants opened after
+ * 2022-11-29, where account/password login is refused. Both modes return the
+ * session on the `kdservice-sessionid` cookie, so the caller attaches it the
+ * same way regardless of mode.
+ *
+ * ## Named request keys
+ *
+ * The login services are called with a named JSON object. The key names below
+ * (`acctID`, `username`, `appid`, `appsecret`, `lcid`) are the community-attested
+ * spelling, not a published Kingdee contract, and KDServiceFx binds them
+ * case-sensitively. Confirm them against your own tenant before relying on a
+ * live connection: 公共设置 → 动态服务定义 → WebAPI lists each operation's
+ * parameters and a sample call.
  */
 import type { KdConfig } from './types.ts';
-/** Payload for `LoginService.ValidateUser` (user mode). */
+/** Payload for `AuthService.ValidateUser` (`user` mode). */
 export declare function buildLoginPayload(config: KdConfig): Record<string, unknown>;
+/**
+ * Payload for `AuthService.LoginByAppSecret` (`app` mode).
+ *
+ * A third-party application login still names the 集成用户 it acts as, so
+ * `userName` is required here as well as `appId`/`appSecret`.
+ */
+export declare function buildAppSecretLoginPayload(config: KdConfig): Record<string, unknown>;
 /** Validate the parts a mode needs before an authenticated call. */
 export declare function validateConfig(config: KdConfig): void;
 /**
  * Headers attached to business (non-login) requests.
  *
- * - user mode: forwards the session `kdservice-sessionid` and `kdsvc` cookies.
- * - app mode: emits a signed `KDAuthentication` header (see the module note).
+ * Kingdee accepts the session on the `Cookie` header and, as its own real
+ * captures show, also as a bare `kdservice-sessionid` request header. Both are
+ * sent so either gateway path resolves; `kdsvc` rides along as the legacy
+ * compatible name. The session is mode-independent — `LoginByAppSecret`
+ * establishes the same cookie as `ValidateUser`.
  */
 export declare function businessHeaders(config: KdConfig, sessionCookie?: string): Record<string, string>;
-/**
- * Build the authentication header for `app` mode.
- *
- * This is the extension point for a deployment's exact third-party signing
- * scheme. The default returns a `KDAuthentication<token>` header carrying the
- * token derived from `appId` and `appSecret`. Replace this body to match your
- * Kingdee version.
- */
-export declare function buildAppAuthHeader(config: KdConfig): Record<string, string>;
 //# sourceMappingURL=auth.d.ts.map

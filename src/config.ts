@@ -24,10 +24,15 @@ export interface Config {
   appId?: string
   /** Credential reference (env-var name) holding the `app` secret. */
   appSecretRef?: string
-  /** Credential reference (env-var name) holding the 账套 username for `user` mode. */
+  /**
+   * Credential reference (env-var name) holding the 账套 username for `user` mode,
+   * or the 集成用户 for `app` mode.
+   */
   userNameRef?: string
   /** Credential reference (env-var name) holding the 账套 password for `user` mode. */
   passwordRef?: string
+  /** Optional locale id sent to the login service. Kingdee's default is `2052` (zh-CN). */
+  lcid?: number
   /** Optional default organization (org) id / FNumber applied to queries. */
   organization?: string
   /** Optional per-request timeout multiplier. */
@@ -46,15 +51,17 @@ export const Config: z<Config> = z.object({
   appSecretRef: z.string().default('DSH_KINGDEE_APP_SECRET'),
   userNameRef: z.string().default('DSH_KINGDEE_USER'),
   passwordRef: z.string().default('DSH_KINGDEE_PASSWORD'),
+  lcid: z.number().step(1).min(0).default(2052),
   organization: z.string(),
   timeoutMs: z.number().step(1).min(0).max(300_000).default(30_000),
   mock: z.boolean().default(false),
   serviceEndpoints: z.object({
     loginService: z.string(),
+    loginByAppSecretService: z.string(),
     logOutService: z.string(),
     dynamicFormService: z.string(),
     listDataCenterService: z.string(),
-    servicePrefix: z.string(),
+    stubSuffix: z.string(),
   }),
 })
 
@@ -71,6 +78,7 @@ export function buildKdConfig(
     baseUrl: config.baseUrl ?? '',
     acctId: config.acctId ?? '',
     authMode: mode,
+    lcid: config.lcid ?? 2052,
     organization: config.organization,
     timeoutMs: config.timeoutMs ?? 30_000,
     endpoints: config.serviceEndpoints,
@@ -84,8 +92,10 @@ export function buildKdConfig(
     }
   }
 
+  // `app` mode names the 集成用户 it acts as, alongside the application credentials.
   return {
     ...base,
+    userName: resolved.userName,
     appId: config.appId,
     appSecret: resolved.appSecret,
   }

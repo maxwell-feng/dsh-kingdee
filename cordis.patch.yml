@@ -21,4 +21,5 @@
         appSecretRef: "DSH_KINGDEE_APP_SECRET"
         userNameRef: "DSH_KINGDEE_USER"
         passwordRef: "DSH_KINGDEE_PASSWORD"
+        lcid: 2052
         mock: false

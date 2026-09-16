@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   assertSafePublicUrl,
+  buildAppSecretLoginPayload,
   buildLoginPayload,
   buildMockTransport,
   businessHeaders,
@@ -11,10 +12,29 @@ import {
   KdClient,
   KdError,
   parseEnvelope,
+  parseLoginOutcome,
   validateConfig,
 } from '../src/kd-core/index.ts'
+import type { KdHttpResponse, KdRequest, KdTransport } from '../src/kd-core/index.ts'
 
 const baseUrl = 'http://kingdee.test/K3Cloud'
+
+/** A transport that records every request and answers with a fixed success envelope. */
+function recordingTransport(
+  data: unknown = {},
+  headers: Record<string, string> = { 'set-cookie': 'kdservice-sessionid=sess' },
+): { transport: KdTransport; seen: KdRequest[] } {
+  const seen: KdRequest[] = []
+  return {
+    seen,
+    transport: {
+      async request(request: KdRequest): Promise<KdHttpResponse> {
+        seen.push(request)
+        return { status: 200, body: { Result: 0, IsSuccess: true, Message: '', Data: data }, headers }
+      },
+    },
+  }
+}
 
 test('parseEnvelope handles a success and a failure envelope', () => {
   assert.deepEqual(parseEnvelope({ Result: 0, IsSuccess: true, Message: '', Data: { ok: true } }), {
@@ -29,25 +49,119 @@ test('parseEnvelope handles a success and a failure envelope', () => {
   assert.equal(failed.Message, 'nope')
 })
 
-test('buildLoginPayload and validateConfig enforce per-mode requirements and SSRF safety', () => {
-  const payload = buildLoginPayload({ baseUrl, acctId: 'A1', userName: 'u', password: 'p' })
-  assert.equal(payload.acctID, 'A1')
-  assert.equal(payload.userName, 'u')
+test('login payloads carry the V9.1 named keys and the lcid', () => {
+  const user = buildLoginPayload({ baseUrl, acctId: 'A1', userName: 'u', password: 'p' })
+  assert.deepEqual(user, { acctID: 'A1', username: 'u', password: 'p', lcid: 2052 })
 
+  const app = buildAppSecretLoginPayload({ baseUrl, acctId: 'A1', userName: 'integ', appId: 'id', appSecret: 'sec', lcid: 1033 })
+  assert.deepEqual(app, { acctID: 'A1', username: 'integ', appid: 'id', appsecret: 'sec', lcid: 1033 })
+})
+
+test('validateConfig enforces per-mode requirements and SSRF safety', () => {
   assert.throws(() => validateConfig({ baseUrl: '', acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }), /baseUrl/)
-  assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', appId: 'id' }), /appSecret/)
+  // app mode needs the 集成用户 as well as the application credentials
+  assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', appId: 'id', appSecret: 'sec' }), /集成用户/)
+  assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', userName: 'u', appId: 'id' }), /appSecret/)
+  assert.doesNotThrow(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', userName: 'u', appId: 'id', appSecret: 'sec' }))
+
   // SSRF checks in validateConfig
   assert.throws(() => validateConfig({ baseUrl: 'http://127.0.0.1/K3Cloud', acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }), /SSRF/)
   assert.throws(() => validateConfig({ baseUrl: 'http://localhost/K3Cloud', acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }), /SSRF/)
 })
 
-test('businessHeaders sends kdservice-sessionid and kdsvc cookies for user mode and auth header for app mode', () => {
-  const user = businessHeaders({ baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }, 'sess')
-  assert.match(user.Cookie, /kdservice-sessionid=sess/)
-  assert.match(user.Cookie, /kdsvc=sess/)
+test('businessHeaders attaches the session as both a header and a cookie', () => {
+  const headers = businessHeaders({ baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }, 'sess')
+  assert.equal(headers['kdservice-sessionid'], 'sess')
+  assert.match(headers.Cookie, /kdservice-sessionid=sess/)
+  assert.match(headers.Cookie, /kdsvc=sess/)
 
-  const app = businessHeaders({ baseUrl, acctId: 'A1', authMode: 'app', appId: 'id', appSecret: 'secret' })
-  assert.ok(app.KDAuthentication)
+  // No session yet: nothing is fabricated, in either mode.
+  assert.equal(businessHeaders({ baseUrl, acctId: 'A1', authMode: 'user' }).Cookie, undefined)
+  assert.equal(businessHeaders({ baseUrl, acctId: 'A1', authMode: 'app' })['kdservice-sessionid'], undefined)
+})
+
+test('stub URLs follow the documented .common.kdsvc convention', async () => {
+  const { transport, seen } = recordingTransport([{ FBillNo: 'SO-1' }])
+  const client = new KdClient({ baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }, transport)
+
+  await client.executeBillQuery({ formId: 'SAL_SaleOrder', fieldKeys: ['FBillNo'] })
+
+  // The session is established first, then reused for the business stub.
+  assert.equal(seen[0]?.url, `${baseUrl}/Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser.common.kdsvc`)
+  assert.equal(
+    seen[1]?.url,
+    `${baseUrl}/Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.ExecuteBillQuery.common.kdsvc`,
+  )
+  assert.equal(seen[1]?.headers['kdservice-sessionid'], 'sess')
+})
+
+test('app mode logs in through LoginByAppSecret and reuses its session', async () => {
+  const { transport, seen } = recordingTransport({ Id: 'mock-1' })
+  const client = new KdClient(
+    { baseUrl, acctId: 'A1', authMode: 'app', userName: 'integ', appId: 'id', appSecret: 'sec' },
+    transport,
+  )
+
+  await client.save({ formId: 'SAL_SaleOrder', data: { FBillNo: 'SO-1' } })
+
+  assert.equal(seen[0]?.url, `${baseUrl}/Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret.common.kdsvc`)
+  assert.deepEqual(seen[0]?.body, { acctID: 'A1', username: 'integ', appid: 'id', appsecret: 'sec', lcid: 2052 })
+  // Second call is the business stub, and no KDAuthentication header is invented.
+  assert.equal(seen[1]?.url, `${baseUrl}/Kingdee.BOS.WebApi.ServicesStub.DynamicFormService.Save.common.kdsvc`)
+  assert.equal(seen[1]?.headers.KDAuthentication, undefined)
+})
+
+test('a custom BOS stub replaces the dynamic-form URL segment', async () => {
+  const { transport, seen } = recordingTransport({ ok: true })
+  const client = new KdClient(
+    { baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' },
+    transport,
+  )
+
+  await client.invokeService({ serviceName: 'GetCust.GetCust.ExecuteService,GetCust', payload: { arg: 1 } })
+
+  assert.equal(seen[1]?.url, `${baseUrl}/GetCust.GetCust.ExecuteService,GetCust.common.kdsvc`)
+  assert.deepEqual(seen[1]?.body, { arg: 1 })
+})
+
+test('parseLoginOutcome reads the login-specific shape, not the business envelope', () => {
+  // The real login services answer with LoginResultType; without this the
+  // absent IsSuccess would report a successful login as a failure.
+  assert.deepEqual(parseLoginOutcome({ LoginResultType: 1 }), { ok: true, message: null, loginResultType: 1 })
+  assert.equal(parseLoginOutcome({ LoginResultType: -1, Message: 'bad password' }).ok, false)
+  assert.equal(parseLoginOutcome({ LoginResultType: -1, Message: 'bad password' }).message, 'bad password')
+  // Deployments (and the mock) that answer with the business envelope still work.
+  assert.equal(parseLoginOutcome({ Result: 0, IsSuccess: true, Message: '', Data: '' }).ok, true)
+  assert.equal(parseLoginOutcome({ Result: 1, IsSuccess: false, Message: 'x', Data: null }).ok, false)
+  assert.equal(parseLoginOutcome(null).ok, false)
+})
+
+test('a login failure surfaces as kd/auth-failed rather than a business envelope error', async () => {
+  const transport: KdTransport = {
+    async request(): Promise<KdHttpResponse> {
+      return { status: 200, body: { LoginResultType: -1, Message: '账套或用户名密码错误' }, headers: {} }
+    },
+  }
+  const client = new KdClient({ baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }, transport)
+
+  await assert.rejects(
+    () => client.login(),
+    (error: unknown) => error instanceof KdError && error.code === 'kd/auth-failed',
+  )
+})
+
+test('a successful LoginResultType establishes the session from its Set-Cookie', async () => {
+  const transport: KdTransport = {
+    async request(): Promise<KdHttpResponse> {
+      return {
+        status: 200,
+        body: { LoginResultType: 1 },
+        headers: { 'set-cookie': 'kdservice-sessionid=real-session; path=/;' },
+      }
+    },
+  }
+  const client = new KdClient({ baseUrl, acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }, transport)
+  assert.equal(await client.login(), 'real-session')
 })
 
 test('SSRF defenses reject localhost, loopback, private and reserved networks', () => {

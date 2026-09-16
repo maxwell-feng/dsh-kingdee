@@ -7,7 +7,8 @@
 `dsh-kingdee` 让 DSH agent 通过金蝶云星空的 **WebAPI** 对账套做一等公民、凭据安全的操作：提供一套类型化工具，用于查询、保存、提交、审核、反审核、查看、删除单据与基础资料，以及调用 BOS 自定义服务。配套的领域技能（`kingdee-bos`）讲解字段/枚举/状态机约定，以及数据层与平台插件层的边界。
 
 - **凭据安全** —— 密钥以环境变量引用存放，经 DSH 凭据缝解析，绝不写在明文配置里。
-- **全面适配金蝶云·星空 V9.0 企业版** —— 深度支持官方标准 `kdservice-sessionid` 会话 Cookie、大表防扫表稳定游标分页（`orderString`、`limit`、`startRow`）、单据编号（`numbers`）直接驱动审批/反审/删除/反提交业务流程，以及保存时自动提审（`isAutoSubmitAndAudit`）。
+- **全面适配金蝶云·星空 V9.1 企业版** —— 深度适配金蝶云·星空 V9.1 企业版（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x）：官方 `kdservice-sessionid` 会话同时以请求头与 Cookie 双通道发出；大表防扫表稳定游标分页（`orderString`、`limit`、`startRow`）；单据编号（`numbers`）直接驱动审批/反审/删除/反提交业务流程；保存时自动提审（`isAutoSubmitAndAudit`）。
+- **两条真实登录链路** —— 账套用户名/密码走 `AuthService.ValidateUser`；第三方应用走 `AuthService.LoginByAppSecret`（金蝶对 2022-11-29 之后开通的公有云账套要求该模式）。两者建立同一个 `kdservice-sessionid` 会话，不使用任何伪造的认证请求头；登录响应按其自身的 `LoginResultType` 结构单独判定，而非业务信封。
 - **SSRF 深度安全基线** —— 纯 TypeScript 实现严格的协议白名单（仅限 `http:` / `https:`）与网络边界拦截，自动屏蔽 `localhost`、环回及私有保留网段请求。
 - **类型化工具** —— 通过 `kingdee_*` 工具完成查询、保存、提交、审核、反审核、查看、删除与调用 BOS 自定义服务，具体见下方工具表。
 - **完整状态机** —— 创建/更新 → 提交 → 审核 → 反审核，开箱即用。
@@ -23,7 +24,7 @@
 dsh plugin add dsh-kingdee
 ```
 
-> 已在 deepseek-harness **0.1.5-rc.2** 最新 `master` 上验证，并适配金蝶云·星空 V9.0 企业版。
+> 已在 deepseek-harness **0.1.6-alpha.1** 上验证：`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.1` profile 中作为 `# == dsh-kingdee` 层正常生效（`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`）。**未进行真实账套联调验证。**
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -36,7 +37,7 @@ dsh plugin add dsh-kingdee
    # Linux / macOS (sh)
    export DSH_KINGDEE_USER=your_username
    export DSH_KINGDEE_PASSWORD=your_password
-   # 若用 app 模式：
+   # app 模式：DSH_KINGDEE_USER 存集成用户，且为必填
    export DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
 
@@ -44,7 +45,7 @@ dsh plugin add dsh-kingdee
    # Windows — PowerShell（当前会话）
    $env:DSH_KINGDEE_USER = "your_username"
    $env:DSH_KINGDEE_PASSWORD = "your_password"
-   $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"   # app 模式
+   $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"   # app 模式（USER 即集成用户）
    ```
 
    ```bat
@@ -54,13 +55,7 @@ dsh plugin add dsh-kingdee
    set DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
 
-   或在任意系统上用 DSH 凭据库（推荐）：
-
-   ```sh
-   dsh credentials set DSH_KINGDEE_USER your_username
-   dsh credentials set DSH_KINGDEE_PASSWORD your_password
-   dsh credentials set DSH_KINGDEE_APP_SECRET your_app_secret
-   ```
+   或者不用 shell 环境变量，而把值存进 DSH 凭据库：在 DSH 设置界面里填一次即可（凭据值只写不读 —— 页面只能看到脱敏描述符），也可直接编辑 `$DSH_HOME/.credentials.yaml`。插件配置里携带的是引用名，值永远不会进入配置文件。
 
    各系统的详细设置（含持久化 `setx` / `[Environment]::SetEnvironmentVariable`）见 [INSTALL.zh.md](./INSTALL.zh.md)。
 
@@ -72,11 +67,14 @@ dsh plugin add dsh-kingdee
 
    agent 会加载 `kingdee-bos` 技能，并以 `formId=SAL_SaleOrder` 调用 `kingdee_query`。
 
-在没有真实账套时，把插件配置设为 `mock: true` —— 工具会返回固化的金蝶信封。
+在没有真实账套时，把插件配置设为 `mock: true` —— 工具会返回固化的金蝶信封。设置卡片会暴露非机密的连接字段，但不含 `mock`，因此该项请在配置中设置：
 
-```sh
-export DSH_KINGDEE_MOCK=true
+```yaml
+config:
+  mock: true
 ```
+
+完整片段见 [INSTALL.zh.md](./INSTALL.zh.md#可选离线-mock)。
 
 ## 工具
 
@@ -98,6 +96,30 @@ export DSH_KINGDEE_MOCK=true
 | `kingdee_batch_save` | 单次批量保存多条 | `formId`、`records[]`、`interaction?` |
 
 每个工具返回规范化的规范值；金蝶 `IsSuccess=false` 的消息会转成类型化错误（`kd/business-error`、`kd/auth-failed` 等），而不是让模型去解析文本。
+
+## 金蝶 V9.1 符合性
+
+`dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition；补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
+
+**V9.1 没有破坏性 WebAPI 变更。** 没有重命名或移除的操作、没有 Cookie 改名、没有 URL 约定变化、也没有新增必填请求头。本插件使用的经典 `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` 会话协议保持不变。
+
+V9.1 在接口层真正发生的变化：
+
+- `Delete` 现在返回正确的 `FNumber` —— 自 `9.1.0.20250807` 起 `SuccessEntitys[].Number` 可直接采信。
+- 多文件附件（文件服务）字段可仅凭文件 ID 赋值。
+- 服务端新增了 WebAPI 请求体日志。
+- 在线文档补充了幂等性校验指引。
+- WebAPI 限流增加了白名单。
+- 报表 Stub / API 自定义接口做了安全加固。
+- 外部用户访问控制被收紧。
+
+由此带来的运维影响：
+
+- 由于服务端会记录请求体，请尽可能优先使用 `app`（第三方）模式，而不是账号密码模式。
+- 由于权限被收紧，缺少查询权限可能表现为**空结果而不是报错** —— 请针对每个 `FormId` 先跑一次探针查询验证，而不要直接相信空结果集。
+- 请把插件所在主机的出口 IP 加入 WebAPI 限流白名单。
+
+**证据诚实性说明。** 登录服务所用的具名请求键（`acctID` / `username` / `appid` / `appsecret` / `lcid`）、`Limit` 行数上限（约 2000）以及 `listDataCenterService` 默认服务名，均为**社区验证结论，并非金蝶官方发布**的契约。每个账套的权威来源是产品本身：以管理员登录 → 公共设置 → 动态服务定义 → WebAPI，选择业务对象与操作，直接查看该操作的参数说明与示例调用。
 
 ## 架构
 
@@ -123,7 +145,7 @@ skills/
 
 ## 构建与测试
 
-无框架核心由单元测试验证，使用 Node 内置测试运行器（Node ≥ 22，TS 类型剥离）运行，核心无需 DSH 安装：
+无框架核心由 **15** 项单元测试验证，使用 Node 内置测试运行器（Node ≥ 22，TS 类型剥离）运行，核心无需 DSH 安装：
 
 ```sh
 pnpm test        # node --test "test/**/*.test.ts"
@@ -134,6 +156,13 @@ DSH host/插件半区（`src/index.ts`、`tools.ts`、`config.ts`、`client/`）
 ```sh
 pnpm install && pnpm run typecheck   # 需 deepseek-harness 单仓（或 DSH profile）提供 peers
 ```
+
+## 已知限制
+
+- **尚未实现公有云 OpenAPI 网关。** 越来越多的金蝶公有云账套要求走 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）并使用 API 签名认证（`LoginByApiSignHeaders`）。本插件**未**实现该链路，只支持经典 `kdsvc` 会话协议。在这类账套上经典会话根本无法建立，因此所有操作都会在登录环节失败；必须使用仍然开放经典 WebAPI 的账套/网关。
+- **平台插件层无法触达。** 服务器端 C# 表单/列表插件、界面布局与后台事件属于 BOS 集成开发环境，**无法**经 WebAPI 访问（见上文的边界说明）。
+- **`./client` 产物由本包自行复现。** 共享的 `clientBundle` tsdown preset 位于 harness 仓库内部且未发布，因此本包自行输出文档化的 factory 格式。
+- **未做真实账套联调。** 本文档的所有内容均以类型检查、单元测试套件与真实 `0.1.6-alpha.1` profile 安装为依据，而非在运行中的金蝶账套上验证。
 
 ## 文档
 

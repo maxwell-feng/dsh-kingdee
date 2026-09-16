@@ -50,6 +50,7 @@ interface KingdeeSettings {
   appSecretRef?: string
   userNameRef?: string
   passwordRef?: string
+  lcid?: number
   organization?: string
   timeoutMs?: number
   mock?: boolean
@@ -62,8 +63,9 @@ const TEXT_FIELDS: ReadonlyArray<{ field: keyof KingdeeSettings & string; label:
   { field: 'authMode', label: 'Auth mode (user | app)' },
   { field: 'appId', label: 'App ID (app mode)' },
   { field: 'appSecretRef', label: 'App secret reference (env name)' },
-  { field: 'userNameRef', label: 'User name reference (env name)' },
+  { field: 'userNameRef', label: 'User name / 集成用户 reference (env name)' },
   { field: 'passwordRef', label: 'Password reference (env name)' },
+  { field: 'lcid', label: 'Locale id (lcid)' },
   { field: 'organization', label: 'Organization (FNumber)' },
   { field: 'timeoutMs', label: 'Timeout (ms)' },
 ]

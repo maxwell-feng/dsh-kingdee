@@ -4,6 +4,39 @@
 
 **dsh-kingdee** 的所有关键版本演进记录均归档于此。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，并严格遵循 [语义化版本规范](https://semver.org/lang/zh-CN/)。
 
+## [0.7.0] - 2026-09-16
+
+### 新增
+
+- **全面适配金蝶云·星空 V9.1 企业版（Kingdee Cloud Starry Sky V9.1 Enterprise Edition）**：
+  - **第三方应用登录（`AuthService.LoginByAppSecret`）**：`authMode: "app"` 现执行真实的 `LoginByAppSecret` 登录（载荷 `acctID` / `username` / `appid` / `appsecret` / `lcid`），除 `appId` / `appSecret` 外还必须提供 `userNameRef`（集成用户），并与 `user` 模式建立同一个 `kdservice-sessionid` 会话。金蝶对 2022-11-29 之后开通的公有云账套拒绝账号密码登录，此类账套必须使用该模式。
+  - **`lcid` 配置项**：新增可选区域 id（数字，默认 `2052`，即 zh-CN），同时发送给两个登录服务。
+  - **新增端点字段**：`serviceEndpoints` 增加 `loginByAppSecretService`（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`）与 `stubSuffix`（默认 `.common.kdsvc`）。
+  - **双通道会话**：会话同时以裸 `kdservice-sessionid` 请求头与 `Cookie`（`kdservice-sessionid=…; kdsvc=…`）发出。
+
+### 变更
+
+- **近似破坏性变更**：
+  - `app` 模式不再伪造 `KDAuthentication` 请求头，改为经 `LoginByAppSecret` 认证后与 `user` 模式一样复用会话；并新增集成用户名（`userNameRef`）必填要求；
+  - 所有 stub URL 统一以 `.common.kdsvc` 结尾；登录 stub 为 `AuthService.ValidateUser`、登出 stub 为 `AuthService.LogOut`（此前文档写的是 `LoginService.*`）；
+  - `kingdee_invoke` 的 `serviceName` 现取自定义 stub 路径 `{namespace}.{class}.{method},{assembly}`（如 `GetCust.GetCust.ExecuteService,GetCust`），该段**直接替换** dynamic-form URL 段，`.common.kdsvc` 自动追加；
+  - `serviceEndpoints.servicePrefix` 已移除，由 `loginByAppSecretService` + `stubSuffix` 取代；
+  - DSH 锁定至 `0.1.6-alpha.1`（peer 范围、devDependencies、`engines.dsh`）。
+- **全面刷新双语文档**（`README`、`INSTALL`、`USAGE`、`CONFIG`、`UPDATE`、`UNINSTALL`、`CHANGELOG`、`docs/RELEASE`），对齐 V9.1 目标与 `0.1.6-alpha.1` 验证。
+
+### 修复
+
+- **登录响应被当成业务信封解析，导致登录成功却报失败**：登录服务返回的是它**自己**的结构（`{"LoginResultType": 1}`），而不是其他所有操作返回的 `Result`/`IsSuccess` 业务信封。此前把登录响应送进业务信封断言，导致 `IsSuccess` 缺失 → 被判为 `false` → **在真实账套上认证永远无法成功**。现在登录结果由 `parseLoginOutcome`（从 `kd-core` 子路径导出）单独判定：存在数字型 `LoginResultType` 时以它为准（`1` 为成功，其余抛 `kd/auth-failed`）；没有 `LoginResultType` 时回退到业务信封。离线 mock 也改为用真实的 `{"LoginResultType": 1}` 结构应答登录 stub，确保该路径始终被覆盖；
+- **自定义 BOS stub URL**：此前会被拼上 `Kingdee.BOS.WebApi.ServicesStub.` 前缀，任何 BOS 自定义服务都无法解析；现由自定义路径整段替换；
+- **补上缺失的 `lcid`**：登录载荷现携带此前缺失的 `lcid`；
+- 从 `user` 模式登录载荷中移除无意义的 `license: appId` 字段。
+
+### 移除
+
+- 从 `kd-core` 子路径 API 移除 `buildAppAuthHeader`（由 `buildAppSecretLoginPayload` 取代）。
+
+---
+
 ## [0.6.1] - 2026-09-13
 
 ### 移除与代码精简

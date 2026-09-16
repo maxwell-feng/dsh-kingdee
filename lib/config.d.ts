@@ -21,10 +21,15 @@ export interface Config {
     appId?: string;
     /** Credential reference (env-var name) holding the `app` secret. */
     appSecretRef?: string;
-    /** Credential reference (env-var name) holding the 账套 username for `user` mode. */
+    /**
+     * Credential reference (env-var name) holding the 账套 username for `user` mode,
+     * or the 集成用户 for `app` mode.
+     */
     userNameRef?: string;
     /** Credential reference (env-var name) holding the 账套 password for `user` mode. */
     passwordRef?: string;
+    /** Optional locale id sent to the login service. Kingdee's default is `2052` (zh-CN). */
+    lcid?: number;
     /** Optional default organization (org) id / FNumber applied to queries. */
     organization?: string;
     /** Optional per-request timeout multiplier. */

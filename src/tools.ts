@@ -187,10 +187,10 @@ export function registerKingdeeTools(ctx: Context, getClient: () => Promise<KdCl
   ctx.tools.register(
     defineTool({
       name: 'kingdee_invoke',
-      description: 'Invoke a Kingdee Cloud BOS custom service registered via the WebAPI.',
+      description: 'Invoke a Kingdee Cloud BOS custom service registered via the WebAPI. The service replaces the dynamic-form segment of the stub URL.',
       parameters: {
-        serviceName: { type: 'string', required: true, description: 'Custom service name (endpoint suffix after Kingdee.BOS.WebApi.ServicesStub.).' },
-        payload: { type: 'object', properties: {}, additionalProperties: true, description: 'Service payload.' },
+        serviceName: { type: 'string', required: true, description: 'Custom service stub path as {namespace}.{class}.{method},{assembly}, e.g. GetCust.GetCust.ExecuteService,GetCust. The .common.kdsvc suffix is added automatically.' },
+        payload: { type: 'object', properties: {}, additionalProperties: true, description: 'Service payload handed to the stub.' },
         formId: { type: 'string', description: 'Optional form id the service acts on.' },
       },
       output: {

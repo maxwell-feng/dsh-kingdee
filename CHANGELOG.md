@@ -4,6 +4,37 @@ English | [中文](CHANGELOG.zh.md)
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-09-16
+
+### Added / 新增
+
+- **Kingdee Cloud Starry Sky V9.1 Enterprise Edition conformance / 适配金蝶云·星空 V9.1 企业版**:
+  - **Third-party app login (`AuthService.LoginByAppSecret`)**: `authMode: "app"` now performs a real `LoginByAppSecret` login — payload `acctID` / `username` / `appid` / `appsecret` / `lcid` — and requires `userNameRef` (the 集成用户) alongside `appId` / `appSecret`, establishing the same `kdservice-sessionid` session as `user` mode. This is the mode Kingdee requires on public-cloud tenants opened after 2022-11-29, where account/password login is refused. / **第三方应用登录（`AuthService.LoginByAppSecret`）**：`authMode: "app"` 现执行真实的 `LoginByAppSecret` 登录（载荷 `acctID` / `username` / `appid` / `appsecret` / `lcid`），除 `appId` / `appSecret` 外还必须提供 `userNameRef`（集成用户），并与 `user` 模式建立同一个 `kdservice-sessionid` 会话。金蝶对 2022-11-29 之后开通的公有云账套拒绝账号密码登录，此类账套必须使用该模式。
+  - **`lcid` config key**: New optional locale id (number, default `2052` = zh-CN), sent to both login services. / **`lcid` 配置项**：新增可选区域 id（数字，默认 `2052`，即 zh-CN），同时发送给两个登录服务。
+  - **New endpoint fields**: `serviceEndpoints` gained `loginByAppSecretService` (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`) and `stubSuffix` (default `.common.kdsvc`). / **新增端点字段**：`serviceEndpoints` 增加 `loginByAppSecretService`（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`）与 `stubSuffix`（默认 `.common.kdsvc`）。
+  - **Session on both channels**: the session is attached as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`). / **双通道会话**：会话同时以裸 `kdservice-sessionid` 请求头与 `Cookie`（`kdservice-sessionid=…; kdsvc=…`）发出。
+
+### Changed / 变更
+
+- **Breaking-ish / 近似破坏性变更**:
+  - `app` mode no longer fabricates a `KDAuthentication` header; it authenticates through `LoginByAppSecret` and then reuses the session exactly like `user` mode. It also now requires the 集成用户名 (`userNameRef`). / `app` 模式不再伪造 `KDAuthentication` 请求头，改为经 `LoginByAppSecret` 认证后与 `user` 模式一样复用会话；并新增集成用户名（`userNameRef`）必填要求。
+  - Every stub URL now ends with `.common.kdsvc`; the login stub is `AuthService.ValidateUser` and the logout stub `AuthService.LogOut` (previously documented through `LoginService.*`). / 所有 stub URL 统一以 `.common.kdsvc` 结尾；登录 stub 为 `AuthService.ValidateUser`、登出 stub 为 `AuthService.LogOut`（此前文档写的是 `LoginService.*`）。
+  - `kingdee_invoke` / `KdInvokeParams.serviceName` now takes the custom-stub path `{namespace}.{class}.{method},{assembly}` (e.g. `GetCust.GetCust.ExecuteService,GetCust`), which **replaces** the dynamic-form URL segment; `.common.kdsvc` is appended automatically. / `kingdee_invoke` 的 `serviceName` 现取自定义 stub 路径 `{namespace}.{class}.{method},{assembly}`（如 `GetCust.GetCust.ExecuteService,GetCust`），该段**直接替换** dynamic-form URL 段，`.common.kdsvc` 自动追加。
+  - `serviceEndpoints.servicePrefix` was removed, replaced by `loginByAppSecretService` + `stubSuffix`. / `serviceEndpoints.servicePrefix` 已移除，由 `loginByAppSecretService` + `stubSuffix` 取代。
+  - DSH pinned to `0.1.6-alpha.1` (peer ranges, devDependencies, `engines.dsh`). / DSH 锁定至 `0.1.6-alpha.1`（peer 范围、devDependencies、`engines.dsh`）。
+- **Refreshed all bilingual documentation** (`README`, `INSTALL`, `USAGE`, `CONFIG`, `UPDATE`, `UNINSTALL`, `CHANGELOG`, `docs/RELEASE`) for the V9.1 target and the `0.1.6-alpha.1` verification. / **全面刷新双语文档**（`README`、`INSTALL`、`USAGE`、`CONFIG`、`UPDATE`、`UNINSTALL`、`CHANGELOG`、`docs/RELEASE`），对齐 V9.1 目标与 `0.1.6-alpha.1` 验证。
+
+### Fixed / 修复
+
+- **Login responses were parsed as the business envelope, so a successful login was reported as a failure / 登录响应被当成业务信封解析，导致登录成功却报失败**: the login services answer with their **own** shape (`{"LoginResultType": 1}`), not the `Result`/`IsSuccess` envelope every other operation returns. Running that through the business-envelope assertion meant `IsSuccess` was absent → treated as `false` → **authentication could never succeed against a real tenant**. Login is now classified separately by `parseLoginOutcome` (exported from the `kd-core` subpath): a numeric `LoginResultType` decides the outcome (`1` = success, anything else throws `kd/auth-failed`), and a response without `LoginResultType` falls back to the business envelope. The offline mock now answers the login stub with the real `{"LoginResultType": 1}` shape so this path stays covered. / 登录服务返回的是它**自己**的结构（`{"LoginResultType": 1}`），而不是其他所有操作返回的 `Result`/`IsSuccess` 业务信封。此前把登录响应送进业务信封断言，导致 `IsSuccess` 缺失 → 被判为 `false` → **在真实账套上认证永远无法成功**。现在登录结果由 `parseLoginOutcome`（从 `kd-core` 子路径导出）单独判定：存在数字型 `LoginResultType` 时以它为准（`1` 为成功，其余抛 `kd/auth-failed`）；没有 `LoginResultType` 时回退到业务信封。离线 mock 也改为用真实的 `{"LoginResultType": 1}` 结构应答登录 stub，确保该路径始终被覆盖。
+- **Custom BOS stub URL**: the path was previously prefixed with `Kingdee.BOS.WebApi.ServicesStub.`, which no BOS custom service can resolve; a custom path now replaces that segment entirely. / **自定义 BOS stub URL**：此前会被拼上 `Kingdee.BOS.WebApi.ServicesStub.` 前缀，任何 BOS 自定义服务都无法解析；现由自定义路径整段替换。
+- **Missing `lcid`**: the login payload now carries `lcid`, which was previously absent. / **补上缺失的 `lcid`**：登录载荷现携带此前缺失的 `lcid`。
+- **Nonsensical `license: appId`** removed from the `user`-mode login payload. / 从 `user` 模式登录载荷中移除无意义的 `license: appId` 字段。
+
+### Removed / 移除
+
+- `buildAppAuthHeader` removed from the `kd-core` subpath API (replaced by `buildAppSecretLoginPayload`). / 从 `kd-core` 子路径 API 移除 `buildAppAuthHeader`（由 `buildAppSecretLoginPayload` 取代）。
+
 ## [0.6.1] - 2026-09-13
 
 ### Removed / 移除
@@ -112,7 +143,7 @@ All notable changes to **dsh-kingdee** are documented here. The format follows [
 
 ### Changed
 
-- Added cross-platform secrets documentation to `INSTALL.md` / `INSTALL.zh.md` and `README.md` / `README.zh.md` — Linux/macOS `export`, Windows PowerShell `$env:`, Windows CMD `set` / `setx`, and the DSH credential store (`dsh credentials set`).
+- Added cross-platform secrets documentation to `INSTALL.md` / `INSTALL.zh.md` and `README.md` / `README.zh.md` — Linux/macOS `export`, Windows PowerShell `$env:`, Windows CMD `set` / `setx`, and the DSH credential store.
 - License changed from MIT to a **proprietary (all rights reserved)** license. The repository is read/evaluation-only: copying, forking, re-hosting, re-publishing, modifying, or creating derivative works is prohibited without prior written permission.
 
 ## [0.1.0] - 2026-09-01

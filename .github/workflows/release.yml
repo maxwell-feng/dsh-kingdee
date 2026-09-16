@@ -37,18 +37,6 @@ jobs:
           draft: false
           prerelease: false
           body_path: docs/RELEASE.md
-          files: |
-            README.md
-            README.zh.md
-            INSTALL.md
-            INSTALL.zh.md
-            USAGE.md
-            USAGE.zh.md
-            CONFIG.md
-            CONFIG.zh.md
-            UPDATE.md
-            UPDATE.zh.md
-            UNINSTALL.md
-            UNINSTALL.zh.md
-            CHANGELOG.md
-            LICENSE
+          # No documentation files are attached as release assets: the release
+          # carries its notes as the body only. The docs live in the repository
+          # (and in the npm package) and are linked from the notes.
