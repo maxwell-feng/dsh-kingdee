@@ -6,7 +6,7 @@
  */
 /** Authentication mode for the Kingdee Cloud WebAPI.
  *
- * - `user`: authenticates with a 账套 username/password (`AuthService.ValidateUser`),
+ * - `user`: authenticates with a account-set username/password (`AuthService.ValidateUser`),
  *   then reuses the `kdservice-sessionid` session for subsequent calls.
  * - `app`: authenticates as a third-party application via
  *   `AuthService.LoginByAppSecret` using `acctId`/`username`/`appId`/`appSecret`.
@@ -23,11 +23,11 @@ export type KdAuthMode = 'user' | 'app';
  * your deployment. Only the fields you set replace the default.
  *
  * The authoritative per-tenant list lives in the product itself: sign in as an
- * administrator, then open 公共设置 → 动态服务定义 → WebAPI, pick the business
+ * administrator, then open Common Settings → Dynamic Service Definition → WebAPI, pick the business
  * object and operation, and read the parameter help and sample call.
  */
 export interface KdServiceEndpoints {
-    /** `AuthService.ValidateUser` — 账套 username/password login (`user` mode). */
+    /** `AuthService.ValidateUser` — account-set username/password login (`user` mode). */
     loginService?: string;
     /** `AuthService.LoginByAppSecret` — third-party application login (`app` mode). */
     loginByAppSecretService?: string;
@@ -59,9 +59,9 @@ export interface KdConfig {
     appId?: string;
     /** Application secret used by `app` auth mode. */
     appSecret?: string;
-    /** 账套 username used by `user` auth mode, and the 集成用户 used by `app` auth mode. */
+    /** account-set username used by `user` auth mode, and the integration user used by `app` auth mode. */
     userName?: string;
-    /** 账套 password used by `user` auth mode. */
+    /** account-set password used by `user` auth mode. */
     password?: string;
     /** Optional locale id sent to the login service. Kingdee's default is `2052` (zh-CN). */
     lcid?: number;

@@ -1,8 +1,8 @@
 # 更新说明
 
-[English](UPDATE.md) | 中文
+[英文](UPDATE.md) | 中文
 
-> 已在 deepseek-harness **0.1.6-alpha.2** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.1.6-alpha.2** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何将 **dsh-kingdee** 升级到更新版本。
 

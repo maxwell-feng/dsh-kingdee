@@ -1,13 +1,13 @@
 # dsh-kingdee
 
-[English](README.md) | 中文
+[英文](README.md) | 中文
 
 > 面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）的金蝶云星空二次开发插件。
 
 `dsh-kingdee` 让 DSH agent 通过金蝶云星空的 **WebAPI** 对账套做一等公民、凭据安全的操作：提供一套类型化工具，用于查询、保存、提交、审核、反审核、查看、删除单据与基础资料，以及调用 BOS 自定义服务。配套的领域技能（`kingdee-bos`）讲解字段/枚举/状态机约定，以及数据层与平台插件层的边界。
 
 - **凭据安全** —— 密钥以环境变量引用存放，经 DSH 凭据缝解析，绝不写在明文配置里。
-- **全面适配金蝶云·星空 V9.1 企业版** —— 深度适配金蝶云·星空 V9.1 企业版（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x）：官方 `kdservice-sessionid` 会话同时以请求头与 Cookie 双通道发出；大表防扫表稳定游标分页（`orderString`、`limit`、`startRow`）；单据编号（`numbers`）直接驱动审批/反审/删除/反提交业务流程；保存时自动提审（`isAutoSubmitAndAudit`）。
+- **全面适配金蝶云·星空 V9.1 企业版** —— 深度适配金蝶云·星空 V9.1 企业版（向下兼容 V9.0 / V8.x）：官方 `kdservice-sessionid` 会话同时以请求头与 Cookie 双通道发出；大表防扫表稳定游标分页（`orderString`、`limit`、`startRow`）；单据编号（`numbers`）直接驱动审批/反审/删除/反提交业务流程；保存时自动提审（`isAutoSubmitAndAudit`）。
 - **两条真实登录链路** —— 账套用户名/密码走 `AuthService.ValidateUser`；第三方应用走 `AuthService.LoginByAppSecret`（金蝶对 2022-11-29 之后开通的公有云账套要求该模式）。两者建立同一个 `kdservice-sessionid` 会话，不使用任何伪造的认证请求头；登录响应按其自身的 `LoginResultType` 结构单独判定，而非业务信封。
 - **SSRF 深度安全基线** —— 纯 TypeScript 实现严格的协议白名单（仅限 `http:` / `https:`）与网络边界拦截，自动屏蔽 `localhost`、环回及私有保留网段请求。
 - **类型化工具** —— 通过 `kingdee_*` 工具完成查询、保存、提交、审核、反审核、查看、删除与调用 BOS 自定义服务，具体见下方工具表。
@@ -99,7 +99,7 @@ config:
 
 ## 金蝶 V9.1 符合性
 
-`dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition；补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
+`dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
 
 **V9.1 没有破坏性 WebAPI 变更。** 没有重命名或移除的操作、没有 Cookie 改名、没有 URL 约定变化、也没有新增必填请求头。本插件使用的经典 `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` 会话协议保持不变。
 

@@ -1,8 +1,8 @@
 # 配置说明文档 (Configuration Guide)
 
-[English](CONFIG.md) | 简体中文
+[英文](CONFIG.md) | 简体中文
 
-> 面向 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.1.6-alpha.2** 验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效）。**未进行真实账套联调验证。**
+> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.1.6-alpha.2** 验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效）。**未进行真实账套联调验证。**
 
 本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 
@@ -15,7 +15,7 @@
 | 配置字段 | 类型 | 默认值 | 敏感级别 | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
 | `baseUrl` | `string` | `""` | 普通 | 金蝶云星空 WebAPI 基址，例如 `https://erp.example.com/K3Cloud`。必须采用 `http:` 或 `https:` 协议。直连 `localhost` 或私网 IP 会被 SSRF 安全策略拒绝。 |
-| `acctId` | `string` | `""` | 普通 | 金蝶账套 ID（数据中心 ID / Data Center ID）。 |
+| `acctId` | `string` | `""` | 普通 | 金蝶账套 ID（数据中心 ID）。 |
 | `authMode` | `'user' / 'app'` | `"user"` | 普通 | 认证模式。`"user"` 以账套用户名/密码经 `AuthService.ValidateUser` 登录；`"app"` 以第三方应用经 `AuthService.LoginByAppSecret` 登录，除 `appId` + `appSecret` 外**还**必须提供 `userNameRef`（集成用户）。金蝶对 2022-11-29 之后开通的公有云账套拒绝账号密码登录，此类账套必须使用 `"app"`。两种模式都不会伪造 `KDAuthentication` 请求头。 |
 | `appId` | `string` | `""` | 普通 | 应用 ID，仅在 `authMode: "app"` 时生效。 |
 | `appSecretRef` | `string` | `"DSH_KINGDEE_APP_SECRET"` | `credential-ref` | 存放 AppSecret 密钥的凭据引用名（环境变量名）。 |
@@ -151,7 +151,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 ## 5. 金蝶 V9.1 符合性
 
-`dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition；补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
+`dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
 
 **V9.1 没有破坏性 WebAPI 变更。** 没有重命名或移除的操作、没有 Cookie 改名、没有 URL 约定变化、也没有新增必填请求头。本插件使用的经典 `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` 会话协议保持不变。
 

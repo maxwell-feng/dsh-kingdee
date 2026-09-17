@@ -13,7 +13,7 @@ export declare const NAMESPACE = "kingdee";
 export interface Config {
     /** Kingdee Cloud WebAPI base URL, e.g. `http://your-server/K3Cloud`. */
     baseUrl?: string;
-    /** 账套 id (`acctId`). */
+    /** Account-set id (`acctId`). */
     acctId?: string;
     /** Authentication mode. */
     authMode?: KdAuthMode;
@@ -22,11 +22,11 @@ export interface Config {
     /** Credential reference (env-var name) holding the `app` secret. */
     appSecretRef?: string;
     /**
-     * Credential reference (env-var name) holding the 账套 username for `user` mode,
-     * or the 集成用户 for `app` mode.
+     * Credential reference (env-var name) holding the account-set username for `user` mode,
+     * or the integration user for `app` mode.
      */
     userNameRef?: string;
-    /** Credential reference (env-var name) holding the 账套 password for `user` mode. */
+    /** Credential reference (env-var name) holding the account-set password for `user` mode. */
     passwordRef?: string;
     /** Optional locale id sent to the login service. Kingdee's default is `2052` (zh-CN). */
     lcid?: number;
