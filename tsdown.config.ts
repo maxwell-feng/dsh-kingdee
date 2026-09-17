@@ -16,9 +16,11 @@ const ID = 'dsh-kingdee'
 
 /** Module-table requests this package declares in `dsh.client.inject`. */
 const REQUESTED = [
+  'react',
   '@deepseek-ai/cordis',
   '@deepseek-ai/dsh-client-locale',
   '@deepseek-ai/dsh-client-ui-settings',
+  '@deepseek-ai/dsh-client-ui-plugin-manager',
 ]
 
 export default defineConfig({

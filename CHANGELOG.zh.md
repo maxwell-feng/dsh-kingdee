@@ -4,6 +4,16 @@
 
 **dsh-kingdee** 的所有关键版本演进记录均归档于此。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，并严格遵循 [语义化版本规范](https://semver.org/lang/zh-CN/)。
 
+## [0.8.0] - 2026-09-18
+
+### 变更
+
+- **全面适配 DeepSeek Harness 0.1.6-alpha.2**：
+  - **客户端配置插槽迁移**：DeepSeek Harness `0.1.6-alpha.2` 将插件配置表面从已废弃的 `settings.plugin.item` 插槽迁移至独立的插件管理页面（`ui-plugin-manager`）。`dsh-kingdee` 现注册至 `plugins.row.config`（键名 `dsh-kingdee#kingdee`）与 `plugins.bundle.config`（键名 `dsh-kingdee`）；
+  - **双视图渲染（`summary` 与 `page`）**：遵循新规范中的 `PluginConfigViewProps` 契约，卡片在 `view: 'summary'` 下提供紧凑的单行描述，在 `view: 'page'` 下挂载完整的带版本围栏保存能力的配置表单；
+  - **依赖与引擎范围更新**：所有 `@deepseek-ai/dsh-*` peer 依赖更新为 `^0.1.6-alpha.2`，开发依赖锁定至 `0.1.6-alpha.2`，`engines.dsh` 更新为 `^0.1.6-alpha.2`；新增 `@deepseek-ai/dsh-client-ui-plugin-manager` 开发依赖；
+  - **全面刷新双语文档**（`README`、`INSTALL`、`USAGE`、`CONFIG`、`UPDATE`、`UNINSTALL`、`CHANGELOG`、`docs/RELEASE`），对齐 `0.1.6-alpha.2` 适配与验证。
+
 ## [0.7.0] - 2026-09-16
 
 ### 新增

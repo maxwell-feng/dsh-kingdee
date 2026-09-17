@@ -24,7 +24,7 @@
 dsh plugin add dsh-kingdee
 ```
 
-> 已在 deepseek-harness **0.1.6-alpha.1** 上验证：`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.1` profile 中作为 `# == dsh-kingdee` 层正常生效（`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.1.6-alpha.2** 上验证：`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效（`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`）。**未进行真实账套联调验证。**
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -162,7 +162,7 @@ pnpm install && pnpm run typecheck   # 需 deepseek-harness 单仓（或 DSH pro
 - **尚未实现公有云 OpenAPI 网关。** 越来越多的金蝶公有云账套要求走 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）并使用 API 签名认证（`LoginByApiSignHeaders`）。本插件**未**实现该链路，只支持经典 `kdsvc` 会话协议。在这类账套上经典会话根本无法建立，因此所有操作都会在登录环节失败；必须使用仍然开放经典 WebAPI 的账套/网关。
 - **平台插件层无法触达。** 服务器端 C# 表单/列表插件、界面布局与后台事件属于 BOS 集成开发环境，**无法**经 WebAPI 访问（见上文的边界说明）。
 - **`./client` 产物由本包自行复现。** 共享的 `clientBundle` tsdown preset 位于 harness 仓库内部且未发布，因此本包自行输出文档化的 factory 格式。
-- **未做真实账套联调。** 本文档的所有内容均以类型检查、单元测试套件与真实 `0.1.6-alpha.1` profile 安装为依据，而非在运行中的金蝶账套上验证。
+- **未做真实账套联调。** 本文档的所有内容均以类型检查、单元测试套件与真实 `0.1.6-alpha.2` profile 安装为依据，而非在运行中的金蝶账套上验证。
 
 ## 文档
 

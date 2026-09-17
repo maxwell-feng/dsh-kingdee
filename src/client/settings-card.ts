@@ -16,6 +16,7 @@
  *    own chrome (type-only imports are erased before the gate runs).
  */
 
+import React, { type ReactNode } from 'react'
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
 // Type-only: pulls the ctx.settingsScope merge (SettingsScopeBinder) into this program.
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
@@ -25,8 +26,8 @@ import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 // Type-only: pulls the ctx.locale merge (LocaleService) into this program.
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-// Type-only: the settings slot types (`settings.plugin.item` slot declaration).
-import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+// Type-only: the plugins page slot types (`plugins.row.config`, `plugins.bundle.config`, `plugins.item`).
+import type { PluginConfigViewProps } from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import type { SettingsScope } from '@deepseek-ai/dsh-client-ui-settings/client'
 
 // This card owns the `settings.kingdee` locale namespace: its key type joins
@@ -35,7 +36,7 @@ import type { SettingsScope } from '@deepseek-ai/dsh-client-ui-settings/client'
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** The Kingdee card's own copy. */
-    'settings.kingdee': string
+    'settings.kingdee': 'kingdeeTitle' | 'kingdeeDescription'
   }
 }
 
@@ -168,21 +169,59 @@ export function apply(ctx: ClientContext): void {
   // Register the card's own locale dictionary under its namespace so the
   // `locale:` declared on the slot entry resolves at render time.
   ctx.effect(
-    () => ctx.locale.register('settings.kingdee', { en: { kingdeeTitle: 'Kingdee Cloud' }, zh: { kingdeeTitle: '金蝶云' } }),
+    () =>
+      ctx.locale.register('settings.kingdee', {
+        en: {
+          kingdeeTitle: 'Kingdee Cloud Starry Sky',
+          kingdeeDescription: 'Kingdee Cloud Starry Sky WebAPI connection and credential references',
+        },
+        zh: {
+          kingdeeTitle: '金蝶云·星空',
+          kingdeeDescription: '金蝶云·星空 WebAPI 连接参数与凭据引用配置',
+        },
+      }),
     'kingdee-card: dictionaries',
   )
 
-  ctx.slots.inject('settings.plugin.item', () =>
+  const cardComponent = (props: {
+    view: 'summary' | 'page'
+    t?: (key: 'kingdeeTitle' | 'kingdeeDescription') => string
+  }): ReactNode => {
+    if (props.view === 'summary') {
+      return props.t
+        ? props.t('kingdeeDescription')
+        : 'Kingdee Cloud Starry Sky WebAPI connection and credential references'
+    }
+    return React.createElement('div', {
+      ref: (el: HTMLDivElement | null) => {
+        if (el && !el.contains(root)) {
+          el.replaceChildren(root, saveBar)
+        }
+      },
+    })
+  }
+
+  // Bundle patch row configuration: opens when clicking Configure on the row in the bundle's page.
+  ctx.slots.inject('plugins.row.config', () =>
     ctx.slots.register(
       {
-        name: 'settings.plugin.item',
-        key: 'kingdee',
+        name: 'plugins.row.config',
+        key: 'dsh-kingdee#kingdee',
         locale: 'settings.kingdee',
-        inject: () => ({ root: [root, saveBar] }),
       },
-      // The renderer mounts whatever this inject face hands back; the card
-      // owns the two nodes it injected above.
-      () => ({ root: [root, saveBar] }),
+      cardComponent,
+    ),
+  )
+
+  // Bundle-level configuration: rendered directly on the bundle's page.
+  ctx.slots.inject('plugins.bundle.config', () =>
+    ctx.slots.register(
+      {
+        name: 'plugins.bundle.config',
+        key: 'dsh-kingdee',
+        locale: 'settings.kingdee',
+      },
+      cardComponent,
     ),
   )
 }

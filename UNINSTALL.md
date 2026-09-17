@@ -2,7 +2,7 @@
 
 English | [中文](UNINSTALL.zh.md)
 
-> Verified against deepseek-harness **0.1.6-alpha.1** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.1` profile) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 How to remove **dsh-kingdee** from a DSH profile.
 

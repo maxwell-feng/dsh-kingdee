@@ -24,7 +24,7 @@ English | [中文](README.zh.md)
 dsh plugin add dsh-kingdee
 ```
 
-> Verified against deepseek-harness **0.1.6-alpha.1**: `pnpm run typecheck` clean, **15** unit tests passing (`pnpm test`), and the bundle patch applying as a `# == dsh-kingdee` layer when installed into a real `0.1.6-alpha.1` profile (`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.1.6-alpha.2**: `pnpm run typecheck` clean, **15** unit tests passing (`pnpm test`), and the bundle patch applying as a `# == dsh-kingdee` layer when installed into a real `0.1.6-alpha.2` profile (`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`). **No live-tenant verification was performed.**
 
 See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, [USAGE.md](./USAGE.md) for the tool reference, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md).
 
@@ -162,7 +162,7 @@ pnpm install && pnpm run typecheck   # requires the deepseek-harness monorepo (o
 - **Public-cloud OpenAPI gateway not implemented.** An increasing number of Kingdee public-cloud tenants require the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) with API-signature authentication (`LoginByApiSignHeaders`). This plugin does **not** implement that path — it speaks the classic `kdsvc` session protocol only. On such a tenant a classic session cannot be established at all, so every operation fails at login; a tenant/gateway that still exposes the classic WebAPI is required.
 - **The platform-plugin layer is out of reach.** Server-side C# form/list plugins, UI layout and background events belong to the BOS 集成开发环境 and are **not** accessible through the WebAPI (see the scope note above).
 - **The `./client` bundle reproduces its artifact.** The shared `clientBundle` tsdown preset lives inside the harness repository and is not published, so this package emits the documented factory format itself.
-- **No live-tenant verification.** Everything documented here is verified against the type checker, the unit-test suite and a real `0.1.6-alpha.1` profile install — not against a running Kingdee tenant.
+- **No live-tenant verification.** Everything documented here is verified against the type checker, the unit-test suite and a real `0.1.6-alpha.2` profile install — not against a running Kingdee tenant.
 
 ## Documentation
 

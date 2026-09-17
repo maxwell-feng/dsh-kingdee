@@ -2,7 +2,7 @@
 
 English | [中文](USAGE.zh.md)
 
-> Verified against deepseek-harness **0.1.6-alpha.1** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.1` profile: `dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile: `dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 This guide documents every `kingdee_*` tool the plugin registers (see `src/tools.ts`). The agent calls these tools in a chat session; each one is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 

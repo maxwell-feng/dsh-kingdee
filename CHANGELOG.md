@@ -4,6 +4,16 @@ English | [中文](CHANGELOG.zh.md)
 
 All notable changes to **dsh-kingdee** are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/); this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-09-18
+
+### Changed / 变更
+
+- **DeepSeek Harness 0.1.6-alpha.2 Alignment / 适配 DeepSeek Harness 0.1.6-alpha.2**:
+  - **Client configuration slot migration**: DeepSeek Harness `0.1.6-alpha.2` migrated plugin settings surfaces from the deprecated `settings.plugin.item` slot to the dedicated Plugins Manager page (`ui-plugin-manager`). `dsh-kingdee` now registers into `plugins.row.config` (keyed by `dsh-kingdee#kingdee`) and `plugins.bundle.config` (keyed by `dsh-kingdee`). / **客户端配置插槽迁移**：DeepSeek Harness `0.1.6-alpha.2` 将插件配置卡片从已废弃的 `settings.plugin.item` 插槽迁移至独立的插件管理页面（`ui-plugin-manager`）。`dsh-kingdee` 现注册至 `plugins.row.config`（键名 `dsh-kingdee#kingdee`）与 `plugins.bundle.config`（键名 `dsh-kingdee`）。
+  - **Dual-view rendering (`summary` & `page`)**: Conforming to the new `PluginConfigViewProps` contract, the card now renders the concise summary description in `view: 'summary'` (used under titles on card heads and detail headers) and mounts the full interactive revision-fenced configuration form in `view: 'page'`. / **双视图渲染（`summary` 与 `page`）**：遵循新规范中的 `PluginConfigViewProps` 契约，卡片在 `view: 'summary'` 下提供紧凑的单行描述，在 `view: 'page'` 下挂载完整的带版本围栏保存能力的配置表单。
+  - **Dependency and engine bounds**: All `@deepseek-ai/dsh-*` peerDependencies updated to `^0.1.6-alpha.2`, devDependencies pinned to `0.1.6-alpha.2`, and `engines.dsh` updated to `^0.1.6-alpha.2`. Added `@deepseek-ai/dsh-client-ui-plugin-manager` to devDependencies. / **依赖与引擎范围更新**：所有 `@deepseek-ai/dsh-*` peer 依赖更新为 `^0.1.6-alpha.2`，开发依赖锁定至 `0.1.6-alpha.2`，`engines.dsh` 更新为 `^0.1.6-alpha.2`；新增 `@deepseek-ai/dsh-client-ui-plugin-manager` 开发依赖。
+  - **Refreshed all bilingual documentation** (`README`, `INSTALL`, `USAGE`, `CONFIG`, `UPDATE`, `UNINSTALL`, `CHANGELOG`, `docs/RELEASE`) for the `0.1.6-alpha.2` release. / **全面刷新双语文档**（`README`、`INSTALL`、`USAGE`、`CONFIG`、`UPDATE`、`UNINSTALL`、`CHANGELOG`、`docs/RELEASE`），对齐 `0.1.6-alpha.2` 适配与验证。
+
 ## [0.7.0] - 2026-09-16
 
 ### Added / 新增

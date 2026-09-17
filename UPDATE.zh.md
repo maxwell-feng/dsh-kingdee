@@ -2,7 +2,7 @@
 
 [English](UPDATE.md) | 中文
 
-> 已在 deepseek-harness **0.1.6-alpha.1** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.1` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.1.6-alpha.2** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何将 **dsh-kingdee** 升级到更新版本。
 
@@ -25,6 +25,7 @@ pnpm install && pnpm run build
 
 ## 升级后
 
+- **0.8.0 适配 DeepSeek Harness 0.1.6-alpha.2 客户端 UI 规范**：DSH 0.1.6-alpha.2 废弃了旧的 `settings.plugin.item` 插槽，改由独立的插件管理页面（`ui-plugin-manager`）承载。客户端配置卡片现注册到 `plugins.row.config`（`dsh-kingdee#kingdee`）与 `plugins.bundle.config`（`dsh-kingdee`），支持紧凑摘要与完整配置双视图。
 - **0.7.0 重写了认证与 stub URL，请优先核对这几项**：`app` 模式现执行真实的 `AuthService.LoginByAppSecret` 登录，除 `appId` / `appSecret` 外**还要求 `userNameRef`**（集成用户），且不再伪造 `KDAuthentication` 请求头；所有 stub URL 统一以 `.common.kdsvc` 结尾，登录/登出 stub 位于 `AuthService.*`（`ValidateUser` / `LoginByAppSecret` / `LogOut`）；`serviceEndpoints.servicePrefix` 已移除，改用 `loginByAppSecretService` + `stubSuffix`；`kingdee_invoke` 的 `serviceName` 现取 `{namespace}.{class}.{method},{assembly}` 形式的自定义 stub 路径（如 `GetCust.GetCust.ExecuteService,GetCust`），该段直接替换 dynamic-form URL 段。本版本还修复了认证本身：登录服务返回的是它自身的 `{"LoginResultType": 1}` 结构，旧版本会误判为失败的业务信封。
 - **体验金蝶云·星空 V9.1 新特性**：查询工具 `kingdee_query` 与 `kingdee_query_business_data` 支持 `orderString`、`limit`、`startRow` 进行稳定游标分页；审批、反审、删除、反提交等工具支持传入 `numbers` 数组（单据编号），无需再提前查底层自增 `FID`；自产品版本 `9.1.0.20250807` 起，`Delete` 返回的 `Number` 也可直接采信。
 - **复查 V9.1 权限与限流**：V9.1 收紧了外部用户访问控制，缺少查询权限可能表现为**空结果而不是报错** —— 请针对每个 `FormId` 先跑探针查询，而不要直接相信空结果集。服务端已开始记录 WebAPI 请求体，请尽可能优先使用 `app` 模式而非账号密码模式，并把主机出口 IP 加入 WebAPI 限流白名单。

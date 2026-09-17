@@ -19,7 +19,7 @@ import type { Context as ClientContext } from '@deepseek-ai/cordis';
 declare module '@deepseek-ai/dsh-client-ui-slots' {
     interface LocaleNamespaceMap {
         /** The Kingdee card's own copy. */
-        'settings.kingdee': string;
+        'settings.kingdee': 'kingdeeTitle' | 'kingdeeDescription';
     }
 }
 export declare const inject: string[];
