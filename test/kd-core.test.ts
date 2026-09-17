@@ -59,8 +59,8 @@ test('login payloads carry the V9.1 named keys and the lcid', () => {
 
 test('validateConfig enforces per-mode requirements and SSRF safety', () => {
   assert.throws(() => validateConfig({ baseUrl: '', acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }), /baseUrl/)
-  // app mode needs the 集成用户 as well as the application credentials
-  assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', appId: 'id', appSecret: 'sec' }), /集成用户/)
+  // app mode needs the integration user as well as the application credentials
+  assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', appId: 'id', appSecret: 'sec' }), /integration user/)
   assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', userName: 'u', appId: 'id' }), /appSecret/)
   assert.doesNotThrow(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', userName: 'u', appId: 'id', appSecret: 'sec' }))
 

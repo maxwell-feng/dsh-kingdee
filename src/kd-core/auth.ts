@@ -4,9 +4,9 @@
  * Two modes are supported, both of which establish a session that every later
  * call reuses through the `kdservice-sessionid` session:
  *
- * - `user`: a 账套 username/password against `AuthService.ValidateUser`.
+ * - `user`: a account-set username/password against `AuthService.ValidateUser`.
  * - `app`: a third-party application against `AuthService.LoginByAppSecret`,
- *   sending `acctId` + 集成用户 + `appId` + `appSecret`.
+ *   sending `acctId` + integration user + `appId` + `appSecret`.
  *
  * `app` is the mode Kingdee requires for public-cloud tenants opened after
  * 2022-11-29, where account/password login is refused. Both modes return the
@@ -19,7 +19,7 @@
  * (`acctID`, `username`, `appid`, `appsecret`, `lcid`) are the community-attested
  * spelling, not a published Kingdee contract, and KDServiceFx binds them
  * case-sensitively. Confirm them against your own tenant before relying on a
- * live connection: 公共设置 → 动态服务定义 → WebAPI lists each operation's
+ * live connection: Common Settings → Dynamic Service Definition → WebAPI lists each operation's
  * parameters and a sample call.
  */
 
@@ -47,7 +47,7 @@ export function buildLoginPayload(config: KdConfig): Record<string, unknown> {
 /**
  * Payload for `AuthService.LoginByAppSecret` (`app` mode).
  *
- * A third-party application login still names the 集成用户 it acts as, so
+ * A third-party application login still names the integration user it acts as, so
  * `userName` is required here as well as `appId`/`appSecret`.
  */
 export function buildAppSecretLoginPayload(config: KdConfig): Record<string, unknown> {
@@ -70,7 +70,7 @@ export function validateConfig(config: KdConfig): void {
     if (!config.userName) throw new Error('KdConfig.userName is required for authMode "user"')
     if (!config.password) throw new Error('KdConfig.password is required for authMode "user"')
   } else {
-    if (!config.userName) throw new Error('KdConfig.userName (the 集成用户) is required for authMode "app"')
+    if (!config.userName) throw new Error('KdConfig.userName (the integration user) is required for authMode "app"')
     if (!config.appId) throw new Error('KdConfig.appId is required for authMode "app"')
     if (!config.appSecret) throw new Error('KdConfig.appSecret is required for authMode "app"')
   }
