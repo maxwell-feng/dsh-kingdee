@@ -11,6 +11,7 @@ One language per file, always in pairs:
 - Switcher line, single language, within the first ten lines: the English side writes `English | [Chinese](X.zh.md)`; the Chinese side writes `[英文](X.md) | 中文`. Documents under `.github/` (issue forms, workflow config) carry no switcher.
 - Forbidden: bilingual labels (`**Compatibility / 兼容性**`), bilingual entries on one line (`English… / 中文…`), and using one file as the shared home for both languages.
 - Exempt (keep the original text): code, commands, paths, file names, field/API names, product proper nouns (Kingdee Cloud Starry Sky, DeepSeek Harness, BOS, WebAPI, API Key), quoted error literals, and fenced blocks inside Chinese documents.
+- Source files under `src/` follow the same rule for strings and comments (English only). A file that must keep Chinese is declared in the checker's `SRC_CJK_ALLOW` with its reason.
 - Issue templates ship as language pairs (`bug_report.md` / `bug_report.zh.md`, and so on) so the picker offers one entry per language.
 
 ## Exemptions registry
@@ -28,6 +29,8 @@ This repository declares:
 - `AGENTS.md` — pairing- and language-check exempt: an English instruction file that quotes both languages as examples.
 - `skills/kingdee-bos/SKILL.md` — Chinese-only domain skill with no English counterpart; still language-checked as Chinese.
 - `.github/ISSUE_TEMPLATE/config.yml` — language-check exempt: single-language per entry (the picker lists one link per language).
+- `src/kd-core/errors.ts` — source exception: its `登录` matcher must recognize the Chinese error text the Kingdee WebAPI returns, so it is function, not prose.
+- `src/client/settings-card.ts` — source exception: the Plugins card shows the Chinese product display name (金蝶云·星空).
 
 ## Self-check
 
@@ -35,7 +38,7 @@ This repository declares:
 node scripts/check-docs-language.mjs
 ```
 
-It fails on: any Chinese character in an English document; an English sentence in a Chinese document (outside code, links, quoted literals and product names); a missing counterpart file; a malformed or missing switcher line.
+It fails on: any Chinese character in an English document; an English sentence in a Chinese document (outside code, links, quoted literals and product names); Chinese in a `src/` file that is not registered in `SRC_CJK_ALLOW`; a missing counterpart file; a malformed or missing switcher line.
 
 ## Security scan status
 
