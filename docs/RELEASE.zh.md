@@ -1,8 +1,10 @@
 # 发行说明 — v0.8.0
 
+
+[英文](RELEASE.md) | 中文
 发布日期：2026-09-18
 
-**dsh-kingdee**（面向 DeepSeek Harness 的金蝶云星空二次开发插件）发布 v0.8.0 版本：全面适配 **DeepSeek Harness `0.1.6-alpha.2`** 及其全新的插件管理规范（`ui-plugin-manager`），并持续提供对 **金蝶云·星空 V9.1 企业版**（Kingdee Cloud Starry Sky V9.1 Enterprise Edition，向下兼容 V9.0 / V8.x）的完整支持。
+**dsh-kingdee**（面向 DeepSeek Harness 的金蝶云星空二次开发插件）发布 v0.8.0 版本：全面适配 **DeepSeek Harness `0.1.6-alpha.2`** 及其全新的插件管理规范（`ui-plugin-manager`），并持续提供对 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）的完整支持。
 
 ## 兼容性与运行环境
 

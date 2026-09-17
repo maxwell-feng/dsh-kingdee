@@ -1,8 +1,8 @@
 # Configuration Guide
 
-English | [简体中文](CONFIG.zh.md)
+English | [Chinese](CONFIG.zh.md)
 
-> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile). **No live-tenant verification was performed.**
+> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile). **No live-tenant verification was performed.**
 
 This document details all configuration options, authentication modes, credential security mechanisms, environment variables, SSRF protection policies, and profile configuration methods for the `dsh-kingdee` plugin in DeepSeek Harness (DSH).
 
@@ -16,11 +16,11 @@ Plugin configuration is strictly validated at runtime using `@deepseek-ai/schema
 | :--- | :--- | :--- | :--- | :--- |
 | `baseUrl` | `string` | `""` | Normal | Kingdee Cloud WebAPI base URL, e.g. `https://erp.example.com/K3Cloud`. Must use `http:` or `https:`. Requests to `localhost` or private IP ranges are blocked by SSRF defense. |
 | `acctId` | `string` | `""` | Normal | Kingdee data center / account ID (`acctId`). |
-| `authMode` | `'user' / 'app'` | `"user"` | Normal | Authentication mode. `"user"` logs in with a 账套 username/password through `AuthService.ValidateUser`; `"app"` logs in as a third-party application through `AuthService.LoginByAppSecret` and requires `appId` + `appSecret` **and** `userNameRef` (the 集成用户). `"app"` is the mode Kingdee requires on public-cloud tenants opened after 2022-11-29, where account/password login is refused. In neither mode is a `KDAuthentication` header fabricated. |
+| `authMode` | `'user' / 'app'` | `"user"` | Normal | Authentication mode. `"user"` logs in with an account-set username/password through `AuthService.ValidateUser`; `"app"` logs in as a third-party application through `AuthService.LoginByAppSecret` and requires `appId` + `appSecret` **and** `userNameRef` (the integration user). `"app"` is the mode Kingdee requires on public-cloud tenants opened after 2022-11-29, where account/password login is refused. In neither mode is a `KDAuthentication` header fabricated. |
 | `appId` | `string` | `""` | Normal | Application ID, required when `authMode` is `"app"`. |
 | `appSecretRef` | `string` | `"DSH_KINGDEE_APP_SECRET"` | `credential-ref` | Credential reference (env var name) holding the `app` secret. |
-| `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | Credential reference (env var name) holding the 账套 username for `user` mode, or the 集成用户 for `app` mode (required in both). |
-| `passwordRef` | `string` | `"DSH_KINGDEE_PASSWORD"` | `credential-ref` | Credential reference (env var name) holding the 账套 password (`user` mode only; not used by `app`). |
+| `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | `credential-ref` | Credential reference (env var name) holding the account-set username for `user` mode, or the integration user for `app` mode (required in both). |
+| `passwordRef` | `string` | `"DSH_KINGDEE_PASSWORD"` | `credential-ref` | Credential reference (env var name) holding the account-set password (`user` mode only; not used by `app`). |
 | `lcid` | `number` | `2052` | Normal | Locale id sent to both login services. `2052` is zh-CN, Kingdee's own default. |
 | `organization` | `string` | `undefined` | Normal | Optional default organization ID or code (FNumber) for operations. |
 | `timeoutMs` | `number` | `30000` | Normal | WebAPI request timeout in milliseconds (range 0 to 300000). |
@@ -30,7 +30,7 @@ Plugin configuration is strictly validated at runtime using `@deepseek-ai/schema
 ### 1.1 Service Endpoints Override (`serviceEndpoints`)
 
 For custom Kingdee deployments or specific version path overrides (defaults come from `src/kd-core/client.ts`):
-- `loginService`: 账套 username/password login stub (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser`)
+- `loginService`: account-set username/password login stub (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.ValidateUser`)
 - `loginByAppSecretService`: Third-party application login stub (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`)
 - `logOutService`: Logout stub (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LogOut`)
 - `dynamicFormService`: Dynamic form service prefix, without the trailing operation (default `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`)
@@ -81,7 +81,7 @@ $env:DSH_KINGDEE_PASSWORD = "your_password"
 
 ### 2.2 App Authentication Mode (`authMode: "app"`)
 
-`app` mode logs in as a third-party application through `AuthService.LoginByAppSecret`. It needs the **集成用户** name as well as the application credentials, so set `DSH_KINGDEE_USER` too:
+`app` mode logs in as a third-party application through `AuthService.LoginByAppSecret`. It needs the **integration user** name as well as the application credentials, so set `DSH_KINGDEE_USER` too:
 
 ```bash
 # Linux / macOS / Android Termux
@@ -131,7 +131,7 @@ Or for `app` mode:
         authMode: "app"
         appId: "your_app_id"
         appSecretRef: "DSH_KINGDEE_APP_SECRET"
-        # The 集成用户 the third-party app acts as (required in app mode).
+        # The integration user the third-party app acts as (required in app mode).
         userNameRef: "DSH_KINGDEE_USER"
         lcid: 2052
         organization: "100"
@@ -153,18 +153,18 @@ In the DeepSeek Harness Web GUI:
 
 ## 5. Kingdee V9.1 Conformance
 
-`dsh-kingdee` targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版; patch PT-163015 → product version `9.1.0.20250807`) and stays backward-compatible with V9.0 / V8.x.
+`dsh-kingdee` targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (patch PT-163015 → product version `9.1.0.20250807`) and stays backward-compatible with V9.0 / V8.x.
 
 **V9.1 has no breaking WebAPI changes.** No renamed or removed operation, no cookie rename, no URL-convention change, and no new required header. The classic `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` session protocol this plugin speaks is unchanged.
 
 Interface-layer increments in V9.1:
 
 - `Delete` now returns a correct `FNumber` — `SuccessEntitys[].Number` can be trusted as-is from `9.1.0.20250807` on.
-- Multi-file attachment (文件服务) fields may be assigned by file ID alone.
+- Multi-file attachment fields may be assigned by file ID alone.
 - WebAPI request-body logging was added server-side.
-- The online documentation gained 幂等性校验 (idempotency) guidance.
+- The online documentation gained idempotency guidance.
 - WebAPI rate limiting gained a whitelist.
-- 报表 Stub / API 自定义接口 were security-hardened.
+- Report stubs and custom API endpoints were security-hardened.
 - External-user access control was tightened.
 
 Operational consequences for this plugin:
@@ -173,4 +173,4 @@ Operational consequences for this plugin:
 - Because permissions were tightened, a missing query permission can surface as an **empty result rather than an error** — validate a probe query per `FormId` instead of trusting an empty row set.
 - Put the plugin host's egress IP on the WebAPI rate-limit whitelist.
 
-**Evidence honesty.** The login services' named request keys (`acctID` / `username` / `appid` / `appsecret` / `lcid`), the `Limit` row cap (~2000) and the `listDataCenterService` default name are **community-attested, not officially published** by Kingdee. The authoritative per-tenant source is the product itself: sign in as an administrator, then open 公共设置 → 动态服务定义 → WebAPI, pick the business object and operation, and read that operation's parameter list and sample call.
+**Evidence honesty.** The login services' named request keys (`acctID` / `username` / `appid` / `appsecret` / `lcid`), the `Limit` row cap (~2000) and the `listDataCenterService` default name are **community-attested, not officially published** by Kingdee. The authoritative per-tenant source is the product itself: sign in as an administrator, then open Common Settings → Dynamic Service Definition → WebAPI, pick the business object and operation, and read that operation's parameter list and sample call.

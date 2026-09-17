@@ -1,8 +1,10 @@
 # 更新日志
 
-[English](CHANGELOG.md) | 中文
+[英文](CHANGELOG.md) | 中文
 
 **dsh-kingdee** 的所有关键版本演进记录均归档于此。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，并严格遵循 [语义化版本规范](https://semver.org/lang/zh-CN/)。
+
+---
 
 ## [0.8.0] - 2026-09-18
 
@@ -14,11 +16,13 @@
   - **依赖与引擎范围更新**：所有 `@deepseek-ai/dsh-*` peer 依赖更新为 `^0.1.6-alpha.2`，开发依赖锁定至 `0.1.6-alpha.2`，`engines.dsh` 更新为 `^0.1.6-alpha.2`；新增 `@deepseek-ai/dsh-client-ui-plugin-manager` 开发依赖；
   - **全面刷新双语文档**（`README`、`INSTALL`、`USAGE`、`CONFIG`、`UPDATE`、`UNINSTALL`、`CHANGELOG`、`docs/RELEASE`），对齐 `0.1.6-alpha.2` 适配与验证。
 
+---
+
 ## [0.7.0] - 2026-09-16
 
 ### 新增
 
-- **全面适配金蝶云·星空 V9.1 企业版（Kingdee Cloud Starry Sky V9.1 Enterprise Edition）**：
+- **全面适配金蝶云·星空 V9.1 企业版**：
   - **第三方应用登录（`AuthService.LoginByAppSecret`）**：`authMode: "app"` 现执行真实的 `LoginByAppSecret` 登录（载荷 `acctID` / `username` / `appid` / `appsecret` / `lcid`），除 `appId` / `appSecret` 外还必须提供 `userNameRef`（集成用户），并与 `user` 模式建立同一个 `kdservice-sessionid` 会话。金蝶对 2022-11-29 之后开通的公有云账套拒绝账号密码登录，此类账套必须使用该模式。
   - **`lcid` 配置项**：新增可选区域 id（数字，默认 `2052`，即 zh-CN），同时发送给两个登录服务。
   - **新增端点字段**：`serviceEndpoints` 增加 `loginByAppSecretService`（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`）与 `stubSuffix`（默认 `.common.kdsvc`）。
@@ -47,6 +51,8 @@
 
 ---
 
+---
+
 ## [0.6.1] - 2026-09-13
 
 ### 移除与代码精简
@@ -58,11 +64,13 @@
   - 精简 `pnpm-workspace.yaml` 中的历史多版本白名单规则，统一锁定为 `0.1.5-rc.2`；
   - 进一步优化包体积，提升运行效率与类型纯净度。
 
+---
+
 ## [0.6.0] - 2026-09-13
 
 ### 新增
 
-- **全面适配金蝶云·星空 V9.0 企业版（Kingdee Cloud Starry Sky V9.0 Enterprise Edition）**：
+- **全面适配金蝶云·星空 V9.0 企业版**：
   - **官方标准会话 Cookie（`kdservice-sessionid`）**：支持解析和回传金蝶星空 V9.0 企业版官方标准响应头 `kdservice-sessionid`，并在业务请求中同时回传 `kdservice-sessionid` 与兼容字段 `kdsvc`，实现跨版本与星空微服务网关的稳定连接。
   - **大表防全量扫表与稳定游标分页（`orderString`、`limit`、`startRow`）**：为 `ExecuteBillQuery` 及 `QueryBusinessData` 接口补全了 `OrderString`（排序子句）、`Limit`（分页大小）与 `StartRow`（起始行偏移量），对齐星空 V9.0 性能与查询规范，确保 AI 在处理万级以上单据大表时避免全表锁定和游标抖动。
   - **业务单据编号驱动操作（`numbers`）**：针对 AI 智能体直接基于业务单号交互的特点，为单据审批（`kingdee_audit`）、反审（`kingdee_unaudit`）、删除（`kingdee_delete`）、反提交（`kingdee_unsubmit`）和暂存删除（`kingdee_delete_draft`）扩展了 `numbers` 数组参数，支持直接使用业务单号（例如 `SO-20260901`）执行批量操作，省去底层内部物理自增 `FID` 的中间查询。
@@ -79,6 +87,8 @@
 
 ---
 
+---
+
 ## [0.5.0] - 2026-09-11
 
 ### 变更
@@ -88,6 +98,8 @@
   - 在 `package.json.engines` 中显式约束宿主引擎兼容范围：`"dsh": "^0.1.5-rc.2"`；
   - 将所有 `@deepseek-ai/dsh-*` peerDependencies 与 devDependencies 升级至 `0.1.5-rc.2`；
   - 全面刷新双语文档，标注针对 `0.1.5-rc.2` 的验证。
+
+---
 
 ---
 
@@ -104,6 +116,8 @@
 
 ---
 
+---
+
 ## [0.3.0] - 2026-09-09
 
 ### 变更
@@ -116,6 +130,8 @@
 
 ---
 
+---
+
 ## [0.2.4] - 2026-09-03
 
 ### 修复与完善
@@ -125,6 +141,52 @@
 - 浏览器设置卡片正常编译与产物输出。
 
 ---
+
+---
+
+## [0.2.3] - 2026-09-02
+
+### 变更
+- **已在 deepseek-harness `0.1.2-alpha.5` 最新 `master` 上验证。** 自 `0.1.2-alpha.4` 以来无影响本插件的 DSH 缝变更 —— `defineTool` / `ctx.credentials` / `ctx.settings` 契约及 WebAPI 传输保持稳定，无需代码改动。版本升至 `0.2.3`，并刷新双语文档（发行版 / 更新说明 / 安装 / 卸载 / 使用 / 配置）。
+
+---
+
+## [0.2.2] - 2026-09-02
+
+### 变更
+- **已在 deepseek-harness `0.1.2-alpha.4` 最新 `master` 上验证。** 自 `0.1.2-alpha.3` 以来无影响本插件的 DSH 缝变更 —— `defineTool` / `ctx.credentials` / `ctx.settings` 契约及 WebAPI 传输保持稳定，无需代码改动。版本升至 `0.2.2`，并刷新双语文档（发行版 / 更新说明 / 安装 / 卸载 / 使用 / 配置）。
+
+---
+
+## [0.2.1] - 2026-09-01
+
+### 修复
+
+- 重写 README 的功能要点（英文 + 中文），使 `kingdee_*` 工具列表在 npm 上渲染正确（避免过长的逗号分隔行内代码段）。完整列表见工具表。
+
+---
+
+## [0.2.0] - 2026-09-01
+
+### 新增
+
+- **`kd-core` 与对应 DSH 工具新增数据/服务层操作**：
+  - `kingdee_logout` —— `LoginService.LogOut`，清除已存会话 cookie；
+  - `kingdee_list_datacenters` —— 列出基址可达的数据中心/账套；
+  - `kingdee_query_business_data` —— 新版结构化 `QueryBusinessData` 查询；
+  - `kingdee_unsubmit` —— 反提交单据（撤销提交）；
+  - `kingdee_delete_draft` —— 删除暂存/创建状态的记录；
+  - `kingdee_batch_save` —— 单次批量保存多条记录。
+- **可覆盖的服务端点**（`KdConfig.endpoints` / `serviceEndpoints` 配置），便于把 WebAPI 服务名对齐到具体的金蝶版本。
+- 覆盖上述新操作的单元测试（7/7 通过）。
+
+### 变更
+
+- 在 `INSTALL.md` / `INSTALL.zh.md` 与 `README.md` / `README.zh.md` 中补充跨平台密钥配置说明 —— Linux/macOS 的 `export`、Windows PowerShell 的 `$env:`、Windows CMD 的 `set` / `setx`，以及 DSH 凭据存储。
+- 许可证由 MIT 变更为**专有许可（保留所有权利）**，仓库仅供阅读/评估：未经所有者事先书面许可，禁止在整体或部分上复制、复刻/fork、再托管、再发布、修改或制作衍生作品。
+
+---
+
 
 ## [0.1.0] - 2026-09-01
 

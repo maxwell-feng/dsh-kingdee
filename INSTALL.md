@@ -1,8 +1,8 @@
 # Installation
 
-English | [中文](INSTALL.zh.md)
+English | [Chinese](INSTALL.zh.md)
 
-> Verified against deepseek-harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (金蝶云·星空 V9.1 企业版, backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.** For full configuration details, see [CONFIG.md](./CONFIG.md).
+> Verified against deepseek-harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.** For full configuration details, see [CONFIG.md](./CONFIG.md).
 
 This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harness (DSH) profile.
 
@@ -49,10 +49,10 @@ Set values either in the **Plugins → kingdee** settings card, or in the `confi
 | Key | Description |
 |---|---|
 | `baseUrl` | WebAPI base URL, e.g. `http://your-server/K3Cloud` |
-| `acctId` | 账套 id |
-| `authMode` | `user` (账套 username/password through `AuthService.ValidateUser`) or `app` (third-party `AuthService.LoginByAppSecret` login) |
+| `acctId` | account-set id |
+| `authMode` | `user` (account-set username/password through `AuthService.ValidateUser`) or `app` (third-party `AuthService.LoginByAppSecret` login) |
 | `appId` | Application id (used by `app` mode) |
-| `userNameRef` | Credential reference holding the 账套 username (`user` mode) or the 集成用户 (`app` mode — required) |
+| `userNameRef` | Credential reference holding the account-set username (`user` mode) or the integration user (`app` mode — required) |
 | `lcid` | Locale id sent to the login services; default `2052` (zh-CN) |
 | `organization` | Optional default organization (org) id / FNumber for queries |
 | `serviceEndpoints` | Advanced: override WebAPI service names for your Kingdee version (see below) |
@@ -61,7 +61,7 @@ Set values either in the **Plugins → kingdee** settings card, or in the `confi
 
 ### Advanced: override service endpoints
 
-WebAPI service names (e.g. `LogOut`, `ListDataCenter`, `UnSubmit`, `DeleteDraft`, `QueryBusinessData`) can differ slightly by Kingdee version. If a tool reports an unknown service, set the matching override in `serviceEndpoints` (e.g. `dynamicFormService`, `listDataCenterService`, `logOutService`, `loginService`, `loginByAppSecretService`, `stubSuffix`). The `listDataCenterService` name in particular is version-specific and community-attested — confirm it in the product under 公共设置 → 动态服务定义 → WebAPI.
+WebAPI service names (e.g. `LogOut`, `ListDataCenter`, `UnSubmit`, `DeleteDraft`, `QueryBusinessData`) can differ slightly by Kingdee version. If a tool reports an unknown service, set the matching override in `serviceEndpoints` (e.g. `dynamicFormService`, `listDataCenterService`, `logOutService`, `loginService`, `loginByAppSecretService`, `stubSuffix`). The `listDataCenterService` name in particular is version-specific and community-attested — confirm it in the product under Common Settings → Dynamic Service Definition → WebAPI.
 
 ## 3. Provide the secrets
 
@@ -74,7 +74,7 @@ Secrets are **references** (environment-variable names), not literals. Set the v
 export DSH_KINGDEE_USER=your_username
 export DSH_KINGDEE_PASSWORD=your_password
 
-# app mode (DSH_KINGDEE_USER is the 集成用户 here, and is required)
+# app mode (DSH_KINGDEE_USER is the integration user here, and is required)
 export DSH_KINGDEE_USER=your_integration_user
 export DSH_KINGDEE_APP_SECRET=your_app_secret
 ```
@@ -86,7 +86,7 @@ export DSH_KINGDEE_APP_SECRET=your_app_secret
 $env:DSH_KINGDEE_USER = "your_username"
 $env:DSH_KINGDEE_PASSWORD = "your_password"
 
-# app mode (DSH_KINGDEE_USER is the 集成用户 here, and is required)
+# app mode (DSH_KINGDEE_USER is the integration user here, and is required)
 $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
@@ -115,7 +115,7 @@ setx DSH_KINGDEE_APP_SECRET your_app_secret
 
 **DSH credential store** (any OS; avoids shell environment-variable issues). The credential store is not managed by a CLI verb: set each value once in the DSH settings UI (credential values are write-only — the page only ever shows a redacted descriptor), or edit `$DSH_HOME/.credentials.yaml` directly. The reference name is what the plugin config carries; the value never enters a config file.
 
-The default reference names are `DSH_KINGDEE_USER`, `DSH_KINGDEE_PASSWORD` and `DSH_KINGDEE_APP_SECRET`. Change them via `userNameRef` / `passwordRef` / `appSecretRef` if you prefer different names. `DSH_KINGDEE_USER` carries the 账套 username in `user` mode and the **集成用户** in `app` mode, where it is required; `DSH_KINGDEE_PASSWORD` is only used by `user` mode.
+The default reference names are `DSH_KINGDEE_USER`, `DSH_KINGDEE_PASSWORD` and `DSH_KINGDEE_APP_SECRET`. Change them via `userNameRef` / `passwordRef` / `appSecretRef` if you prefer different names. `DSH_KINGDEE_USER` carries the account-set username in `user` mode and the **integration user** in `app` mode, where it is required; `DSH_KINGDEE_PASSWORD` is only used by `user` mode.
 
 The login services answer with their own `{"LoginResultType": 1}` shape, not the `Result`/`IsSuccess` business envelope every other operation returns; the plugin classifies that response separately, so a non-`1` value is reported as `kd/auth-failed`.
 
@@ -158,7 +158,7 @@ or on the `kingdee` row of your profile's `cordis.patch.yml`:
 
 ## Troubleshooting
 
-- **kingdee/auth-failed** — check `acctId` / `appId` / `appSecret` and the 集成用户 (`userNameRef`), and confirm the WebAPI is enabled on the tenant. On a public-cloud tenant opened after 2022-11-29 Kingdee refuses account/password login — switch `authMode` to `"app"`. A tenant reachable only through the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) cannot be used at all: the classic session cannot be established, so every call fails at login.
+- **kingdee/auth-failed** — check `acctId` / `appId` / `appSecret` and the integration user (`userNameRef`), and confirm the WebAPI is enabled on the tenant. On a public-cloud tenant opened after 2022-11-29 Kingdee refuses account/password login — switch `authMode` to `"app"`. A tenant reachable only through the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) cannot be used at all: the classic session cannot be established, so every call fails at login.
 - **kingdee/network** — confirm the `baseUrl` is reachable from the DSH host and that the WebAPI endpoint responds.
 - **kingdee/business-error** — the tenant rejected the call; read `message` (e.g. a missing required field, or a document status that cannot perform the requested action).
 - **A query returns no rows instead of an error** — V9.1 tightened external-user permissions, so a missing query permission can surface as an empty result. Validate a probe query per `FormId` before trusting an empty row set, and put the host's egress IP on the WebAPI rate-limit whitelist.
