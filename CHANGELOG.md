@@ -4,6 +4,17 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.8.1] - 2026-09-18
+
+### Changed
+
+- **Language boundary completed.** Runtime strings are English only: the `kingdee_delete_draft` tool description, the settings-card user-name label, the `authMode: "app"` error message, and every source comment. Two exceptions stay Chinese by design — the login-word matcher in `src/kd-core/errors.ts`, which must recognize the Chinese error text the Kingdee WebAPI returns, and the Chinese product display name on the Plugins card.
+- **Documentation normalized.** Every document is single-language — `X.md` English, `X.zh.md` Chinese — with complete pairs and switcher lines, and both changelogs now cover the same 13 releases.
+
+### Added
+
+- `AGENTS.md` states the bilingual rule; `scripts/check-docs-language.mjs` enforces documents, source strings and pairs locally and in CI, which runs it before installing dependencies.
+
 ## [0.8.0] - 2026-09-18
 
 ### Changed
