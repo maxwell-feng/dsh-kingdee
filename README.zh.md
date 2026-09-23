@@ -159,6 +159,12 @@ DSH host/插件半区（`src/index.ts`、`tools.ts`、`config.ts`、`client/`）
 pnpm install && pnpm run typecheck   # 需 deepseek-harness 单仓（或 DSH profile）提供 peers
 ```
 
+仓库全量使用 TypeScript，没有需要同步维护的 JavaScript 源码。双语文档闸门为 [`scripts/check-docs-language.ts`](./scripts/check-docs-language.ts)，CI 在安装依赖之前用裸 Node 直接运行它（无需任何依赖）：
+
+```sh
+node scripts/check-docs-language.ts
+```
+
 ## 已知限制
 
 - **尚未实现公有云 OpenAPI 网关。** 越来越多的金蝶公有云账套要求走 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）并使用 API 签名认证（`LoginByApiSignHeaders`）。本插件**未**实现该链路，只支持经典 `kdsvc` 会话协议。在这类账套上经典会话根本无法建立，因此所有操作都会在登录环节失败；必须使用仍然开放经典 WebAPI 的账套/网关。

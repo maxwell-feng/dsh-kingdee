@@ -4,6 +4,26 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.1] - 2026-09-23
+
+**Documentation and repository-tooling release** — no runtime, configuration or tool-surface change.
+
+### Changed
+
+- **The repository now holds TypeScript sources only.** The bilingual-documents gate moved from `scripts/check-docs-language.mjs` to `scripts/check-docs-language.ts`. Node ≥22.19 strips the types, so the gate still runs with no dependencies installed and still gates CI before the install step. `scripts/**/*.ts` joined the `tsconfig.json` include list, so `pnpm run typecheck` covers the gate as well, and `.gitattributes` no longer carries JavaScript line-ending rules.
+
+### Fixed
+
+- **Changelog bodies had been lost.** The 0.4.0, 0.3.0, 0.2.3 and 0.2.2 entries in the English changelog carried category headings with no content, and the 0.1.0 `Documentation` bullet was truncated mid-sentence. All are restored, and the Chinese 0.1.0 entry now covers that release at the same depth as English.
+- **Section numbering in the configuration guide.** The guide had two `## 3.` sections and two subsections (`2.1` / `2.2`) hanging off the wrong parent; the sections are now numbered 1–6 with 3.1 / 3.2, and the "section 5" cross-reference points at the renumbered V9.1 conformance section.
+- **Listing order.** The README Tools table now follows the same order as the per-tool reference in USAGE, and the Documentation list includes the configuration guide it had omitted.
+- **Duplicated rules and heading levels.** Six duplicated `---` rules were removed from the Chinese changelog; both sides now use the same heading levels release for release, and both gained the link-reference block they lacked.
+
+### Verification
+
+- `pnpm run typecheck` clean (now including `scripts/`), clean build (`tsc` + `tsdown`), and **15** unit tests passing against DeepSeek Harness `0.1.7-rc.1`.
+- `node scripts/check-docs-language.ts` green; the docs audit that found these defects reports no remaining findings.
+
 ## [0.9.0] - 2026-09-23
 
 **DeepSeek Harness 0.1.7-rc.1 Alignment — schema-driven volatile configuration**
@@ -217,6 +237,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.9.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.1
 [0.9.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.0
 [0.8.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.1
 [0.8.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.0

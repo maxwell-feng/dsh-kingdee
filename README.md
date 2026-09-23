@@ -159,6 +159,15 @@ The DSH host/plugin half (`src/index.ts`, `tools.ts`, `config.ts`, `client/`) im
 pnpm install && pnpm run typecheck   # requires the deepseek-harness monorepo (or a DSH profile) for peers
 ```
 
+The repository is TypeScript throughout; there is no JavaScript source to keep in
+sync. The bilingual-documents gate is
+[`scripts/check-docs-language.ts`](./scripts/check-docs-language.ts), which CI runs
+with bare Node (no dependencies installed) before the install step:
+
+```sh
+node scripts/check-docs-language.ts
+```
+
 ## Known Limitations
 
 - **Public-cloud OpenAPI gateway not implemented.** An increasing number of Kingdee public-cloud tenants require the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) with API-signature authentication (`LoginByApiSignHeaders`). This plugin does **not** implement that path — it speaks the classic `kdsvc` session protocol only. On such a tenant a classic session cannot be established at all, so every operation fails at login; a tenant/gateway that still exposes the classic WebAPI is required.
