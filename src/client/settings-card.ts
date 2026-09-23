@@ -3,12 +3,15 @@
  *
  * Built by `tsdown.config.ts` into `lib/client.js` — the lazy-CJS factory the
  * client module system loads (`dsh.client` manifest in package.json). The Host
- * half that registers the `kingdee` settings namespace is `src/index.ts`; this
- * card keys on the same namespace so the settings page pairs the two halves.
+ * half that declares the `Config` schema is `src/index.ts`; this card edits the
+ * same Host entry, so the two halves meet on one settings namespace.
  *
  * Per the DSH settings-card contract (docs/cookbook/adding-a-settings-card):
- *  - the card registers into the `settings.plugin.item` slot under `kingdee`;
- *  - reads/writes through `ctx.settingsScope` (revision-fenced writes);
+ *  - since 0.1.7 a form is reached through `ctx.configForms.get(entryId)`, where
+ *    `entryId` is the Host profile entry id — the same key `SettingsService`
+ *    derives each namespace from (`describe()` keys forms by `entry.options.id`);
+ *  - reads/writes go through `ConfigForm` (revision-fenced, ordered writes; a
+ *    Host-refused write reloads Host state rather than guessing);
  *  - the secret references (appSecretRef / userNameRef / passwordRef) are
  *    plain section fields holding reference NAMES, not secrets, so they ride
  *    the section like every other connection fact;
@@ -18,7 +21,7 @@
 
 import React, { type ReactNode } from 'react'
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
-// Type-only: pulls the ctx.settingsScope merge (SettingsScopeBinder) into this program.
+// Type-only: pulls the ctx.configForms merge (ConfigForms) into this program.
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 // Type-only: pulls the ctx.remote merge (credentials domain) into this program.
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
@@ -26,13 +29,14 @@ import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 // Type-only: pulls the ctx.locale merge (LocaleService) into this program.
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-// Type-only: the plugins page slot types (`plugins.row.config`, `plugins.bundle.config`, `plugins.item`).
+// Type-only: the Plugins page slot types (`plugins.row.config`, `plugins.bundle.config`).
 import type { PluginConfigViewProps } from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
-import type { SettingsScope } from '@deepseek-ai/dsh-client-ui-settings/client'
+import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client'
 
 // This card owns the `settings.kingdee` locale namespace: its key type joins
-// the map here so `ctx.slots.register({ locale: 'settings.kingdee' })` and the
-// `t` seat type-check without touching the section package's dictionary.
+// the map here so `ctx.locale.bind('settings.kingdee')` and the
+// `locale:` declared on each slot entry type-check without touching the
+// section package's dictionary.
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** The Kingdee card's own copy. */
@@ -40,7 +44,32 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   }
 }
 
-export const inject = ['slots', 'locale', 'connection', 'remote', 'settingsScope']
+/**
+ * Host profile entry id this card edits, and therefore the settings namespace
+ * `ctx.configForms.get()` addresses.
+ *
+ * Under the 0.1.7 model the namespace is not plugin-chosen: the Host serves a
+ * form per profile entry, keyed by the entry id. This plugin's row is declared
+ * in `cordis.patch.yml` as
+ *
+ *     - insert:
+ *         - id: kingdee
+ *           name: dsh-kingdee
+ *
+ * so the entry id is the ROW id `kingdee`, not the package name `dsh-kingdee`.
+ * The same rule holds for every bundled DSH plugin — a bundle's row id is its
+ * namespace (`- id: web-search-deepseek` →
+ * `WEB_SEARCH_DEEPSEEK_SETTINGS_NAMESPACE`, `- id: bash-sandbox` → `BASH_NS`) —
+ * and it is why the 0.1.6 `NAMESPACE = 'kingdee'` still names this section.
+ * A profile that renames the row renames the namespace with it, which is why
+ * `src/config.ts` documents both places together.
+ */
+const ENTRY_ID = 'kingdee'
+
+/** Dictionary namespace owned by this card. */
+const LOCALE_NS = 'settings.kingdee'
+
+export const inject = ['slots', 'locale', 'connection', 'remote', 'configForms']
 
 /** The section fields this card edits (all non-secret connection facts). */
 interface KingdeeSettings {
@@ -112,17 +141,22 @@ function renderCard(state: {
 }
 
 export function apply(ctx: ClientContext): void {
-  const scope: SettingsScope<KingdeeSettings> =
-    ctx.settingsScope.bind({ namespace: 'kingdee' })
+  const t = ctx.locale.bind(LOCALE_NS)
+  // The form is the provider's shared per-entry instance — `ConfigForms` owns
+  // its lifetime and disposes it with the settings service, so this card only
+  // subscribes to it and never disposes it. `props.form`, which the Plugins
+  // page hands a configuration entry, is the same entry's form; this card
+  // keeps its own handle because it draws its own chrome and save control.
+  const form: ConfigForm<KingdeeSettings> = ctx.configForms.get<KingdeeSettings>(ENTRY_ID)
 
   // Staged drafts, one keyed input element per section field. Drafts live in
-  // the DOM until Save; the scope's revision fence serializes the write.
+  // the DOM until Save; the form's revision fence serializes the write.
   const drafts = new Map<string, string>()
   const root = document.createElement('div')
   root.dataset.pluginCard = 'kingdee'
 
   const currentFields = (): Array<{ field: string; label: string; text: string }> => {
-    const value = scope.getSnapshot().value ?? {}
+    const value = form.getSnapshot().value ?? {}
     return TEXT_FIELDS.map(({ field, label }) => ({
       field,
       label,
@@ -131,7 +165,7 @@ export function apply(ctx: ClientContext): void {
   }
 
   const repaint = (): void => {
-    const snapshot = scope.getSnapshot()
+    const snapshot = form.getSnapshot()
     root.innerHTML = renderCard({
       available: snapshot.status === 'ready',
       writable: snapshot.writable,
@@ -149,8 +183,11 @@ export function apply(ctx: ClientContext): void {
   }
 
   const save = async (): Promise<void> => {
+    // `set` resolves false for a Host refusal, after reloading Host state into
+    // the snapshot; dropping the draft either way lets the repaint below show
+    // what the Host actually holds, never what the page hoped for.
     for (const [field, text] of drafts) {
-      await scope.set(field, text)
+      await form.set(field, text)
     }
     drafts.clear()
     repaint()
@@ -163,14 +200,14 @@ export function apply(ctx: ClientContext): void {
   saveButton.addEventListener('click', () => { void save() })
   saveBar.appendChild(saveButton)
 
-  ctx.effect(() => scope.subscribe(repaint), 'kingdee-card: scope mirror')
+  ctx.effect(() => form.subscribe(repaint), 'kingdee-card: config form mirror')
   repaint()
 
   // Register the card's own locale dictionary under its namespace so the
   // `locale:` declared on the slot entry resolves at render time.
   ctx.effect(
     () =>
-      ctx.locale.register('settings.kingdee', {
+      ctx.locale.register(LOCALE_NS, {
         en: {
           kingdeeTitle: 'Kingdee Cloud Starry Sky',
           kingdeeDescription: 'Kingdee Cloud Starry Sky WebAPI connection and credential references',
@@ -183,15 +220,8 @@ export function apply(ctx: ClientContext): void {
     'kingdee-card: dictionaries',
   )
 
-  const cardComponent = (props: {
-    view: 'summary' | 'page'
-    t?: (key: 'kingdeeTitle' | 'kingdeeDescription') => string
-  }): ReactNode => {
-    if (props.view === 'summary') {
-      return props.t
-        ? props.t('kingdeeDescription')
-        : 'Kingdee Cloud Starry Sky WebAPI connection and credential references'
-    }
+  const cardComponent = (props: PluginConfigViewProps): ReactNode => {
+    if (props.view === 'summary') return t('kingdeeDescription')
     return React.createElement('div', {
       ref: (el: HTMLDivElement | null) => {
         if (el && !el.contains(root)) {
@@ -207,7 +237,7 @@ export function apply(ctx: ClientContext): void {
       {
         name: 'plugins.row.config',
         key: 'dsh-kingdee#kingdee',
-        locale: 'settings.kingdee',
+        locale: LOCALE_NS,
       },
       cardComponent,
     ),
@@ -219,7 +249,7 @@ export function apply(ctx: ClientContext): void {
       {
         name: 'plugins.bundle.config',
         key: 'dsh-kingdee',
-        locale: 'settings.kingdee',
+        locale: LOCALE_NS,
       },
       cardComponent,
     ),

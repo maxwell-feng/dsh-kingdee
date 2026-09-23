@@ -2,7 +2,7 @@
 
 [英文](UPDATE.md) | 中文
 
-> 已在 deepseek-harness **0.1.6-alpha.2** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.1.7-rc.1** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.7-rc.1` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何将 **dsh-kingdee** 升级到更新版本。
 
@@ -25,6 +25,7 @@ pnpm install && pnpm run build
 
 ## 升级后
 
+- **0.9.0 将宿主基线抬升至 DeepSeek Harness 0.1.7**：插件现要求 `0.1.7-alpha.2` 或更新，并已在 `0.1.7-rc.1` 上验证；开发依赖锁定至 `0.1.7-rc.1`，`engines.dsh` 为 `^0.1.7-alpha.2`。配置迁移到 0.1.7 的**易变 schema**：十二个字段的名称、取值与默认值全部不变，但 `apply` 现在逐字段读取活引用，并在每次操作开始时一次性捕获，因此保存的修改与轮换后的凭据都无需重启即可对下一次操作生效。插件不再注册设置节（`ctx.settings.installSection` 已移除）——Host 自行读取导出的 `Config` schema 并以 profile 行 id `kingdee` 为键渲染该条目表单。**在 `0.1.6` 宿主上插件会在加载阶段被拒绝**：DSH 0.1.7-rc.1 会在加载插件行之前用运行时版本校验其 `@deepseek-ai/dsh*` peer 依赖，请先升级宿主，或按 DSH 打印的提示执行 `dsh plugin allow-version dsh-kingdee@0.9.0 <你的 dsh 版本>` 授予确切版本豁免。**配置无破坏性变更**——`cordis.yml` 与 `cordis.patch.yml` 原样继续可用。
 - **0.8.0 适配 DeepSeek Harness 0.1.6-alpha.2 客户端 UI 规范**：DSH 0.1.6-alpha.2 废弃了旧的 `settings.plugin.item` 插槽，改由独立的插件管理页面（`ui-plugin-manager`）承载。客户端配置卡片现注册到 `plugins.row.config`（`dsh-kingdee#kingdee`）与 `plugins.bundle.config`（`dsh-kingdee`），支持紧凑摘要与完整配置双视图。
 - **0.7.0 重写了认证与 stub URL，请优先核对这几项**：`app` 模式现执行真实的 `AuthService.LoginByAppSecret` 登录，除 `appId` / `appSecret` 外**还要求 `userNameRef`**（集成用户），且不再伪造 `KDAuthentication` 请求头；所有 stub URL 统一以 `.common.kdsvc` 结尾，登录/登出 stub 位于 `AuthService.*`（`ValidateUser` / `LoginByAppSecret` / `LogOut`）；`serviceEndpoints.servicePrefix` 已移除，改用 `loginByAppSecretService` + `stubSuffix`；`kingdee_invoke` 的 `serviceName` 现取 `{namespace}.{class}.{method},{assembly}` 形式的自定义 stub 路径（如 `GetCust.GetCust.ExecuteService,GetCust`），该段直接替换 dynamic-form URL 段。本版本还修复了认证本身：登录服务返回的是它自身的 `{"LoginResultType": 1}` 结构，旧版本会误判为失败的业务信封。
 - **体验金蝶云·星空 V9.1 新特性**：查询工具 `kingdee_query` 与 `kingdee_query_business_data` 支持 `orderString`、`limit`、`startRow` 进行稳定游标分页；审批、反审、删除、反提交等工具支持传入 `numbers` 数组（单据编号），无需再提前查底层自增 `FID`；自产品版本 `9.1.0.20250807` 起，`Delete` 返回的 `Number` 也可直接采信。

@@ -2,7 +2,7 @@
 
 [英文](CONFIG.md) | 简体中文
 
-> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.1.6-alpha.2** 验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.6-alpha.2` profile 中作为 `# == dsh-kingdee` 层正常生效）。**未进行真实账套联调验证。**
+> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.1.7-rc.1** 验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.7-rc.1` profile 中作为 `# == dsh-kingdee` 层正常生效）。**未进行真实账套联调验证。**
 
 本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 
@@ -10,7 +10,7 @@
 
 ## 1. 配置字段说明
 
-插件配置通过 `@deepseek-ai/schemastery` 进行运行时严格校验。配置位于 `kingdee` 命名空间下。
+插件配置由 `@deepseek-ai/schemastery` 严格校验。自 DeepSeek Harness 0.1.7 起，每个可编辑字段都声明为 `.volatile()`，因此 `apply` 收到的是逐字段的活引用（`Volatile<T>`）而非冻结值。Host 自行读取本插件导出的 `Config` schema（`entry.fiber.runtime.Config`）并渲染该条目的表单；表单以 **profile 行 id** 为键（`cordis.patch.yml` 中的 `kingdee`），这个命名空间由 Host 推导，并非插件自行选择。每次操作开始时一次性捕获全部引用，因此保存的修改无需重启即对下一次操作生效，且单次操作绝不会混用两个配置版本。
 
 | 配置字段 | 类型 | 默认值 | 敏感级别 | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -146,6 +146,8 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 2. 进入 **Plugins → kingdee** 设置卡片。
 3. 可视化修改 `baseUrl`、`acctId`、`authMode`、`appId`、`lcid`、`organization`、`timeoutMs` 及凭据引用名等字段。
 4. 修改后点击保存，配置立即更新。
+
+该页面由 Host 依据该条目的 schema 渲染，并叠加插件自带的浏览器半端（`src/client/settings-card.ts`，构建为 `lib/client.js`）：后者绑定 `plugins.row.config` 与 `plugins.bundle.config`，驱动 Plugins 页拥有的同一个逐条目 `ConfigForm`。写入带修订号栅栏——Host 拒绝时会重新加载 Host 状态而不是猜测，因此卡片绝不会显示 Host 并不持有的值。
 
 ---
 

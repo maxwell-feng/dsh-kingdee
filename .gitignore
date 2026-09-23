@@ -2,8 +2,9 @@
 node_modules/
 .pnpm-store/
 
-# Build output
-lib/**/*.map
+# Build output — never tracked: the repository holds TypeScript sources only.
+# `pnpm build` (and npm's `prepublishOnly` hook) emit lib/ before packing.
+lib/
 *.tsbuildinfo
 *.tgz
 

@@ -2,7 +2,7 @@
 
 English | [Chinese](CONFIG.zh.md)
 
-> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.1.6-alpha.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.6-alpha.2` profile). **No live-tenant verification was performed.**
+> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.1.7-rc.1** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.7-rc.1` profile). **No live-tenant verification was performed.**
 
 This document details all configuration options, authentication modes, credential security mechanisms, environment variables, SSRF protection policies, and profile configuration methods for the `dsh-kingdee` plugin in DeepSeek Harness (DSH).
 
@@ -10,7 +10,7 @@ This document details all configuration options, authentication modes, credentia
 
 ## 1. Configuration Options
 
-Plugin configuration is strictly validated at runtime using `@deepseek-ai/schemastery`. Options are registered under the `kingdee` namespace.
+Plugin configuration is strictly validated by `@deepseek-ai/schemastery`. Since DeepSeek Harness 0.1.7 every editable field is declared `.volatile()`, so `apply` receives one live reference per field (`Volatile<T>`) instead of a frozen value. The Host discovers the exported `Config` schema itself (`entry.fiber.runtime.Config`) and renders this entry's form; the form is keyed by the **profile row id** (`kingdee` in `cordis.patch.yml`), which is not a name the plugin chooses. Each operation captures every reference once, at its start, so a saved edit reaches the next operation without a restart and no single operation can mix two config revisions.
 
 | Field | Type | Default | Sensitivity | Description |
 | :--- | :--- | :--- | :--- | :--- |
@@ -148,6 +148,13 @@ In the DeepSeek Harness Web GUI:
 2. Select **Plugins → kingdee**.
 3. Adjust `baseUrl`, `acctId`, `authMode`, `appId`, `lcid`, `organization`, `timeoutMs`, and credential reference names interactively.
 4. Save your changes to take effect immediately without host restart.
+
+The card is the Host-rendered schema form for this entry plus the plugin's own
+browser half (`src/client/settings-card.ts`, built to `lib/client.js`), which
+binds into `plugins.row.config` and `plugins.bundle.config` and drives the same
+per-entry `ConfigForm` the Plugins page owns. Writes are revision-fenced: a Host
+refusal reloads Host state rather than guessing, so the card never shows a value
+the Host does not hold.
 
 ---
 
