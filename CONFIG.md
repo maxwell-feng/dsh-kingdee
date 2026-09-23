@@ -34,7 +34,7 @@ For custom Kingdee deployments or specific version path overrides (defaults come
 - `loginByAppSecretService`: Third-party application login stub (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`)
 - `logOutService`: Logout stub (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LogOut`)
 - `dynamicFormService`: Dynamic form service prefix, without the trailing operation (default `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`)
-- `listDataCenterService`: Data center listing stub (default `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`; the name is version-specific — see the evidence note in section 5)
+- `listDataCenterService`: Data center listing stub (default `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`; the name is version-specific — see the evidence note in section 6)
 - `stubSuffix`: Suffix appended to every generated stub path (default `.common.kdsvc`; a value already carrying the suffix is left alone)
 
 ---
@@ -61,7 +61,7 @@ To protect sensitive credentials, **never store passwords or AppSecrets in plain
 - Credentials are dynamically resolved from environment variables on every operation.
 - Rotating or modifying environment variables does not require restarting the DSH host.
 
-### 2.1 Username & Password Mode (`authMode: "user"`)
+### 3.1 Username & Password Mode (`authMode: "user"`)
 
 Set the environment variables on the host system:
 
@@ -79,7 +79,7 @@ $env:DSH_KINGDEE_PASSWORD = "your_password"
 [Environment]::SetEnvironmentVariable('DSH_KINGDEE_PASSWORD', 'your_password', 'User')
 ```
 
-### 2.2 App Authentication Mode (`authMode: "app"`)
+### 3.2 App Authentication Mode (`authMode: "app"`)
 
 `app` mode logs in as a third-party application through `AuthService.LoginByAppSecret`. It needs the **integration user** name as well as the application credentials, so set `DSH_KINGDEE_USER` too:
 
@@ -97,7 +97,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 ---
 
-## 3. Static Profile Configuration (`cordis.yml` / `cordis.patch.yml`)
+## 4. Static Profile Configuration (`cordis.yml` / `cordis.patch.yml`)
 
 Add the plugin entry to your DSH Profile configuration file:
 
@@ -141,7 +141,7 @@ Or for `app` mode:
 
 ---
 
-## 4. Runtime Web UI Configuration
+## 5. Runtime Web UI Configuration
 
 In the DeepSeek Harness Web GUI:
 1. Navigate to **Settings** from the left-hand navigation.
@@ -158,7 +158,7 @@ the Host does not hold.
 
 ---
 
-## 5. Kingdee V9.1 Conformance
+## 6. Kingdee V9.1 Conformance
 
 `dsh-kingdee` targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (patch PT-163015 → product version `9.1.0.20250807`) and stays backward-compatible with V9.0 / V8.x.
 

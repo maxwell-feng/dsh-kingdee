@@ -8,9 +8,9 @@
 
 ## [0.9.0] - 2026-09-23
 
-### 适配 DeepSeek Harness 0.1.7-rc.1：schema 驱动的易变配置
+**适配 DeepSeek Harness 0.1.7-rc.1：schema 驱动的易变配置**
 
-**变更**
+### 变更
 
 - **宿主对齐**：开发依赖锁定至 DeepSeek Harness `0.1.7-rc.1`（最新发行版），并已针对该版本完成验证。`@deepseek-ai/dsh-*` peer 区间为 `^0.1.7-alpha.2`——即引入易变配置的那条发布线——因此插件在 `0.1.7-alpha.2` 与 `0.1.7-rc.1` 上均可安装；对本插件消费的全部包而言，这两个版本的源码完全一致。`engines.dsh` 为 `^0.1.7-alpha.2`，`@deepseek-ai/cordis` 升至 `4.0.4`，`@deepseek-ai/schemastery` 升至 `3.18.4`。
 - **配置迁移至 0.1.7 的易变 schema**：每个可编辑字段都声明为 `.volatile()`，`apply` 因此收到逐字段的活引用。插件不再注册设置节——`ctx.settings.installSection` 调用、`ctx.inject(['settings'])` 与 `@deepseek-ai/dsh-settings` 依赖均已移除。Host 自行读取导出的 `Config` schema（`entry.fiber.runtime.Config`），并以 profile 行 id `kingdee` 为键渲染该条目的表单。
@@ -18,16 +18,16 @@
 - **`pnpm-workspace.yaml`**：为 `0.1.7-rc.1` 的确切包集合显式豁免 pnpm 的最小发布年龄闸门——否则 DSH 持续发布的预发行版会被该闸门拦下。
 - **构建产物不再纳入版本库**：`lib/` 已加入忽略列表，由 `pnpm build`（以及 npm 的 `prepublishOnly` 钩子）在打包前生成。
 
-**新增**
+### 新增
 
 - **补充宿主兼容性闸门说明**：DeepSeek Harness 0.1.7-rc.1 会在加载前用运行时版本校验插件的 `@deepseek-ai/dsh*` peer 依赖，不兼容的行会被直接拒绝。本发行版声明的 peer 均实际满足，无需豁免；README 与升级文档均写明了该拒绝行为及 `dsh plugin allow-version` 豁免方式。
 - **补充客户端卡片契约说明**：`src/client/settings-card.ts` 已写明是 Plugins 页所拥有的同一个逐条目 `ConfigForm` 的浏览器半端。
 
-**修复**
+### 修复
 
 - **补齐客户端半端的 `dsh.client.inject` 声明**：该卡片注册到 `plugins.row.config` / `plugins.bundle.config`（由 `@deepseek-ai/dsh-client-ui-plugin-manager` 提供），并读取 `ctx.remote` 与 `ctx.connection`，但此前只声明了 `@deepseek-ai/dsh-client-locale` 与 `@deepseek-ai/dsh-client-ui-settings`。现补齐 `@deepseek-ai/dsh-client-ui-plugin-manager`、`@deepseek-ai/dsh-api-remotes` 与 `@deepseek-ai/dsh-client-connection`，与使用同一批服务的官方客户端卡片保持一致。
 
-**验证**
+### 验证
 
 - `pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`）、构建干净（`tsc` + `tsdown`），且 `node scripts/check-docs-language.mjs` 全绿。
 - `pnpm install --frozen-lockfile` 通过 pnpm 的供应链策略校验；声明的 DSH peer 依赖经 DeepSeek Harness 自带的 `evaluatePluginCompatibility` 对运行时 `0.1.7-rc.1` 校验通过。
@@ -89,9 +89,6 @@
 - 从 `kd-core` 子路径 API 移除 `buildAppAuthHeader`（由 `buildAppSecretLoginPayload` 取代）。
 
 ---
-
----
-
 ## [0.6.1] - 2026-09-13
 
 ### 移除与代码精简
@@ -125,9 +122,6 @@
   - 在配置验证层（`validateConfig`）与网络请求实际发出层（`HttpTransport.request`）双重设防，杜绝内网横向扫描与伪造请求风险。
 
 ---
-
----
-
 ## [0.5.0] - 2026-09-11
 
 ### 变更
@@ -139,9 +133,6 @@
   - 全面刷新双语文档，标注针对 `0.1.5-rc.2` 的验证。
 
 ---
-
----
-
 ## [0.4.0] - 2026-09-10
 
 ### 变更
@@ -154,9 +145,6 @@
 - 新增独立双语使用说明文档（`USAGE.md` / `USAGE.zh.md`），详述 14 个 `kingdee_*` 工具参数与示例。
 
 ---
-
----
-
 ## [0.3.0] - 2026-09-09
 
 ### 变更
@@ -168,21 +156,19 @@
 - 新增独立双语配置说明文档（`CONFIG.md` / `CONFIG.zh.md`）。
 
 ---
-
----
-
 ## [0.2.4] - 2026-09-03
 
-### 修复与完善
+### 变更
 
-- 真实 peer 依赖替换 ambient 声明，类型检查 0 错误；
+- 按官方插件开发规范适配 deepseek-harness `0.1.2-rc.1`（`docs/user/develop/basic/config|tool|publish`、`docs/cookbook/adding-a-settings-card`）。本插件使用的 DSH 缝 —— `defineTool`、`ctx.tools.register`、`ctx.credentials.resolve`、`ctx.settings.installSection` —— 自 `0.1.2-alpha.5` 以来未变，工具集与凭据流行为一致。
+
+### 修复
+
+- 以真实已发布的 peer 包替换 ambient `any` 声明（`src/types/peers.d.ts`），`npm run typecheck` 现为 0 错误（此前 43 个隐式 `any`）；
 - 工具输出采用开放值 JSON schema；
-- 浏览器设置卡片正常编译与产物输出。
+- 浏览器设置卡片正常编译并产出 `lib/client.js` 产物。
 
 ---
-
----
-
 ## [0.2.3] - 2026-09-02
 
 ### 变更
@@ -229,4 +215,44 @@
 
 ## [0.1.0] - 2026-09-01
 
-- 初始发布：纯 TypeScript 编写的 `kd-core` 运行时内核、DSH 工具集与凭据安全流。
+初始发布。
+
+### 新增
+
+- **`kd-core`** —— 无框架依赖的金蝶云·星空 WebAPI 客户端：
+  - 两种认证模式：`user`（账套用户名/密码，经 `LoginService.ValidateUser`，使用 `kdsvc` 会话 cookie）与 `app`（appId/appSecret）。
+  - 类型化操作：`executeBillQuery`、`save`、`submit`、`audit`、`unaudit`、`view`、`delete`、`invokeService`。
+  - 信封解析/规范化与类型化错误映射（`kd/business-error`、`kd/auth-failed`、`kd/not-found`、`kd/invalid-config`、`kd/network`、`kd/timeout`、`kd/unknown`）。
+  - 传输留缝：真实 `HttpTransport`（全局 `fetch`）与离线 `MockTransport`。
+- **DSH 插件** —— 经 `defineTool` 注册的类型化工具：
+  - `kingdee_query`、`kingdee_save`、`kingdee_submit`、`kingdee_audit`、`kingdee_unaudit`、`kingdee_view`、`kingdee_delete`、`kingdee_invoke`。
+  - 凭据安全配置：密钥每次操作经 DSH 凭据缝（`ctx.credentials.resolve`）解析。
+  - `kingdee` 设置命名空间（Host 半端）与浏览器设置卡片脚手架（Client 半端，`dsh.client`）。
+- **配套技能** —— `kingdee-bos`：字段/枚举/状态约定、单据状态机、工具用法，以及数据层与平台插件层的边界。
+- **文档** —— 中英双语（英文 + 简体中文）`README` 与逐版本发行说明。
+- **测试** —— 内核单元测试（信封解析、配置校验、认证头、完整 mock 流程与错误映射），使用 Node 内置测试运行器。
+
+### 安全
+
+- 配置中不存储任何明文密钥；密钥每次操作从环境变量引用解析。
+
+### 说明
+
+- 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
+- DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
+
+[0.9.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.0
+[0.8.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.1
+[0.8.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.0
+[0.7.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.7.0
+[0.6.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.6.1
+[0.6.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.6.0
+[0.5.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.5.0
+[0.4.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.4.0
+[0.3.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.3.0
+[0.2.4]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.4
+[0.2.3]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.3
+[0.2.2]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.2
+[0.2.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.1
+[0.2.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.0
+[0.1.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.1.0

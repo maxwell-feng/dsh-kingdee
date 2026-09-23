@@ -81,19 +81,21 @@ config:
 | 工具 | 作用 | 关键入参 |
 |---|---|---|
 | `kingdee_query` | `ExecuteBillQuery` —— 查单据/基础资料 | `formId`、`fieldKeys[]`、`filter?`、`topCount?`、`organization?` |
+| `kingdee_query_business_data` | 结构化查询（`QueryBusinessData`） | `formId`、`fieldKeys[]`、`filter?`、`topCount?`、`organization?` |
 | `kingdee_save` | 保存（新增/更新）单据或基础资料 | `formId`、`data`、`interaction?` |
+| `kingdee_batch_save` | 单次批量保存多条 | `formId`、`records[]`、`interaction?` |
 | `kingdee_submit` | 提交一条或多条 | `formId`、`ids[]`、`numbers?` |
+| `kingdee_unsubmit` | 反提交 | `formId`、`ids[]` |
 | `kingdee_audit` | 审核 | `formId`、`ids[]` |
 | `kingdee_unaudit` | 反审核 | `formId`、`ids[]` |
 | `kingdee_view` | 按 id 查看单条 | `formId`、`id` |
 | `kingdee_delete` | 按 id 删除 | `formId`、`ids[]` |
+| `kingdee_delete_draft` | 删除草稿（暂存） | `formId`、`ids[]` |
 | `kingdee_invoke` | 调用 BOS 自定义服务 | `serviceName`、`payload?`、`formId?` |
 | `kingdee_logout` | 退出当前会话 | — |
 | `kingdee_list_datacenters` | 列出该地址可达的数据中心/账套 | — |
-| `kingdee_query_business_data` | 结构化查询（`QueryBusinessData`） | `formId`、`fieldKeys[]`、`filter?`、`topCount?`、`organization?` |
-| `kingdee_unsubmit` | 反提交 | `formId`、`ids[]` |
-| `kingdee_delete_draft` | 删除草稿（暂存） | `formId`、`ids[]` |
-| `kingdee_batch_save` | 单次批量保存多条 | `formId`、`records[]`、`interaction?` |
+
+表格顺序与 [USAGE.zh.md](./USAGE.zh.md) 的逐工具参考章节顺序一致。
 
 每个工具返回规范化的规范值；金蝶 `IsSuccess=false` 的消息会转成类型化错误（`kd/business-error`、`kd/auth-failed` 等），而不是让模型去解析文本。
 
@@ -167,6 +169,7 @@ pnpm install && pnpm run typecheck   # 需 deepseek-harness 单仓（或 DSH pro
 ## 文档
 
 - [INSTALL.zh.md](./INSTALL.zh.md) —— 安装与配置
+- [CONFIG.zh.md](./CONFIG.zh.md) —— 配置参考：字段、认证模式、凭据与 SSRF 基线
 - [USAGE.zh.md](./USAGE.zh.md) —— 工具说明（含入参与示例）
 - [UPDATE.zh.md](./UPDATE.zh.md) —— 升级
 - [UNINSTALL.zh.md](./UNINSTALL.zh.md) —— 卸载

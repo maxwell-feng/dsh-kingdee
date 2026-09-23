@@ -34,7 +34,7 @@
 - `loginByAppSecretService`：第三方应用登录 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`）
 - `logOutService`：登出 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LogOut`）
 - `dynamicFormService`：动态表单服务前缀，不含末尾操作名（默认 `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`）
-- `listDataCenterService`：数据中心列表 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`；该服务名随版本而异，见第 5 节的证据说明）
+- `listDataCenterService`：数据中心列表 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`；该服务名随版本而异，见第 6 节的证据说明）
 - `stubSuffix`：追加到所有生成 stub 路径末尾的后缀（默认 `.common.kdsvc`；若覆盖值已带该后缀则不再重复追加）
 
 ---
@@ -59,7 +59,7 @@
 
 为了确保凭据安全，**严禁将账套密码或 AppSecret 明文写在配置文件或代码中**。`dsh-kingdee` 遵循 DeepSeek Harness 的凭据缝（Credentials Seam）规范，在每次请求时动态解析环境变量。修改环境变量后无需重启 DSH 即可在下次调用时立即生效。
 
-### 2.1 用户名密码模式 (`authMode: "user"`)
+### 3.1 用户名密码模式 (`authMode: "user"`)
 
 在主机上配置以下环境变量：
 
@@ -77,7 +77,7 @@ $env:DSH_KINGDEE_PASSWORD = "your_password"
 [Environment]::SetEnvironmentVariable('DSH_KINGDEE_PASSWORD', 'your_password', 'User')
 ```
 
-### 2.2 应用授权模式 (`authMode: "app"`)
+### 3.2 应用授权模式 (`authMode: "app"`)
 
 `app` 模式以第三方应用经 `AuthService.LoginByAppSecret` 登录。除应用凭据外还需要**集成用户**名，因此也要设置 `DSH_KINGDEE_USER`：
 
@@ -95,7 +95,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 ---
 
-## 3. 在 Profile 中进行静态配置 (`cordis.yml` / `cordis.patch.yml`)
+## 4. 在 Profile 中进行静态配置 (`cordis.yml` / `cordis.patch.yml`)
 
 在你的 DSH Profile 配置文件中添加插件配置项：
 
@@ -139,7 +139,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 ---
 
-## 4. 运行时 Web 界面配置
+## 5. 运行时 Web 界面配置
 
 在 DeepSeek Harness Web 界面中：
 1. 打开左侧导航栏的 **Settings（设置）**。
@@ -151,7 +151,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 ---
 
-## 5. 金蝶 V9.1 符合性
+## 6. 金蝶 V9.1 符合性
 
 `dsh-kingdee` 面向 **金蝶云·星空 V9.1 企业版**（补丁 PT-163015 → 产品版本 `9.1.0.20250807`），并向下兼容 V9.0 / V8.x。
 

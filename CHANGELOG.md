@@ -122,7 +122,12 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Changed
 
+- **Adapted to deepseek-harness `0.1.5-rc.1` per the official plugin development docs.** Upgraded all `@deepseek-ai/dsh-*` devDependencies to `0.1.5-rc.1`.
+- **Refreshed bilingual documentation** (`README.md`, `README.zh.md`, `INSTALL.md`, `INSTALL.zh.md`, `UPDATE.md`, `UPDATE.zh.md`, `UNINSTALL.md`, `UNINSTALL.zh.md`) to mark verification against DeepSeek Harness `0.1.5-rc.1`.
+
 ### Added
+
+- **Standalone bilingual usage guide** (`USAGE.md` / `USAGE.zh.md`) documenting the parameters and worked examples of all 14 `kingdee_*` tools.
 
 ## [0.3.0] - 2026-09-09
 
@@ -132,6 +137,8 @@ All notable changes to this project are documented here. The format follows [Kee
 - **Refreshed bilingual documentation** (`README.md`, `README.zh.md`, `INSTALL.md`, `INSTALL.zh.md`, `UPDATE.md`, `UPDATE.zh.md`, `UNINSTALL.md`, `UNINSTALL.zh.md`) to mark verification against DeepSeek Harness `0.1.5-alpha.1`.
 
 ### Added
+
+- **Standalone bilingual configuration guide** (`CONFIG.md` / `CONFIG.zh.md`).
 
 ## [0.2.4] - 2026-09-03
 
@@ -149,9 +156,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Changed
 
+- **Verified against deepseek-harness `0.1.2-alpha.5` (latest `master`).** No DSH seam change since `0.1.2-alpha.4` affects this plugin — the `defineTool` / `ctx.credentials` / `ctx.settings` contracts and the WebAPI transport are stable, so no code change was needed. Version bumped to `0.2.3`, and the bilingual docs (release notes / update / install / uninstall / usage / config) were refreshed.
+
 ## [0.2.2] - 2026-09-02
 
 ### Changed
+
+- **Verified against deepseek-harness `0.1.2-alpha.4` (latest `master`).** No DSH seam change since `0.1.2-alpha.3` affects this plugin — the `defineTool` / `ctx.credentials` / `ctx.settings` contracts and the WebAPI transport are stable, so no code change was needed. Version bumped to `0.2.2`, and the bilingual docs (release notes / update / install / uninstall / usage / config) were refreshed.
 
 ## [0.2.1] - 2026-09-01
 
@@ -194,7 +205,7 @@ Initial release.
   - Credential-safe configuration: secrets resolved per operation through the DSH credential seam (`ctx.credentials.resolve`).
   - A `kingdee` settings namespace (Host half) with a browser settings card scaffold (Client half, `dsh.client`).
 - **Companion skill** — `kingdee-bos`: field/enum/status conventions, the bill state machine, tool usage, and the data-layer vs platform-plugin-layer boundary.
-- **Documentation** — bilingual (English
+- **Documentation** — bilingual (English and Simplified Chinese) `README` and per-release notes.
 - **Tests** — unit tests for the core (envelope parsing, config validation, auth headers, the full mock flow, and error mapping) using the Node built-in test runner.
 
 ### Security
@@ -205,3 +216,19 @@ Initial release.
 
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
+
+[0.9.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.0
+[0.8.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.1
+[0.8.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.0
+[0.7.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.7.0
+[0.6.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.6.1
+[0.6.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.6.0
+[0.5.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.5.0
+[0.4.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.4.0
+[0.3.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.3.0
+[0.2.4]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.4
+[0.2.3]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.3
+[0.2.2]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.2
+[0.2.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.1
+[0.2.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.2.0
+[0.1.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.1.0
