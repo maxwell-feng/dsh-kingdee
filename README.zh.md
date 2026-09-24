@@ -179,7 +179,7 @@ node scripts/check-docs-language.ts
 - [USAGE.zh.md](./USAGE.zh.md) —— 工具说明（含入参与示例）
 - [UPDATE.zh.md](./UPDATE.zh.md) —— 升级
 - [UNINSTALL.zh.md](./UNINSTALL.zh.md) —— 卸载
-- [CHANGELOG.md](./CHANGELOG.md) —— 版本历史
+- [CHANGELOG.zh.md](./CHANGELOG.zh.md) —— 版本历史
 - [docs/RELEASE.zh.md](./docs/RELEASE.zh.md) —— 当前版本发行说明
 
 ## 许可证

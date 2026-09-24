@@ -14,6 +14,10 @@ All notable changes to this project are documented here. The format follows [Kee
 - **Seam audit against the 0.1.7-rc.2 plugin-development documentation.** Every seam this plugin consumes is source-identical between `0.1.7-rc.1` and `0.1.7-rc.2`: the Host-side `Config` schema the Host discovers as `entry.fiber.runtime.Config` with its `.volatile()` fields and its per-entry form keyed by `entry.options.id`; `ctx.tools.register` with `defineTool`; `ctx.credentials.resolve` with `credentialRef`; and the browser half's contracts — `ctx.configForms.get(entryId)` returning `ConfigForm` (`getSnapshot` / `subscribe` / `set`), `PluginConfigViewProps` for the `plugins.row.config` and `plugins.bundle.config` slots, `ctx.locale`, and `ctx.slots`. The one changed file under the packages this plugin consumes, `@deepseek-ai/dsh-client-ui-settings`' `contract/slots.ts`, only adds two optional fields to `SettingsLauncherOwnerProps`, a type this plugin does not use. No plugin source changed.
 - **`pnpm-workspace.yaml`** now exempts the exact `0.1.7-rc.2` package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases.
 
+### Fixed
+
+- **One Chinese entry covered a release at less depth than English.** The 0.3.0 entry carried a single line against the English entry's seam detail, devDependency bump and documentation refresh; it now matches. The Chinese documentation list also links `CHANGELOG.zh.md` instead of the English changelog.
+
 ### Verification
 
 - `pnpm run typecheck` clean, clean build (`tsc` + `tsdown`), and **15** unit tests passing (`pnpm test`) against DeepSeek Harness `0.1.7-rc.2`.

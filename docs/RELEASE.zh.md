@@ -12,6 +12,10 @@
 - **按 0.1.7-rc.2 插件开发文档逐缝核对**：本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致——包括由 Host 以 `entry.fiber.runtime.Config` 读取的宿主侧 `Config` schema（含各 `.volatile()` 字段，以及按 `entry.options.id` 键控的逐条目表单）；`ctx.tools.register` 与 `defineTool`；`ctx.credentials.resolve` 与 `credentialRef`；以及浏览器半端的各项契约——`ctx.configForms.get(entryId)` 返回的 `ConfigForm`（`getSnapshot` / `subscribe` / `set`）、`plugins.row.config` 与 `plugins.bundle.config` 槽位所用的 `PluginConfigViewProps`、`ctx.locale` 与 `ctx.slots`。本插件所消费的包中唯一发生改动的文件是 `@deepseek-ai/dsh-client-ui-settings` 的 `contract/slots.ts`，它只为 `SettingsLauncherOwnerProps` 增加了两个可选字段，而本插件并不使用该类型。故本版不改动任何插件源码。
 - **`pnpm-workspace.yaml`**：改为对 `0.1.7-rc.2` 的确切包集合显式豁免 pnpm 的最小发布年龄闸门——否则 DSH 持续发布的预发行版会被该闸门拦下。
 
+## 修复
+
+- **中文更新日志的 0.3.0 条目已补齐到与英文同等的详略程度**，中文文档列表也改为指向 `CHANGELOG.zh.md` 而非英文更新日志。不涉及运行时逻辑、配置或工具接口变更。
+
 ## 更新说明
 
 - **升级命令**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.10.0`）。

@@ -16,6 +16,10 @@
 - **按 0.1.7-rc.2 插件开发文档逐缝核对**：本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致——包括由 Host 以 `entry.fiber.runtime.Config` 读取的宿主侧 `Config` schema（含各 `.volatile()` 字段，以及按 `entry.options.id` 键控的逐条目表单）；`ctx.tools.register` 与 `defineTool`；`ctx.credentials.resolve` 与 `credentialRef`；以及浏览器半端的各项契约——`ctx.configForms.get(entryId)` 返回的 `ConfigForm`（`getSnapshot` / `subscribe` / `set`）、`plugins.row.config` 与 `plugins.bundle.config` 槽位所用的 `PluginConfigViewProps`、`ctx.locale` 与 `ctx.slots`。本插件所消费的包中唯一发生改动的文件是 `@deepseek-ai/dsh-client-ui-settings` 的 `contract/slots.ts`，它只为 `SettingsLauncherOwnerProps` 增加了两个可选字段，而本插件并不使用该类型。故本版不改动任何插件源码。
 - **`pnpm-workspace.yaml`**：改为对 `0.1.7-rc.2` 的确切包集合显式豁免 pnpm 的最小发布年龄闸门——否则 DSH 持续发布的预发行版会被该闸门拦下。
 
+### 修复
+
+- **一处中文条目对同一版本的覆盖深度低于英文。** 0.3.0 条目原先只有一行，而英文条目包含缝接口说明、依赖升级与文档刷新三项内容；现已在中文侧对齐。中文文档列表也改为指向 `CHANGELOG.zh.md`，不再指向英文更新日志。
+
 ### 验证
 
 - `pnpm run typecheck` 零错误、构建干净（`tsc` + `tsdown`）、**15** 项单元测试在 DeepSeek Harness `0.1.7-rc.2` 上全部通过（`pnpm test`）。
@@ -190,11 +194,12 @@
 
 ### 变更
 
-- 适配 deepseek-harness `0.1.5-alpha.1`。
+- **按官方插件开发文档适配 deepseek-harness `0.1.5-alpha.1`**：将所有 `@deepseek-ai/dsh-*` 开发依赖升级至 `0.1.5-alpha.1`。运行时各项缝（`defineTool`、`ctx.tools.register`、`ctx.credentials.resolve`、`ctx.settings.installSection`）继续正常工作。
+- **刷新双语文档**（`README.md`、`README.zh.md`、`INSTALL.md`、`INSTALL.zh.md`、`UPDATE.md`、`UPDATE.zh.md`、`UNINSTALL.md`、`UNINSTALL.zh.md`），标注已在 DeepSeek Harness `0.1.5-alpha.1` 上验证。
 
 ### 新增
 
-- 新增独立双语配置说明文档（`CONFIG.md` / `CONFIG.zh.md`）。
+- **独立双语配置说明文档**（`CONFIG.md` / `CONFIG.zh.md`）。
 
 ---
 ## [0.2.4] - 2026-09-03

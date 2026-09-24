@@ -12,6 +12,10 @@ Fifteenth release of **dsh-kingdee**, the Kingdee Cloud Starry Sky secondary-dev
 - **Seam audit against the 0.1.7-rc.2 plugin-development documentation.** Every seam this plugin consumes is source-identical between `0.1.7-rc.1` and `0.1.7-rc.2`: the Host-side `Config` schema the Host discovers as `entry.fiber.runtime.Config` with its `.volatile()` fields and its per-entry form keyed by `entry.options.id`; `ctx.tools.register` with `defineTool`; `ctx.credentials.resolve` with `credentialRef`; and the browser half's contracts — `ctx.configForms.get(entryId)` returning `ConfigForm` (`getSnapshot` / `subscribe` / `set`), `PluginConfigViewProps` for the `plugins.row.config` and `plugins.bundle.config` slots, `ctx.locale`, and `ctx.slots`. The one changed file under the packages this plugin consumes, `@deepseek-ai/dsh-client-ui-settings`' `contract/slots.ts`, only adds two optional fields to `SettingsLauncherOwnerProps`, a type this plugin does not use. No plugin source changed.
 - **`pnpm-workspace.yaml`** now exempts the exact `0.1.7-rc.2` package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases.
 
+## Fixed
+
+- **The Chinese 0.3.0 changelog entry now covers that release at the same depth as English**, and the Chinese documentation list links `CHANGELOG.zh.md` rather than the English changelog. No runtime, configuration or tool-surface change.
+
 ## Update notes
 
 - **Update**: `dsh plugin update dsh-kingdee` (or `dsh plugin add dsh-kingdee@0.10.0`).
