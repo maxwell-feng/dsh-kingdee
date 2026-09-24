@@ -10,20 +10,22 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Changed
 
-- **Harness alignment.** `devDependencies` are pinned to DeepSeek Harness `0.1.7-rc.2`, the current release of the plugin-development documentation this plugin follows, and the plugin is verified against it. The `@deepseek-ai/dsh-*` peer ranges stay `^0.1.7-alpha.2` — the release line that introduced volatile config — so the plugin remains installable on every `0.1.7` prerelease from `0.1.7-alpha.2` through `0.1.7-rc.2`. `engines.dsh` stays `^0.1.7-alpha.2` and `engines.node` stays `>=22`.
-- **Seam audit against the 0.1.7-rc.2 plugin-development documentation.** Every seam this plugin consumes is source-identical between `0.1.7-rc.1` and `0.1.7-rc.2`: the Host-side `Config` schema the Host discovers as `entry.fiber.runtime.Config` with its `.volatile()` fields and its per-entry form keyed by `entry.options.id`; `ctx.tools.register` with `defineTool`; `ctx.credentials.resolve` with `credentialRef`; and the browser half's contracts — `ctx.configForms.get(entryId)` returning `ConfigForm` (`getSnapshot` / `subscribe` / `set`), `PluginConfigViewProps` for the `plugins.row.config` and `plugins.bundle.config` slots, `ctx.locale`, and `ctx.slots`. The one changed file under the packages this plugin consumes, `@deepseek-ai/dsh-client-ui-settings`' `contract/slots.ts`, only adds two optional fields to `SettingsLauncherOwnerProps`, a type this plugin does not use. No plugin source changed.
-- **`pnpm-workspace.yaml`** now exempts the exact `0.1.7-rc.2` package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases.
+- **Harness alignment.** Development dependencies move to DeepSeek Harness 0.1.7-rc.2, and this release is verified against it.
+- **Peer ranges are unchanged.** They stay ^0.1.7-alpha.2, the release line that introduced volatile config, so the plugin still installs on every 0.1.7 prerelease from alpha.2 through rc.2. The harness engine range and the Node engine range are unchanged.
+- **Seam audit.** Every interface this plugin uses is identical in the rc.1 and rc.2 sources: the configuration schema the Host reads, the per-entry settings form, tool registration, the credential resolver, the configuration form the browser half reads, and the locale and slot registries.
+- **Source change.** None. The only changed file in the packages this plugin consumes adds two optional fields to a type this plugin does not use.
+- **Supply-chain gate.** The workspace file now exempts the rc.2 packages from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases.
 
 ### Fixed
 
-- **One Chinese entry covered a release at less depth than English.** The 0.3.0 entry carried a single line against the English entry's seam detail, devDependency bump and documentation refresh; it now matches. The Chinese documentation list also links `CHANGELOG.zh.md` instead of the English changelog.
+- **One Chinese entry covered a release at less depth than English.** The 0.3.0 entry carried a single line against the English entry's seam detail, dependency bump and documentation refresh; it now matches. The Chinese documentation list also links CHANGELOG.zh.md instead of the English changelog.
 
 ### Verification
 
-- `pnpm run typecheck` clean, clean build (`tsc` + `tsdown`), and **15** unit tests passing (`pnpm test`) against DeepSeek Harness `0.1.7-rc.2`.
-- `pnpm install --frozen-lockfile` passes pnpm's supply-chain gate.
-- The declared DSH peers pass DeepSeek Harness's own `evaluatePluginCompatibility` (`dsh-v0.1.7-rc.2`) against runtimes `0.1.7-rc.2`, `0.1.7-rc.1` and `0.1.7-alpha.2`: admitted, no exemption required.
-- The shipped `dsh-kingdee-0.10.0.tgz` installs into a real `0.1.7-rc.2` profile (`dsh plugin --profile <name> add ./dsh-kingdee-0.10.0.tgz`) and composes as a `# == dsh-kingdee` layer under the row id `kingdee`; `dsh --profile <name> --dump-config` shows every schema default applied.
+- Type check and build are clean, and all 15 unit tests pass against DeepSeek Harness 0.1.7-rc.2.
+- A frozen-lockfile install passes pnpm's supply-chain gate.
+- The declared peers pass the host's own compatibility check on rc.2, rc.1 and alpha.2: admitted, no exemption required.
+- The shipped 0.10.0 tarball installs into a real 0.1.7-rc.2 profile and composes as a dsh-kingdee layer under the row id kingdee, with every schema default applied.
 
 ## [0.9.1] - 2026-09-23
 

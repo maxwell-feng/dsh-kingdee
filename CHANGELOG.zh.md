@@ -12,20 +12,22 @@
 
 ### 变更
 
-- **宿主对齐**：开发依赖锁定至 DeepSeek Harness `0.1.7-rc.2`——即本插件所遵循的插件开发文档的当前发行版——并已针对该版本完成验证。`@deepseek-ai/dsh-*` peer 区间保持 `^0.1.7-alpha.2`（引入易变配置的那条发布线），因此插件在 `0.1.7-alpha.2` 至 `0.1.7-rc.2` 的每一个 `0.1.7` 预发行版上均可安装。`engines.dsh` 保持 `^0.1.7-alpha.2`，`engines.node` 保持 `>=22`。
-- **按 0.1.7-rc.2 插件开发文档逐缝核对**：本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致——包括由 Host 以 `entry.fiber.runtime.Config` 读取的宿主侧 `Config` schema（含各 `.volatile()` 字段，以及按 `entry.options.id` 键控的逐条目表单）；`ctx.tools.register` 与 `defineTool`；`ctx.credentials.resolve` 与 `credentialRef`；以及浏览器半端的各项契约——`ctx.configForms.get(entryId)` 返回的 `ConfigForm`（`getSnapshot` / `subscribe` / `set`）、`plugins.row.config` 与 `plugins.bundle.config` 槽位所用的 `PluginConfigViewProps`、`ctx.locale` 与 `ctx.slots`。本插件所消费的包中唯一发生改动的文件是 `@deepseek-ai/dsh-client-ui-settings` 的 `contract/slots.ts`，它只为 `SettingsLauncherOwnerProps` 增加了两个可选字段，而本插件并不使用该类型。故本版不改动任何插件源码。
-- **`pnpm-workspace.yaml`**：改为对 `0.1.7-rc.2` 的确切包集合显式豁免 pnpm 的最小发布年龄闸门——否则 DSH 持续发布的预发行版会被该闸门拦下。
+- **宿主对齐**：开发依赖升级到 DeepSeek Harness 0.1.7-rc.2，并已针对该版本完成验证。
+- **peer 区间不变**：仍为 ^0.1.7-alpha.2，即引入易变配置的那条发布线，因此插件在 0.1.7-alpha.2 至 0.1.7-rc.2 的每一个预发行版上仍可安装。宿主引擎区间与 Node 引擎区间均未改动。
+- **接缝核对**：本插件使用的全部接口在 rc.1 与 rc.2 源码中完全一致——Host 读取的配置 schema、按条目渲染的设置表单、工具注册、凭据解析，以及浏览器半端读取的配置表单、语言与槽位注册表。
+- **源码改动**：无。本插件所消费的包中唯一变动的文件，只是给它并不使用的某个类型加了两个可选字段。
+- **供应链闸门**：工作区文件现对 rc.2 的各包豁免 pnpm 的最小发布年龄闸门，否则 DSH 持续发布的预发行版会被拦下。
 
 ### 修复
 
-- **一处中文条目对同一版本的覆盖深度低于英文。** 0.3.0 条目原先只有一行，而英文条目包含缝接口说明、依赖升级与文档刷新三项内容；现已在中文侧对齐。中文文档列表也改为指向 `CHANGELOG.zh.md`，不再指向英文更新日志。
+- **一处中文条目对同一版本的覆盖深度低于英文。** 0.3.0 条目原先只有一行，而英文条目包含接缝说明、依赖升级与文档刷新三项内容；现已在中文侧对齐。中文文档列表也改为指向 CHANGELOG.zh.md，不再指向英文更新日志。
 
 ### 验证
 
-- `pnpm run typecheck` 零错误、构建干净（`tsc` + `tsdown`）、**15** 项单元测试在 DeepSeek Harness `0.1.7-rc.2` 上全部通过（`pnpm test`）。
-- `pnpm install --frozen-lockfile` 通过 pnpm 的供应链策略校验。
-- 声明的 DSH peer 依赖经 DeepSeek Harness 自带的 `evaluatePluginCompatibility`（`dsh-v0.1.7-rc.2`）对运行时 `0.1.7-rc.2`、`0.1.7-rc.1`、`0.1.7-alpha.2` 校验均准入，无需豁免。
-- 实际发布的 `dsh-kingdee-0.10.0.tgz` 可装入真实的 `0.1.7-rc.2` profile（`dsh plugin --profile <name> add ./dsh-kingdee-0.10.0.tgz`），并以行 id `kingdee` 组合出 `# == dsh-kingdee` 层；`dsh --profile <name> --dump-config` 显示各 schema 默认值均已生效。
+- 类型检查与构建均干净，15 项单元测试在 DeepSeek Harness 0.1.7-rc.2 上全部通过。
+- 冻结锁文件安装通过 pnpm 的供应链策略校验。
+- 声明的 peer 依赖经宿主自带的兼容性校验在 rc.2、rc.1、alpha.2 上均准入，无需豁免。
+- 实际发布的 0.10.0 压缩包可装入真实的 0.1.7-rc.2 profile，并以行 id kingdee 组合出 dsh-kingdee 图层，各项 schema 默认值均已生效。
 
 ---
 
