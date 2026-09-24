@@ -2,13 +2,13 @@
 
 English | [Chinese](UPDATE.zh.md)
 
-> Verified against deepseek-harness **0.1.7-rc.1** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.7-rc.1` profile) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.1.7-rc.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.7-rc.2` profile) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 How to move **dsh-kingdee** to a newer version.
 
 ## Before you upgrade
 
-1. **Read the [CHANGELOG.md](./CHANGELOG.md)** for the target version. The biggest risk is a **breaking change**, and each release note marks them explicitly.
+1. **Read the [CHANGELOG.md](./CHANGELOG.md) or [CHANGELOG.zh.md](./CHANGELOG.zh.md)** for the target version. The biggest risk is a **breaking change**, and each release note marks them explicitly.
 2. **Back up your configuration.** The connection settings (`baseUrl`, `acctId`, `authMode`, …) live in the profile's `cordis.yml` or settings document; the secrets stay in the environment / credentials store and are not backed up by this plugin.
 
 ## Upgrade steps
@@ -25,6 +25,7 @@ pnpm install && pnpm run build
 
 ## After you upgrade
 
+- **0.10.0 aligns with DeepSeek Harness 0.1.7-rc.2.** No runtime code, configuration or tool surface change — the plugin behaves exactly as 0.9.1. `devDependencies` are pinned to `0.1.7-rc.2`; the `@deepseek-ai/dsh-*` peer ranges stay `^0.1.7-alpha.2`, so the plugin stays installable on every `0.1.7` prerelease from `0.1.7-alpha.2` through `0.1.7-rc.2`. Every seam this plugin consumes is source-identical between `0.1.7-rc.1` and `0.1.7-rc.2`, so no source changed and no configuration field moved. No action required.
 - **0.9.1 is a documentation and repository-tooling release.** No runtime code, configuration or tool surface changes — the plugin behaves exactly as 0.9.0. The repository now holds TypeScript sources only: the bilingual-documents gate moved from `scripts/check-docs-language.mjs` to `scripts/check-docs-language.ts`, which Node ≥22.19 runs by stripping the types (still with no dependencies installed, still before CI's install step), and `scripts/**/*.ts` joined the `tsconfig.json` include list. This release also corrects the Tools-table order in the README, the duplicated section numbers in the configuration guide, and restored changelog entries that had lost their text. No action required.
 - **0.9.0 raises the harness floor to DeepSeek Harness 0.1.7.** The plugin now requires `0.1.7-alpha.2` or newer and is verified on `0.1.7-rc.1`; `devDependencies` are pinned to `0.1.7-rc.1` and `engines.dsh` is `^0.1.7-alpha.2`. Configuration migrated to the 0.1.7 **volatile schema**: the same twelve fields with the same names, values and defaults, but `apply` now reads one live reference per field and captures them once per operation, so a saved edit and a rotated credential both reach the next operation without a restart. The plugin no longer registers a settings section (`ctx.settings.installSection` is gone) — the Host discovers the exported `Config` schema and renders this entry's form, keyed by the profile row id `kingdee`. **On a `0.1.6` host the plugin is refused at load**: DeepSeek Harness 0.1.7-rc.1 verifies a plugin's declared `@deepseek-ai/dsh*` peers against the running runtime before admitting the row, so upgrade the harness first, or grant the exact-version exemption DSH prints with `dsh plugin allow-version dsh-kingdee@0.9.0 <your-dsh-version>`. **No breaking config change** — `cordis.yml` and `cordis.patch.yml` keep working unchanged.
 - **0.8.0 adapts to DeepSeek Harness 0.1.6-alpha.2 client UI.** DSH 0.1.6-alpha.2 retired `settings.plugin.item` and introduced the Plugins manager page (`ui-plugin-manager`). The client configuration card now binds into `plugins.row.config` (`dsh-kingdee#kingdee`) and `plugins.bundle.config` (`dsh-kingdee`), providing both concise summary and full interactive configuration views.
@@ -42,7 +43,7 @@ pnpm install && pnpm run build
 - A credential reference name changes.
 - The config shape changes (a key is renamed or removed).
 
-Each of these is called out explicitly as breaking in the relevant [CHANGELOG.md](./CHANGELOG.md) entry.
+Each of these is called out explicitly as breaking in the relevant [CHANGELOG.md](./CHANGELOG.md) / [CHANGELOG.zh.md](./CHANGELOG.zh.md) entry.
 
 ## Rollback
 

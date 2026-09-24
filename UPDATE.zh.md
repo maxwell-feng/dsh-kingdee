@@ -2,7 +2,7 @@
 
 [英文](UPDATE.md) | 中文
 
-> 已在 deepseek-harness **0.1.7-rc.1** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.7-rc.1` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.1.7-rc.2** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.7-rc.2` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何将 **dsh-kingdee** 升级到更新版本。
 
@@ -25,6 +25,7 @@ pnpm install && pnpm run build
 
 ## 升级后
 
+- **0.10.0 完成与 DeepSeek Harness 0.1.7-rc.2 的对齐**：不改运行时逻辑、不改配置、不改工具接口，行为与 0.9.1 完全一致。开发依赖锁定至 `0.1.7-rc.2`；`@deepseek-ai/dsh-*` peer 区间保持 `^0.1.7-alpha.2`，因此插件在 `0.1.7-alpha.2` 至 `0.1.7-rc.2` 的每一个 `0.1.7` 预发行版上均可安装。本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致，故源码未作改动，配置字段也没有任何迁移。无需任何额外操作。
 - **0.9.1 为文档与仓库工程化修补版本**：不改运行时逻辑、不改配置、不改工具接口，行为与 0.9.0 完全一致。仓库现只保留 TypeScript 源码：双语文档闸门由 `scripts/check-docs-language.mjs` 迁至 `scripts/check-docs-language.ts`，Node ≥22.19 直接剥离类型运行（依旧无需安装依赖，依旧在 CI 安装依赖之前执行），且 `tsconfig.json` 的 include 新增 `scripts/**/*.ts`。本版还修正了 README 工具表顺序、配置文档中重复的章节编号，并恢复了丢失正文的更新日志条目。无需任何额外操作。
 - **0.9.0 将宿主基线抬升至 DeepSeek Harness 0.1.7**：插件现要求 `0.1.7-alpha.2` 或更新，并已在 `0.1.7-rc.1` 上验证；开发依赖锁定至 `0.1.7-rc.1`，`engines.dsh` 为 `^0.1.7-alpha.2`。配置迁移到 0.1.7 的**易变 schema**：十二个字段的名称、取值与默认值全部不变，但 `apply` 现在逐字段读取活引用，并在每次操作开始时一次性捕获，因此保存的修改与轮换后的凭据都无需重启即可对下一次操作生效。插件不再注册设置节（`ctx.settings.installSection` 已移除）——Host 自行读取导出的 `Config` schema 并以 profile 行 id `kingdee` 为键渲染该条目表单。**在 `0.1.6` 宿主上插件会在加载阶段被拒绝**：DSH 0.1.7-rc.1 会在加载插件行之前用运行时版本校验其 `@deepseek-ai/dsh*` peer 依赖，请先升级宿主，或按 DSH 打印的提示执行 `dsh plugin allow-version dsh-kingdee@0.9.0 <你的 dsh 版本>` 授予确切版本豁免。**配置无破坏性变更**——`cordis.yml` 与 `cordis.patch.yml` 原样继续可用。
 - **0.8.0 适配 DeepSeek Harness 0.1.6-alpha.2 客户端 UI 规范**：DSH 0.1.6-alpha.2 废弃了旧的 `settings.plugin.item` 插槽，改由独立的插件管理页面（`ui-plugin-manager`）承载。客户端配置卡片现注册到 `plugins.row.config`（`dsh-kingdee#kingdee`）与 `plugins.bundle.config`（`dsh-kingdee`），支持紧凑摘要与完整配置双视图。

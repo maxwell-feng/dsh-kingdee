@@ -2,7 +2,7 @@
 
 English | [Chinese](CONFIG.zh.md)
 
-> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.1.7-rc.1** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.7-rc.1` profile). **No live-tenant verification was performed.**
+> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.1.7-rc.2** (`pnpm run typecheck` clean, **15** unit tests passing via `pnpm test`, and the bundle patch applying as a `# == dsh-kingdee` layer in a real `0.1.7-rc.2` profile). **No live-tenant verification was performed.**
 
 This document details all configuration options, authentication modes, credential security mechanisms, environment variables, SSRF protection policies, and profile configuration methods for the `dsh-kingdee` plugin in DeepSeek Harness (DSH).
 

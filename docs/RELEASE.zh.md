@@ -1,30 +1,26 @@
-# 发行说明 — v0.9.1
+# 发行说明 — v0.10.0
 
 [英文](RELEASE.md) | 中文
 
-发布日期：2026-09-23
+发行日期：2026-09-24
 
-**dsh-kingdee**（面向 DeepSeek Harness 的金蝶云星空二次开发插件）发布 v0.9.1：本版为文档与仓库工程化修补版本，不改运行时逻辑、不改配置、不改工具接口，行为与 v0.9.0 完全一致。宿主与账套兼容性保持不变（DeepSeek Harness `0.1.7-rc.1`、金蝶云·星空 V9.1 企业版，向下兼容 V9.0 / V8.x）。
+**dsh-kingdee**（面向 DeepSeek Harness 的金蝶云星空二次开发插件）发布第十五版 v0.10.0。本版完成与 DeepSeek Harness `0.1.7-rc.2` 的对齐——即本插件所遵循的插件开发文档的当前发行版——不改运行时逻辑、不改配置、不改工具接口，行为与 v0.9.1 完全一致。账套兼容性保持不变（金蝶云·星空 V9.1 企业版，向下兼容 V9.0 / V8.x；**未进行真实账套联调验证**）。
 
 ## 变更
 
-- **仓库现只保留 TypeScript 源码。** 双语文档闸门由 `scripts/check-docs-language.mjs` 迁至 `scripts/check-docs-language.ts`。Node ≥22.19 会剥离类型，因此该闸门依旧无需安装任何依赖即可运行，CI 中也仍在安装依赖之前执行。`tsconfig.json` 的 include 新增 `scripts/**/*.ts`，`pnpm run typecheck` 会一并检查该闸门；`.gitattributes` 同时移除了针对 JavaScript 的换行规则。
-
-## 修复
-
-- **更新日志正文丢失。** 英文更新日志的 0.4.0、0.3.0、0.2.3、0.2.2 四个版本只剩空标题，0.1.0 的 `Documentation` 条目同样被截断。现全部恢复，且中文 0.1.0 条目已补齐到与英文同等的详略程度。
-- **配置文档章节编号错乱。** 该文档出现过两个 `## 3.` 章节，且 `2.1` / `2.2` 两个子节挂在错误的父节之下。现编号为 1–6，子节为 3.1 / 3.2，并已把「第 5 节」的交叉引用改指重编号后的 V9.1 符合性章节。
-- **清单顺序。** README 工具表现与 USAGE 的逐工具参考章节顺序保持一致；文档列表补上了此前遗漏的配置文档。
-- **重复分隔线与标题层级。** 移除中文更新日志中 6 处重复的 `---`；两侧现逐版本使用一致的标题层级，并各自补齐了此前缺失的链接定义块。
+- **宿主对齐**：开发依赖锁定至 DeepSeek Harness `0.1.7-rc.2`，并已针对该版本完成验证。`@deepseek-ai/dsh-*` peer 区间保持 `^0.1.7-alpha.2`（引入易变配置的那条发布线），因此插件在 `0.1.7-alpha.2` 至 `0.1.7-rc.2` 的每一个 `0.1.7` 预发行版上均可安装。`engines.dsh` 保持 `^0.1.7-alpha.2`，`engines.node` 保持 `>=22`。
+- **按 0.1.7-rc.2 插件开发文档逐缝核对**：本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致——包括由 Host 以 `entry.fiber.runtime.Config` 读取的宿主侧 `Config` schema（含各 `.volatile()` 字段，以及按 `entry.options.id` 键控的逐条目表单）；`ctx.tools.register` 与 `defineTool`；`ctx.credentials.resolve` 与 `credentialRef`；以及浏览器半端的各项契约——`ctx.configForms.get(entryId)` 返回的 `ConfigForm`（`getSnapshot` / `subscribe` / `set`）、`plugins.row.config` 与 `plugins.bundle.config` 槽位所用的 `PluginConfigViewProps`、`ctx.locale` 与 `ctx.slots`。本插件所消费的包中唯一发生改动的文件是 `@deepseek-ai/dsh-client-ui-settings` 的 `contract/slots.ts`，它只为 `SettingsLauncherOwnerProps` 增加了两个可选字段，而本插件并不使用该类型。故本版不改动任何插件源码。
+- **`pnpm-workspace.yaml`**：改为对 `0.1.7-rc.2` 的确切包集合显式豁免 pnpm 的最小发布年龄闸门——否则 DSH 持续发布的预发行版会被该闸门拦下。
 
 ## 更新说明
 
-- **升级命令**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.9.1`）。
+- **升级命令**：`dsh plugin update dsh-kingdee`（或 `dsh plugin add dsh-kingdee@0.10.0`）。
 - **环境要求**：harness `^0.1.7-alpha.2`，Node ≥22。
-- **无配置与接口变更** —— 十二个配置字段的名称、取值与默认值全部不变，`cordis.yml` 与 `cordis.patch.yml` 原样继续可用。详见 [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.9.1/USAGE.zh.md) / [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.9.1/USAGE.md)。
+- **无配置、接口与工具变更** —— 十二个配置字段的名称、取值与默认值全部不变，`cordis.yml` 与 `cordis.patch.yml` 原样继续可用。详见 [USAGE.zh.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.10.0/USAGE.zh.md) / [USAGE.md](https://github.com/maxwell-feng/dsh-kingdee/blob/v0.10.0/USAGE.md)。
 
 ## 验证
 
-- `pnpm run typecheck` 零错误（现覆盖 `scripts/`）、构建干净（`tsc` + `tsdown`）、**15** 项单元测试通过（`pnpm test`）。
-- `node scripts/check-docs-language.ts` 通过；发现上述缺陷的文档审计已无剩余发现。
-- 声明的 DSH peer 依赖仍通过 DeepSeek Harness 自带的 `evaluatePluginCompatibility`（`dsh-v0.1.7-rc.1`）对运行时 `0.1.7-rc.1` 的校验：准入通过，无需豁免。
+- `pnpm run typecheck` 零错误、构建干净（`tsc` + `tsdown`）、**15** 项单元测试在 DeepSeek Harness `0.1.7-rc.2` 上全部通过（`pnpm test`）。
+- `pnpm install --frozen-lockfile` 通过 pnpm 的供应链策略校验。
+- 声明的 DSH peer 依赖经 DeepSeek Harness 自带的 `evaluatePluginCompatibility`（`dsh-v0.1.7-rc.2`）对运行时 `0.1.7-rc.2`、`0.1.7-rc.1`、`0.1.7-alpha.2` 校验均准入，无需豁免。
+- 实际发布的 `dsh-kingdee-0.10.0.tgz` 可装入真实的 `0.1.7-rc.2` profile（`dsh plugin --profile <name> add ./dsh-kingdee-0.10.0.tgz`），并以行 id `kingdee` 组合出 `# == dsh-kingdee` 层；`dsh --profile <name> --dump-config` 显示各 schema 默认值均已生效。

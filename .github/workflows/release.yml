@@ -29,6 +29,15 @@ jobs:
       - name: Resolve tag
         id: tag
         run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+      - name: Compose the bilingual release body
+        # One release body carrying both languages: the English notes followed by
+        # the Chinese notes, each staying a complete document of its own.
+        run: |
+          {
+            cat docs/RELEASE.md
+            printf '\n---\n\n'
+            cat docs/RELEASE.zh.md
+          } > "$RUNNER_TEMP/release-body.md"
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -36,7 +45,7 @@ jobs:
           name: dsh-kingdee ${{ steps.tag.outputs.tag }}
           draft: false
           prerelease: false
-          body_path: docs/RELEASE.md
+          body_path: ${{ runner.temp }}/release-body.md
           # No documentation files are attached as release assets: the release
-          # carries its notes as the body only. The docs live in the repository
-          # (and in the npm package) and are linked from the notes.
+          # carries its bilingual notes as the body only. The docs live in the
+          # repository (and in the npm package) and are linked from the notes.

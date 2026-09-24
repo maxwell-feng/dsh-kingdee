@@ -4,6 +4,23 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.10.0] - 2026-09-24
+
+**DeepSeek Harness 0.1.7-rc.2 alignment** — no runtime, configuration or tool-surface change.
+
+### Changed
+
+- **Harness alignment.** `devDependencies` are pinned to DeepSeek Harness `0.1.7-rc.2`, the current release of the plugin-development documentation this plugin follows, and the plugin is verified against it. The `@deepseek-ai/dsh-*` peer ranges stay `^0.1.7-alpha.2` — the release line that introduced volatile config — so the plugin remains installable on every `0.1.7` prerelease from `0.1.7-alpha.2` through `0.1.7-rc.2`. `engines.dsh` stays `^0.1.7-alpha.2` and `engines.node` stays `>=22`.
+- **Seam audit against the 0.1.7-rc.2 plugin-development documentation.** Every seam this plugin consumes is source-identical between `0.1.7-rc.1` and `0.1.7-rc.2`: the Host-side `Config` schema the Host discovers as `entry.fiber.runtime.Config` with its `.volatile()` fields and its per-entry form keyed by `entry.options.id`; `ctx.tools.register` with `defineTool`; `ctx.credentials.resolve` with `credentialRef`; and the browser half's contracts — `ctx.configForms.get(entryId)` returning `ConfigForm` (`getSnapshot` / `subscribe` / `set`), `PluginConfigViewProps` for the `plugins.row.config` and `plugins.bundle.config` slots, `ctx.locale`, and `ctx.slots`. The one changed file under the packages this plugin consumes, `@deepseek-ai/dsh-client-ui-settings`' `contract/slots.ts`, only adds two optional fields to `SettingsLauncherOwnerProps`, a type this plugin does not use. No plugin source changed.
+- **`pnpm-workspace.yaml`** now exempts the exact `0.1.7-rc.2` package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases.
+
+### Verification
+
+- `pnpm run typecheck` clean, clean build (`tsc` + `tsdown`), and **15** unit tests passing (`pnpm test`) against DeepSeek Harness `0.1.7-rc.2`.
+- `pnpm install --frozen-lockfile` passes pnpm's supply-chain gate.
+- The declared DSH peers pass DeepSeek Harness's own `evaluatePluginCompatibility` (`dsh-v0.1.7-rc.2`) against runtimes `0.1.7-rc.2`, `0.1.7-rc.1` and `0.1.7-alpha.2`: admitted, no exemption required.
+- The shipped `dsh-kingdee-0.10.0.tgz` installs into a real `0.1.7-rc.2` profile (`dsh plugin --profile <name> add ./dsh-kingdee-0.10.0.tgz`) and composes as a `# == dsh-kingdee` layer under the row id `kingdee`; `dsh --profile <name> --dump-config` shows every schema default applied.
+
 ## [0.9.1] - 2026-09-23
 
 **Documentation and repository-tooling release** — no runtime, configuration or tool-surface change.
@@ -237,6 +254,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0
 [0.9.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.1
 [0.9.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.0
 [0.8.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.1

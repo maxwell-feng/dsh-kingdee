@@ -6,6 +6,25 @@
 
 ---
 
+## [0.10.0] - 2026-09-24
+
+**适配 DeepSeek Harness 0.1.7-rc.2** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **宿主对齐**：开发依赖锁定至 DeepSeek Harness `0.1.7-rc.2`——即本插件所遵循的插件开发文档的当前发行版——并已针对该版本完成验证。`@deepseek-ai/dsh-*` peer 区间保持 `^0.1.7-alpha.2`（引入易变配置的那条发布线），因此插件在 `0.1.7-alpha.2` 至 `0.1.7-rc.2` 的每一个 `0.1.7` 预发行版上均可安装。`engines.dsh` 保持 `^0.1.7-alpha.2`，`engines.node` 保持 `>=22`。
+- **按 0.1.7-rc.2 插件开发文档逐缝核对**：本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致——包括由 Host 以 `entry.fiber.runtime.Config` 读取的宿主侧 `Config` schema（含各 `.volatile()` 字段，以及按 `entry.options.id` 键控的逐条目表单）；`ctx.tools.register` 与 `defineTool`；`ctx.credentials.resolve` 与 `credentialRef`；以及浏览器半端的各项契约——`ctx.configForms.get(entryId)` 返回的 `ConfigForm`（`getSnapshot` / `subscribe` / `set`）、`plugins.row.config` 与 `plugins.bundle.config` 槽位所用的 `PluginConfigViewProps`、`ctx.locale` 与 `ctx.slots`。本插件所消费的包中唯一发生改动的文件是 `@deepseek-ai/dsh-client-ui-settings` 的 `contract/slots.ts`，它只为 `SettingsLauncherOwnerProps` 增加了两个可选字段，而本插件并不使用该类型。故本版不改动任何插件源码。
+- **`pnpm-workspace.yaml`**：改为对 `0.1.7-rc.2` 的确切包集合显式豁免 pnpm 的最小发布年龄闸门——否则 DSH 持续发布的预发行版会被该闸门拦下。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、构建干净（`tsc` + `tsdown`）、**15** 项单元测试在 DeepSeek Harness `0.1.7-rc.2` 上全部通过（`pnpm test`）。
+- `pnpm install --frozen-lockfile` 通过 pnpm 的供应链策略校验。
+- 声明的 DSH peer 依赖经 DeepSeek Harness 自带的 `evaluatePluginCompatibility`（`dsh-v0.1.7-rc.2`）对运行时 `0.1.7-rc.2`、`0.1.7-rc.1`、`0.1.7-alpha.2` 校验均准入，无需豁免。
+- 实际发布的 `dsh-kingdee-0.10.0.tgz` 可装入真实的 `0.1.7-rc.2` profile（`dsh plugin --profile <name> add ./dsh-kingdee-0.10.0.tgz`），并以行 id `kingdee` 组合出 `# == dsh-kingdee` 层；`dsh --profile <name> --dump-config` 显示各 schema 默认值均已生效。
+
+---
+
 ## [0.9.1] - 2026-09-23
 
 **文档与仓库工程化修补版本** —— 不改运行时逻辑、不改配置项、不改工具接口。
@@ -263,6 +282,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0
 [0.9.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.1
 [0.9.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.0
 [0.8.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.8.1
