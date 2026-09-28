@@ -2,7 +2,7 @@
 
 English | [Chinese](INSTALL.zh.md)
 
-> Verified against deepseek-harness **0.2.0-rc.1** with plugin **0.11.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, `pnpm install` passing pnpm's supply-chain gate, and the harness's own compatibility check admitting `dsh-kingdee@0.11.0` on runtime `0.2.0-rc.1`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.** For full configuration details, see [CONFIG.md](./CONFIG.md).
+> Verified against deepseek-harness **0.2.0-rc.1** with plugin **0.11.1** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, `pnpm install` passing pnpm's supply-chain gate, and the harness's own compatibility check admitting `dsh-kingdee@0.11.1` on runtime `0.2.0-rc.1`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.** For full configuration details, see [CONFIG.md](./CONFIG.md).
 
 This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harness (DSH) profile.
 
@@ -21,7 +21,7 @@ The package ships as a DSH **bundle** (an npm package that contributes a configu
 dsh plugin add dsh-kingdee
 ```
 
-> **Upgrading from 0.10.0 on DeepSeek Harness 0.2.0-rc.1.** 0.11.0 declares `@deepseek-ai/dsh-credentials` and `@deepseek-ai/dsh-tools` as `>=0.1.7-alpha.2 <0.3.0`, so the harness's peer-compatibility gate admits it on `0.1.7-alpha.2` through `0.2.x` (and still refuses it on `0.1.6-alpha.2`). The previous `0.10.0` declares `^0.1.7-alpha.2`, which excludes 0.2.x, so on 0.2.0-rc.1 its row is refused before it loads: the harness checks every `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer entry against the single running runtime version, with prereleases participating in range matching, and `engines.dsh` is not what the gate reads. Upgrade with `dsh plugin add dsh-kingdee@0.11.0` (or `dsh plugin update dsh-kingdee`). `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk` (or the plugin manager) only records an **exact-version exemption** in the profile's `compatibility.json`: it is a risk acknowledgement, not a compatibility fix, and neither a plugin upgrade nor a harness upgrade inherits the grant.
+> **Upgrading from 0.10.0 on DeepSeek Harness 0.2.0-rc.1.** 0.11.1 declares `@deepseek-ai/dsh-credentials` and `@deepseek-ai/dsh-tools` as `>=0.1.7-alpha.2 <0.3.0`, so the harness's peer-compatibility gate admits it on `0.1.7-alpha.2` through `0.2.x` (and still refuses it on `0.1.6-alpha.2`). The previous `0.10.0` declares `^0.1.7-alpha.2`, which excludes 0.2.x, so on 0.2.0-rc.1 its row is refused before it loads: the harness checks every `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer entry against the single running runtime version, with prereleases participating in range matching, and `engines.dsh` is not what the gate reads. Upgrade with `dsh plugin add dsh-kingdee@0.11.1` (or `dsh plugin update dsh-kingdee`). `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk` (or the plugin manager) only records an **exact-version exemption** in the profile's `compatibility.json`: it is a risk acknowledgement, not a compatibility fix, and neither a plugin upgrade nor a harness upgrade inherits the grant.
 
 Or, from a source checkout, add it to your `cordis.yml` (or a `cordis.patch.yml` layer):
 

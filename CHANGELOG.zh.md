@@ -6,6 +6,24 @@
 
 ---
 
+## [0.11.1] - 2026-09-28
+
+**纯文档修正版本** —— 不改运行时逻辑、不改配置、不改工具接口。
+
+### 修复
+
+- **英文 0.7.0 条目比中文单薄。** 缺少第三方 `LoginByAppSecret` 登录、`app` 模式取消伪造 `KDAuthentication` 请求头并新增 `userNameRef` 必填要求，以及曾导致真实账套认证失败的登录响应修复（`parseLoginOutcome`）。三项均已补齐。
+- **中文 0.6.1 的分类标题与一条空泛条目。** `### 移除与代码精简` 改为 `### 移除`，与英文分类一致；末尾那条英文侧没有对应内容的填充条目已删除。
+- **同一示例出现两个占位域名。** 配置指南用 `https://erp.mycompany.com/K3Cloud`，其他指南用 `https://erp.example.com/K3Cloud`；两侧现统一为 `erp.example.com`。
+- **中文配置指南把凭据缝契约写成散文**，而英文为两条列表；中文侧现改为相同的两条列表。
+- **中文安装指南漏列 `172.16.0.0/12`** 这一被拦截的私网网段。
+- **中文指南的章节编号现与英文一致。** 安装与卸载指南的顶层章节原用中文数字，而英文用 `1.`–`5.`；两侧现统一编号，可逐节对齐。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、`pnpm run build` 干净，**15** 项单元测试在 DeepSeek Harness 0.2.0-rc.1 上全部通过；`package.json` 仅版本号变化，peer 声明与已被闸门准入的 0.11.0 相同。
+- `node scripts/check-docs-language.ts` 通过；另对全部双语文档做了两遍机械校对（结构与代码围栏对齐、乱码与控制字符扫描、更新日志由新到旧排序、链接引用覆盖、逐节条目对应）。
+
 ## [0.11.0] - 2026-09-28
 
 **适配 DeepSeek Harness 0.2.0-rc.1，并放宽 peer 区间** —— 不改运行时逻辑、不改配置项、不改工具接口。
@@ -163,14 +181,13 @@
 ---
 ## [0.6.1] - 2026-09-13
 
-### 移除与代码精简
+### 移除
 
 - **清理死代码与未使用的遗留接口**：
   - 彻底移除 `src/kd-core/types.ts` 中废弃未被引用的 `KdToolResult` 接口定义及核心导出（工具输出全面统一为 `@deepseek-ai/dsh-util-values` 规范的 `JsonValue` 开放值模型）；
   - 移除 `src/kd-core/envelope.ts` 中内部未引用的 `parseEnvelopeFromText` 函数及其单测；
   - 移除 `src/kd-core/errors.ts` 中从未被业务或捕获层消费的死错误码 `'kd/not-found'`；
-  - 精简 `pnpm-workspace.yaml` 中的历史多版本白名单规则，统一锁定为 `0.1.5-rc.2`；
-  - 进一步优化包体积，提升运行效率与类型纯净度。
+  - 精简 `pnpm-workspace.yaml` 中的历史多版本白名单规则，统一锁定为 `0.1.5-rc.2`。
 
 ---
 
@@ -314,6 +331,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.11.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.1
 [0.11.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.0
 [0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0
 [0.9.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.1

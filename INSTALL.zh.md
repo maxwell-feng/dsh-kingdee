@@ -2,7 +2,7 @@
 
 [英文](INSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）、`pnpm install` 通过 pnpm 的供应链闸门，且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
+> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.1** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）、`pnpm install` 通过 pnpm 的供应链闸门，且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.1`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
@@ -11,9 +11,9 @@
 - 已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 并自带 Web GUI（具备 `dsh` CLI，且已具备 `tools`、`credentials`、`settings` 这几个 peer 包）。
 - Node ≥ 22（仅核心库/测试需要）。
 - 具备一个可访问的、**已启用经典 WebAPI** 的金蝶云·星空实例（**V9.1 企业版**，向下兼容 V9.0 / V8.x），以及有效账套账号。账套需开放经典 `.../K3Cloud` stub 路径；仅提供公有云 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）的账套不在支持范围内（见 [README.zh.md](./README.zh.md) 的已知限制）。
-- **网络与 SSRF 安全要求**：配置的 `baseUrl` 必须采用 `http:` 或 `https:` 协议。为满足企业级网络安全基线，插件内置了 SSRF 深度防护机制，默认拒绝直接请求 `localhost`、环回地址或未经验证的私网保留网段（如 `127.0.0.0/8`、`192.168.0.0/16`、`10.0.0.0/8` 等）。生产中请配置企业专属解析域名或通过安全反向代理网关接入（如 `https://erp.example.com/K3Cloud`）。
+- **网络与 SSRF 安全要求**：配置的 `baseUrl` 必须采用 `http:` 或 `https:` 协议。为满足企业级网络安全基线，插件内置了 SSRF 深度防护机制，默认拒绝直接请求 `localhost`、环回地址或未经验证的私网保留网段（如 `127.0.0.0/8`、`10.0.0.0/8`、`192.168.0.0/16`、`172.16.0.0/12` 等）。生产中请配置企业专属解析域名或通过安全反向代理网关接入（如 `https://erp.example.com/K3Cloud`）。
 
-## 一、添加 bundle
+## 1. 添加 bundle
 
 本包以 DSH **bundle**（一个贡献配置层的 npm 包）形式发布。安装到 profile：
 
@@ -21,7 +21,7 @@
 dsh plugin add dsh-kingdee
 ```
 
-> **在 DeepSeek Harness 0.2.0-rc.1 上从 0.10.0 升级。** 0.11.0 把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 声明为 `>=0.1.7-alpha.2 <0.3.0`，因此宿主自带的 peer 兼容性闸门会在 `0.1.7-alpha.2` 至 `0.2.x` 上准入本插件（在 `0.1.6-alpha.2` 上仍会拒绝）。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.0-rc.1 上它的行会在加载前被拒绝：宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配，闸门读取的**不是** `engines.dsh`。请执行 `dsh plugin add dsh-kingdee@0.11.0`（或 `dsh plugin update dsh-kingdee`）升级。`dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或插件管理器）只会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**：那是风险确认而非兼容性修复，插件升级与宿主升级都不会继承该授权。
+> **在 DeepSeek Harness 0.2.0-rc.1 上从 0.10.0 升级。** 0.11.1 把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 声明为 `>=0.1.7-alpha.2 <0.3.0`，因此宿主自带的 peer 兼容性闸门会在 `0.1.7-alpha.2` 至 `0.2.x` 上准入本插件（在 `0.1.6-alpha.2` 上仍会拒绝）。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.0-rc.1 上它的行会在加载前被拒绝：宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配，闸门读取的**不是** `engines.dsh`。请执行 `dsh plugin add dsh-kingdee@0.11.1`（或 `dsh plugin update dsh-kingdee`）升级。`dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或插件管理器）只会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**：那是风险确认而非兼容性修复，插件升级与宿主升级都不会继承该授权。
 
 或从源码检出，加进你的 `cordis.yml`（或某一层 `cordis.patch.yml`）：
 
@@ -44,7 +44,7 @@ dsh plugin add dsh-kingdee
 
 > `name: dsh-kingdee` 引用已安装的包（其 `main` 即构建后的 host 入口 `lib/index.js`）。从源码检出开发时改用 `name: ./src/index.ts`——DSH loader 会直接编译 TS。
 
-## 二、配置连接
+## 2. 配置连接
 
 在 **Plugins → kingdee** 设置卡片，或上述 `config:` 块中设置这些值：
 
@@ -65,7 +65,7 @@ dsh plugin add dsh-kingdee
 
 WebAPI 服务名（如 `LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft`、`QueryBusinessData`）可能随金蝶版本略有差异。若某工具提示未知服务，请在 `serviceEndpoints` 中覆盖对应项（如 `dynamicFormService`、`listDataCenterService`、`logOutService`、`loginService`、`loginByAppSecretService`、`stubSuffix`）。其中 `listDataCenterService` 的服务名尤其随版本而异且属社区验证结论 —— 请在产品内「公共设置 → 动态服务定义 → WebAPI」核对。
 
-## 三、提供密钥
+## 3. 提供密钥
 
 密钥是**引用**（环境变量名），不是字面值。把值放进环境变量或凭据库即可；插件**每次操作都重新解析**，因此轮换后无需重启即可在下一次调用生效。所有系统使用相同的引用名，只是设置环境变量的方式不同。
 
@@ -121,7 +121,7 @@ setx DSH_KINGDEE_APP_SECRET your_app_secret
 
 登录服务返回的是它自身的 `{"LoginResultType": 1}` 结构，而不是其他操作返回的 `Result`/`IsSuccess` 业务信封；插件单独判定该响应，非 `1` 时以 `kd/auth-failed` 呈现。
 
-## 四、验证
+## 4. 验证
 
 让 agent 对已知 FormId 发起查询：
 

@@ -24,11 +24,11 @@
 dsh plugin add dsh-kingdee
 ```
 
-> **面向 DeepSeek Harness 0.2.0-rc.1，旧版本必须升级。** 0.11.0 完成对 DeepSeek Harness 0.2.0-rc.1 的适配。此前的 `0.10.0` 在 0.2.0-rc.1 上**会在加载阶段被拒绝**：它把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 两个 peer 声明为 `^0.1.7-alpha.2`，该区间不含 0.2.x；而 0.2.0-rc.1 会在插件行加载之前，用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配（闸门读取的**不是** `engines.dsh`）。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。0.11.0 把两个 peer 区间放宽为 `>=0.1.7-alpha.2 <0.3.0`，因此在 `0.1.7-alpha.2` 至 `0.2.x` 上均被准入 —— 但在 `0.1.6-alpha.2` 上仍会被拒绝。在 0.2.0-rc.1 上请用 `dsh plugin add dsh-kingdee@0.11.0` 升级。
+> **面向 DeepSeek Harness 0.2.0-rc.1，旧版本必须升级。** 0.11.1 完成对 DeepSeek Harness 0.2.0-rc.1 的适配。此前的 `0.10.0` 在 0.2.0-rc.1 上**会在加载阶段被拒绝**：它把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 两个 peer 声明为 `^0.1.7-alpha.2`，该区间不含 0.2.x；而 0.2.0-rc.1 会在插件行加载之前，用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配（闸门读取的**不是** `engines.dsh`）。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。0.11.1 把两个 peer 区间放宽为 `>=0.1.7-alpha.2 <0.3.0`，因此在 `0.1.7-alpha.2` 至 `0.2.x` 上均被准入 —— 但在 `0.1.6-alpha.2` 上仍会被拒绝。在 0.2.0-rc.1 上请用 `dsh plugin add dsh-kingdee@0.11.1` 升级。
 >
 > 被拒时宿主会打印的补救方式是 `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或使用插件管理器），它会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**。这是风险确认，而不是兼容性修复；且它只对一个确切插件版本、一个确切运行时生效：插件升级或宿主升级都不会继承该授权。
 
-> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.0** 验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）、`pnpm install` 通过 pnpm 的供应链闸门，且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.0`。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.1** 验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）、`pnpm install` 通过 pnpm 的供应链闸门，且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.1`。**未进行真实账套联调验证。**
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 

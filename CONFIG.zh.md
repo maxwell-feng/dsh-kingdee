@@ -2,7 +2,7 @@
 
 [英文](CONFIG.md) | 简体中文
 
-> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.2.0-rc.1** 与插件 **0.11.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.0`）。`@deepseek-ai/dsh-*` peer 区间为 `>=0.1.7-alpha.2 <0.3.0`。**未进行真实账套联调验证。**
+> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.2.0-rc.1** 与插件 **0.11.1** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.1`）。`@deepseek-ai/dsh-*` peer 区间为 `>=0.1.7-alpha.2 <0.3.0`。**未进行真实账套联调验证。**
 
 本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 
@@ -57,7 +57,9 @@
 
 ## 3. 凭据安全配置（推荐）
 
-为了确保凭据安全，**严禁将账套密码或 AppSecret 明文写在配置文件或代码中**。`dsh-kingdee` 遵循 DeepSeek Harness 的凭据缝（Credentials Seam）规范，在每次请求时动态解析环境变量。修改环境变量后无需重启 DSH 即可在下次调用时立即生效。
+为了确保凭据安全，**严禁将账套密码或 AppSecret 明文写在配置文件或代码中**。`dsh-kingdee` 遵循 DeepSeek Harness 的凭据缝（Credentials Seam）规范：
+- 每次操作都会从环境变量动态解析凭据。
+- 轮换或修改环境变量无需重启 DSH 宿主。
 
 ### 3.1 用户名密码模式 (`authMode: "user"`)
 

@@ -4,6 +4,24 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.11.1] - 2026-09-28
+
+**Documentation-only release** — no runtime, configuration or tool-surface change.
+
+### Fixed
+
+- **English 0.7.0 entry was thinner than the Chinese one.** It was missing the third-party `LoginByAppSecret` login, the removal of the fabricated `KDAuthentication` header together with the new `userNameRef` requirement in `app` mode, and the login-response fix (`parseLoginOutcome`) that had made authentication fail on a real tenant. All three are now documented.
+- **Chinese 0.6.1 category heading and one vague item.** The Chinese heading now reads simply *Removed*, matching the English `### Removed`, and the trailing filler item with no English counterpart was removed.
+- **Two different placeholder hosts for one example.** The configuration guide used `https://erp.mycompany.com/K3Cloud` where the other guides use `https://erp.example.com/K3Cloud`; both languages now use `erp.example.com`.
+- **Chinese configuration guide stated the credential-seam contract as prose** where English lists two bullets; the Chinese side now carries the same two bullets.
+- **Chinese install guide omitted `172.16.0.0/12`** from the blocked private ranges listed in the prerequisites.
+- **Chinese guide section numbers now match the English ones.** The install and uninstall guides numbered their top-level sections with Chinese numerals where English uses `1.`–`5.`; both languages now number them the same way, so every pair lines up section for section.
+
+### Verification
+
+- `pnpm run typecheck` clean, `pnpm run build` clean, and all **15** unit tests pass against DeepSeek Harness 0.2.0-rc.1; `package.json` changes in its version only, so the peer declarations are the 0.11.0 ones the harness gate already admits.
+- `node scripts/check-docs-language.ts` green, plus two mechanical proofreading passes over every bilingual pair: structure and code-fence parity, mojibake and control-character scan, newest-first changelog ordering, link-reference coverage, and per-section bullet correspondence.
+
 ## [0.11.0] - 2026-09-28
 
 **DeepSeek Harness 0.2.0-rc.1 alignment and peer-range widening** — no runtime, configuration or tool-surface change.
@@ -122,6 +140,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Added
 
 - **Kingdee Cloud Starry Sky V9.1 Enterprise Edition conformance**:
+ - **Third-party application login (`AuthService.LoginByAppSecret`)**: `authMode: "app"` now performs a real `LoginByAppSecret` login (payload `acctID` / `username` / `appid` / `appsecret` / `lcid`) and requires `userNameRef` (the integration user) in addition to `appId` / `appSecret`, establishing the same `kdservice-sessionid` session as `user` mode. Kingdee refuses account/password login on public-cloud tenants opened after 2022-11-29, so those tenants must use this mode.
  - **`lcid` config key**: New optional locale id (number, default `2052` = zh-CN), sent to both login services.
  - **New endpoint fields**: `serviceEndpoints` gained `loginByAppSecretService` (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`) and `stubSuffix` (default `.common.kdsvc`).
  - **Session on both channels**: the session is attached as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`).
@@ -129,6 +148,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Changed
 
 - **Breaking-ish**:
+ - `app` mode no longer fabricates a `KDAuthentication` header: it authenticates through `LoginByAppSecret` and then reuses the session exactly as `user` mode does, and the integration user name (`userNameRef`) is now required.
  - Every stub URL now ends with `.common.kdsvc`; the login stub is `AuthService.ValidateUser` and the logout stub `AuthService.LogOut` (previously documented through `LoginService.*`).
  - `kingdee_invoke` / `KdInvokeParams.serviceName` now takes the custom-stub path `{namespace}.{class}.{method},{assembly}` (e.g. `GetCust.GetCust.ExecuteService,GetCust`), which **replaces** the dynamic-form URL segment; `.common.kdsvc` is appended automatically.
  - `serviceEndpoints.servicePrefix` was removed, replaced by `loginByAppSecretService` + `stubSuffix`.
@@ -137,6 +157,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Fixed
 
+- **Login responses were parsed as business envelopes, so a successful login reported failure**: the login services answer with their **own** shape (`{"LoginResultType": 1}`), not the `Result` / `IsSuccess` business envelope every other operation returns. Feeding the login response into the business-envelope assertion left `IsSuccess` absent → treated as `false` → **authentication could never succeed against a real tenant**. The login outcome is now classified separately by `parseLoginOutcome` (exported from the `kd-core` subpath): a numeric `LoginResultType` decides it (`1` is success, anything else throws `kd/auth-failed`), and a response without `LoginResultType` falls back to the business envelope. The offline mock now answers the login stub with the real `{"LoginResultType": 1}` shape so this path stays covered.
 - **Custom BOS stub URL**: the path was previously prefixed with `Kingdee.BOS.WebApi.ServicesStub.`, which no BOS custom service can resolve; a custom path now replaces that segment entirely.
 - **Missing `lcid`**: the login payload now carries `lcid`, which was previously absent.
 - **Nonsensical `license: appId`** removed from the `user`-mode login payload.
@@ -283,6 +304,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.11.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.1
 [0.11.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.0
 [0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0
 [0.9.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.1
