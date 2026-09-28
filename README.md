@@ -24,7 +24,11 @@ English | [Chinese](README.zh.md)
 dsh plugin add dsh-kingdee
 ```
 
-> Verified against deepseek-harness **0.1.7-rc.2**: `pnpm run typecheck` clean, **15** unit tests passing (`pnpm test`), and the bundle patch applying as a `# == dsh-kingdee` layer when installed into a real `0.1.7-rc.2` profile (`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`). **No live-tenant verification was performed.**
+> **Previous releases must be upgraded for DeepSeek Harness 0.2.0-rc.1.** 0.11.0 adapts the plugin to DeepSeek Harness 0.2.0-rc.1. The previous `0.10.0` is **refused at load** on 0.2.0-rc.1: it declared its `@deepseek-ai/dsh-credentials` and `@deepseek-ai/dsh-tools` peers as `^0.1.7-alpha.2`, which excludes 0.2.x, and 0.2.0-rc.1 checks every `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer entry against the single running runtime version before a plugin row loads, with prereleases participating in range matching (`engines.dsh` is **not** what the gate reads). An incompatible row is refused and an incompatible bundle is skipped. 0.11.0 widens both peers to `>=0.1.7-alpha.2 <0.3.0`, so it is admitted on `0.1.7-alpha.2` through `0.2.x` — and still refused on `0.1.6-alpha.2`. On 0.2.0-rc.1, upgrade with `dsh plugin add dsh-kingdee@0.11.0`.
+>
+> The remedy the harness prints for a refusal is `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk` (or the plugin manager), which records an **exact-version exemption** in the profile's `compatibility.json`. That is a risk acknowledgement, not a compatibility fix, and it grants one exact plugin version on one exact runtime: a plugin upgrade or a harness upgrade does not inherit the grant.
+
+> Verified against deepseek-harness **0.2.0-rc.1** with plugin **0.11.0**: `pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing (`pnpm test`), `pnpm install` passing pnpm's supply-chain gate, and the harness's own compatibility check admitting `dsh-kingdee@0.11.0` on runtime `0.2.0-rc.1`. **No live-tenant verification was performed.**
 
 See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, [USAGE.md](./USAGE.md) for the tool reference, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md) / [CHANGELOG.zh.md](./CHANGELOG.zh.md).
 
@@ -173,7 +177,7 @@ node scripts/check-docs-language.ts
 - **Public-cloud OpenAPI gateway not implemented.** An increasing number of Kingdee public-cloud tenants require the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) with API-signature authentication (`LoginByApiSignHeaders`). This plugin does **not** implement that path — it speaks the classic `kdsvc` session protocol only. On such a tenant a classic session cannot be established at all, so every operation fails at login; a tenant/gateway that still exposes the classic WebAPI is required.
 - **The platform-plugin layer is out of reach.** Server-side C# form/list plugins, UI layout and background events belong to the BOS integration development environment and are **not** accessible through the WebAPI (see the scope note above).
 - **The `./client` bundle reproduces its artifact.** The shared `clientBundle` tsdown preset lives inside the harness repository and is not published, so this package emits the documented factory format itself.
-- **No live-tenant verification.** Everything documented here is verified against the type checker, the unit-test suite and a real `0.1.7-rc.2` profile install — not against a running Kingdee tenant.
+- **No live-tenant verification.** Everything documented here is verified against the type checker, the build, the unit-test suite and the harness's own plugin compatibility check — not against a running Kingdee tenant.
 
 ## Documentation
 

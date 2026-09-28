@@ -2,7 +2,7 @@
 
 [英文](UPDATE.md) | 中文
 
-> 已在 deepseek-harness **0.1.7-rc.2** 上验证（`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.7-rc.2` profile 中作为 `# == dsh-kingdee` 层正常生效），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）、`pnpm install` 通过 pnpm 的供应链闸门，且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何将 **dsh-kingdee** 升级到更新版本。
 
@@ -25,6 +25,7 @@ pnpm install && pnpm run build
 
 ## 升级后
 
+- **0.11.0 完成与 DeepSeek Harness 0.2.0-rc.1 的适配 —— 而 0.10.0 在该版本上会被拒绝。** 不改运行时逻辑、不改配置、不改工具接口：清单改动仅限版本号、`@deepseek-ai/dsh-*` peer 区间、锁定的开发依赖与工作区的供应链豁免。`@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 的 peer 区间由 `^0.1.7-alpha.2` 改为 `>=0.1.7-alpha.2 <0.3.0`，且每个 `@deepseek-ai/dsh-*` 开发依赖都锁定至 `0.2.0-rc.1`（`@deepseek-ai/cordis` 保持 `^4.0.4`、`@deepseek-ai/schemastery` 保持 `^3.18.4`）。DeepSeek Harness 0.2.0-rc.1 引入了**硬性 peer 兼容性闸门**：在插件行加载之前，宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，预发行版参与区间匹配；不兼容的行会被拒绝（不兼容的 bundle 会被跳过）。闸门读取的**不是** `engines.dsh`，因此 0.10.0 声明的 `^0.1.7-alpha.2`（不含 0.2.x）使该版本在 **0.2.0-rc.1 上被直接拒绝**。在 0.2.0-rc.1 上请执行 `dsh plugin add dsh-kingdee@0.11.0`（或 `dsh plugin update dsh-kingdee`）升级。0.11.0 在 `0.1.7-alpha.2` 至 `0.2.x` 上均被准入，但在 `0.1.6-alpha.2` 上仍会被拒绝。`dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或插件管理器）只会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**：那是风险确认而非兼容性修复，插件升级与宿主升级都不会继承该授权。
 - **0.10.0 完成与 DeepSeek Harness 0.1.7-rc.2 的对齐**：不改运行时逻辑、不改配置、不改工具接口，行为与 0.9.1 完全一致。开发依赖锁定至 `0.1.7-rc.2`；`@deepseek-ai/dsh-*` peer 区间保持 `^0.1.7-alpha.2`，因此插件在 `0.1.7-alpha.2` 至 `0.1.7-rc.2` 的每一个 `0.1.7` 预发行版上均可安装。本插件消费的全部接缝在 `0.1.7-rc.1` 与 `0.1.7-rc.2` 之间源码完全一致，故源码未作改动，配置字段也没有任何迁移。无需任何额外操作。
 - **0.9.1 为文档与仓库工程化修补版本**：不改运行时逻辑、不改配置、不改工具接口，行为与 0.9.0 完全一致。仓库现只保留 TypeScript 源码：双语文档闸门由 `scripts/check-docs-language.mjs` 迁至 `scripts/check-docs-language.ts`，Node ≥22.19 直接剥离类型运行（依旧无需安装依赖，依旧在 CI 安装依赖之前执行），且 `tsconfig.json` 的 include 新增 `scripts/**/*.ts`。本版还修正了 README 工具表顺序、配置文档中重复的章节编号，并恢复了丢失正文的更新日志条目。无需任何额外操作。
 - **0.9.0 将宿主基线抬升至 DeepSeek Harness 0.1.7**：插件现要求 `0.1.7-alpha.2` 或更新，并已在 `0.1.7-rc.1` 上验证；开发依赖锁定至 `0.1.7-rc.1`，`engines.dsh` 为 `^0.1.7-alpha.2`。配置迁移到 0.1.7 的**易变 schema**：十二个字段的名称、取值与默认值全部不变，但 `apply` 现在逐字段读取活引用，并在每次操作开始时一次性捕获，因此保存的修改与轮换后的凭据都无需重启即可对下一次操作生效。插件不再注册设置节（`ctx.settings.installSection` 已移除）——Host 自行读取导出的 `Config` schema 并以 profile 行 id `kingdee` 为键渲染该条目表单。**在 `0.1.6` 宿主上插件会在加载阶段被拒绝**：DSH 0.1.7-rc.1 会在加载插件行之前用运行时版本校验其 `@deepseek-ai/dsh*` peer 依赖，请先升级宿主，或按 DSH 打印的提示执行 `dsh plugin allow-version dsh-kingdee@0.9.0 <你的 dsh 版本>` 授予确切版本豁免。**配置无破坏性变更**——`cordis.yml` 与 `cordis.patch.yml` 原样继续可用。

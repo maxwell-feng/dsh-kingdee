@@ -6,6 +6,31 @@
 
 ---
 
+## [0.11.0] - 2026-09-28
+
+**适配 DeepSeek Harness 0.2.0-rc.1，并放宽 peer 区间** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **宿主对齐**：开发依赖升级到 DeepSeek Harness 0.2.0-rc.1，并已针对该版本完成验证；`@deepseek-ai/cordis` 保持 `^4.0.4`、`@deepseek-ai/schemastery` 保持 `^3.18.4`。
+- **peer 区间放宽为 `>=0.1.7-alpha.2 <0.3.0`**：DeepSeek Harness 0.2.0-rc.1 引入了硬性 peer 兼容性闸门 —— 在插件行加载之前，宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，预发行版参与区间匹配，不兼容的行会被拒绝。此前的 `^0.1.7-alpha.2` 区间不含 0.2.x，因此凭据与工具两个 peer 现放宽为可准入 `0.1.7-alpha.2` 至 `0.2.x`：插件在两条发布线上均可加载，但在 `0.1.6-alpha.2` 上仍会被拒绝。闸门读取的**不是** `engines.dsh`。
+- **供应链闸门**：工作区文件现对 `0.2.0-rc.1` 的各包豁免 pnpm 的最小发布年龄闸门 —— 否则 DSH 持续发布的预发行版会被拦下；锁文件已按 `0.2.0-rc.1` 重新生成。
+- **源码改动**：无。`src/`、`test/`、`scripts/`、`.github/`、`skills/`、`cordis.patch.yml` 与构建配置下均无文件改动，配置字段也没有任何迁移。
+
+### 修复
+
+- **0.10.0 在 DeepSeek Harness 0.2.0-rc.1 上会在加载阶段被拒绝**：它声明的 `@deepseek-ai/dsh-*` peer 区间不含 0.2.x，因此被新闸门拒绝。放宽区间后，插件无需豁免即可在 0.2.0-rc.1 上准入；各指南也已写明 0.2.0-rc.1 上的用户必须升级到 0.11.0。`dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk` 仅作为记录在 profile `compatibility.json` 中的确切版本风险确认而存在 —— 插件升级与宿主升级都不会继承该授权。
+
+### 验证
+
+- 类型检查与构建均干净，15 项单元测试在 DeepSeek Harness 0.2.0-rc.1 上全部通过。
+- `pnpm install` 通过 pnpm 的供应链闸门。
+- 宿主自带的已发布实现 `evaluatePluginCompatibility` / `getDshRuntimeVersion`（来自 `@deepseek-ai/dsh-app-boot@0.2.0-rc.1`）报告运行时为 `0.2.0-rc.1`，在 `0.2.0-rc.1`、`0.2.0`、`0.1.7-rc.2`、`0.1.7-alpha.2` 上均准入 `dsh-kingdee@0.11.0`，并在 `0.2.0-rc.1` 上以 `@deepseek-ai/dsh-credentials`、`@deepseek-ai/dsh-tools`（`^0.1.7-alpha.2`）peer 不满足为由拒绝 `dsh-kingdee@0.10.0`；对 `0.1.6-alpha.2` 上的 `0.11.0` 同样拒绝。
+- 实际打包的 0.11.0 压缩包含构建产物 `lib/`、`cordis.patch.yml`、`skills/kingdee-bos` 技能与中英双语指南，其清单即上述闸门所准入的那一份。
+- 未验证项：在真实 `0.2.0-rc.1` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
+
+---
+
 ## [0.10.0] - 2026-09-24
 
 **适配 DeepSeek Harness 0.1.7-rc.2** —— 不改运行时逻辑、不改配置项、不改工具接口。
@@ -289,6 +314,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.11.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.0
 [0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0
 [0.9.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.1
 [0.9.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.9.0

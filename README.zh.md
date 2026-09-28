@@ -24,7 +24,11 @@
 dsh plugin add dsh-kingdee
 ```
 
-> 已在 deepseek-harness **0.1.7-rc.2** 上验证：`pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`），且 bundle 补丁在真实 `0.1.7-rc.2` profile 中作为 `# == dsh-kingdee` 层正常生效（`dsh plugin --profile <name> add` → `dsh --profile <name> --dump-config`）。**未进行真实账套联调验证。**
+> **面向 DeepSeek Harness 0.2.0-rc.1，旧版本必须升级。** 0.11.0 完成对 DeepSeek Harness 0.2.0-rc.1 的适配。此前的 `0.10.0` 在 0.2.0-rc.1 上**会在加载阶段被拒绝**：它把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 两个 peer 声明为 `^0.1.7-alpha.2`，该区间不含 0.2.x；而 0.2.0-rc.1 会在插件行加载之前，用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配（闸门读取的**不是** `engines.dsh`）。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。0.11.0 把两个 peer 区间放宽为 `>=0.1.7-alpha.2 <0.3.0`，因此在 `0.1.7-alpha.2` 至 `0.2.x` 上均被准入 —— 但在 `0.1.6-alpha.2` 上仍会被拒绝。在 0.2.0-rc.1 上请用 `dsh plugin add dsh-kingdee@0.11.0` 升级。
+>
+> 被拒时宿主会打印的补救方式是 `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或使用插件管理器），它会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**。这是风险确认，而不是兼容性修复；且它只对一个确切插件版本、一个确切运行时生效：插件升级或宿主升级都不会继承该授权。
+
+> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.0** 验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）、`pnpm install` 通过 pnpm 的供应链闸门，且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.0`。**未进行真实账套联调验证。**
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -170,7 +174,7 @@ node scripts/check-docs-language.ts
 - **尚未实现公有云 OpenAPI 网关。** 越来越多的金蝶公有云账套要求走 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）并使用 API 签名认证（`LoginByApiSignHeaders`）。本插件**未**实现该链路，只支持经典 `kdsvc` 会话协议。在这类账套上经典会话根本无法建立，因此所有操作都会在登录环节失败；必须使用仍然开放经典 WebAPI 的账套/网关。
 - **平台插件层无法触达。** 服务器端 C# 表单/列表插件、界面布局与后台事件属于 BOS 集成开发环境，**无法**经 WebAPI 访问（见上文的边界说明）。
 - **`./client` 产物由本包自行复现。** 共享的 `clientBundle` tsdown preset 位于 harness 仓库内部且未发布，因此本包自行输出文档化的 factory 格式。
-- **未做真实账套联调。** 本文档的所有内容均以类型检查、单元测试套件与真实 `0.1.7-rc.2` profile 安装为依据，而非在运行中的金蝶账套上验证。
+- **未做真实账套联调。** 本文档的所有内容均以类型检查、构建、单元测试套件与宿主自带的插件兼容性校验为依据，而非在运行中的金蝶账套上验证。
 
 ## 文档
 
