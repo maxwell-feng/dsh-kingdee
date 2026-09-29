@@ -2,7 +2,7 @@
 
 [英文](CONFIG.md) | 简体中文
 
-> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.2.0-rc.1** 与插件 **0.11.1** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.1`）。`@deepseek-ai/dsh-*` peer 区间为 `>=0.1.7-alpha.2 <0.3.0`。**未进行真实账套联调验证。**
+> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.2.0-rc.2** 与插件 **0.12.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.2` 上准入 `dsh-kingdee@0.12.0`）。`@deepseek-ai/dsh-*` peer 区间为 `>=0.1.7-alpha.2 <0.3.0`。**未进行真实账套联调验证。**
 
 本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 

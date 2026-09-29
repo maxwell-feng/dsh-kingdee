@@ -2,7 +2,7 @@
 
 [英文](USAGE.md) | 中文
 
-> 已在 deepseek-harness **0.2.0-rc.1** 上、以插件 **0.11.1** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.1` 上准入 `dsh-kingdee@0.11.1`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.0-rc.2** 上、以插件 **0.12.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.2` 上准入 `dsh-kingdee@0.12.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 本文档列出本插件注册的全部 `kingdee_*` 工具（见 `src/tools.ts`）。agent 在会话中调用这些工具；每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
 
@@ -14,7 +14,7 @@
 - 认证是隐式的：无会话时首次操作自动登录，随后每次业务调用都会以**裸 `kdservice-sessionid` 请求头**与 **`Cookie`（`kdservice-sessionid=…; kdsvc=…`）双通道**附带会话，不使用 `KDAuthentication` 请求头。
 - 登录 stub 返回的是它自身的 `{"LoginResultType": 1}` 结构，**不是** `Result`/`IsSuccess` 业务信封；客户端单独判定该结果，非 `1` 时以 `kd/auth-failed` 呈现。
 - `formId` 为金蝶表单 id（例如 `SAL_SaleOrder`）。
-- 星空 V9.1 规范：审核、反审、删除、反提交等操作支持直接传入 `numbers`（业务单据编号，如 `SO-20260901`），无须预查内部自增 `FID`；自产品版本 `9.1.0.20250807` 起，`Delete` 返回结果中的 `Number` 也可直接采信。
+- 星空 V9.1 规范：审核（`kingdee_audit`）、反审（`kingdee_unaudit`）、删除（`kingdee_delete`）、反提交（`kingdee_unsubmit`）与暂存删除（`kingdee_delete_draft`）等操作都接受 `ids` 或 `numbers`（业务单据编号，如 `SO-20260901`）二选一。自产品版本 `9.1.0.20250807` 起，`Delete` 的成功实体中也会返回可信的 `Number`。
 
 ## kingdee_query
 
@@ -51,7 +51,7 @@
 | `formId` | 是 | `string` | 金蝶表单 id，例如 `SAL_SaleOrder`。 |
 | `fieldKeys` | 是 | `string[]` | 要返回的字段键，例如 `FBillNo`、`FDocumentStatus`。 |
 | `filter` | 否 | `string` | 金蝶过滤表达式，例如 `FBillNo='SO-20260701'`。 |
-| `orderString` | 否 | `string` | 排序子句，例如 `FCreateDate DESC, FBillNo ASC`。 |
+| `orderString` | 否 | `string` | 排序子句，例如 `FCreateDate DESC, FBillNo ASC`。保障稳定游标分页的核心。 |
 | `topCount` | 否 | `number` | 最多返回的行数（TopRowCount）。 |
 | `limit` | 否 | `number` | 分页大小限制。 |
 | `startRow` | 否 | `number` | 分页起始行偏移。 |
