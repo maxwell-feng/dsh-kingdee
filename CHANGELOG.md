@@ -4,6 +4,23 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.12.0] - 2026-09-29
+
+**DeepSeek Harness 0.2.0-rc.2 alignment** — no runtime, configuration or tool-surface change.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.0-rc.1` to `0.2.0-rc.2`, and the lockfile is regenerated against 0.2.0-rc.2; `@deepseek-ai/cordis` stays `^4.0.4` and `@deepseek-ai/schemastery` stays `^3.18.4`.
+- **Peer ranges are unchanged.** They stay `>=0.1.7-alpha.2 <0.3.0`, the range 0.11.0 widened, so this release is **not** a mandatory upgrade: `dsh-kingdee@0.11.1` is still admitted on DeepSeek Harness 0.2.0-rc.2. 0.12.0 is the version verified against 0.2.0-rc.2 and aligned with its development dependencies.
+- **Supply-chain gate.** The workspace file now exempts the 0.2.0-rc.2 package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases.
+- **Source change.** None. No file under `src/`, `test/`, `scripts/`, `.github/`, `skills/`, `cordis.patch.yml` or the build configuration changed, and no configuration field moved: the plugin behaves exactly as 0.11.1.
+
+### Verification
+
+- `pnpm run typecheck` clean, `pnpm run build` clean (`tsc -p tsconfig.build.json` plus the `tsdown` client bundle), and all **15** unit tests pass (`pnpm test`) against DeepSeek Harness 0.2.0-rc.2.
+- The harness's own published `evaluatePluginCompatibility` / `getDshRuntimeVersion` from `@deepseek-ai/dsh-app-boot@0.2.0-rc.2` report runtime `0.2.0-rc.2` and admit `dsh-kingdee@0.12.0` on `0.2.0-rc.2`, `0.2.0-rc.1`, `0.2.0`, `0.1.7-rc.2` and `0.1.7-alpha.2`; they refuse `dsh-kingdee@0.12.0` on `0.1.6-alpha.2`. The earlier `dsh-kingdee@0.10.0`, whose peers are `^0.1.7-alpha.2`, is still refused on `0.2.0-rc.2`.
+- Not verified: a live boot into a real 0.2.0-rc.2 profile (no `dsh` CLI exists on the verification machine), and — as always — no live Kingdee tenant.
+
 ## [0.11.1] - 2026-09-28
 
 **Documentation-only release** — no runtime, configuration or tool-surface change.
@@ -304,6 +321,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.12.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.12.0
 [0.11.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.1
 [0.11.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.0
 [0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0

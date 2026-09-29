@@ -2,7 +2,7 @@
 
 English | [Chinese](USAGE.zh.md)
 
-> Verified against deepseek-harness **0.2.0-rc.1** with plugin **0.11.1** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.11.1` on runtime `0.2.0-rc.1`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.2.0-rc.2** with plugin **0.12.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.12.0` on runtime `0.2.0-rc.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 This guide documents every `kingdee_*` tool the plugin registers (see `src/tools.ts`). The agent calls these tools in a chat session; each one is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 

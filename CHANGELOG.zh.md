@@ -6,6 +6,25 @@
 
 ---
 
+## [0.12.0] - 2026-09-29
+
+**适配 DeepSeek Harness 0.2.0-rc.2** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **宿主对齐**：`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.0-rc.1` 升至 `0.2.0-rc.2`，锁文件按 `0.2.0-rc.2` 重新生成；`@deepseek-ai/cordis` 保持 `^4.0.4`、`@deepseek-ai/schemastery` 保持 `^3.18.4`。
+- **peer 区间不变**：仍为 `>=0.1.7-alpha.2 <0.3.0`，即 0.11.0 放宽后的区间，因此本版**不是**强制升级：`dsh-kingdee@0.11.1` 在 DeepSeek Harness 0.2.0-rc.2 上同样被准入。0.12.0 是已针对 0.2.0-rc.2 完成验证、并对齐其开发依赖的版本。
+- **供应链闸门**：工作区文件现对 `0.2.0-rc.2` 的各包豁免 pnpm 的最小发布年龄闸门 —— 否则 DSH 持续发布的预发行版会被拦下。
+- **源码改动**：无。`src/`、`test/`、`scripts/`、`.github/`、`skills/`、`cordis.patch.yml` 与构建配置下均无文件改动，配置字段也没有任何迁移：插件行为与 0.11.1 完全一致。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、`pnpm run build` 干净（`tsc -p tsconfig.build.json` 加 `tsdown` 客户端 bundle），**15** 项单元测试（`pnpm test`）在 DeepSeek Harness 0.2.0-rc.2 上全部通过。
+- 宿主自带的已发布实现 `evaluatePluginCompatibility` / `getDshRuntimeVersion`（来自 `@deepseek-ai/dsh-app-boot@0.2.0-rc.2`）报告运行时为 `0.2.0-rc.2`，在 `0.2.0-rc.2`、`0.2.0-rc.1`、`0.2.0`、`0.1.7-rc.2`、`0.1.7-alpha.2` 上均准入 `dsh-kingdee@0.12.0`；对 `0.1.6-alpha.2` 上的 `0.12.0` 则拒绝。更早的 `dsh-kingdee@0.10.0`（peer 为 `^0.1.7-alpha.2`）在 `0.2.0-rc.2` 上仍被拒绝。
+- 未验证项：在真实 `0.2.0-rc.2` profile 中的实际启动（验证机器上没有 `dsh` CLI）；以及一如既往，未做真实金蝶账套联调。
+
+---
+
 ## [0.11.1] - 2026-09-28
 
 **纯文档修正版本** —— 不改运行时逻辑、不改配置、不改工具接口。
@@ -226,7 +245,7 @@
 
 ### 变更
 
-- 按官方插件开发规范全面适配 deepseek-harness `0.1.5-rc.1`。
+- **按官方插件开发规范全面适配 deepseek-harness `0.1.5-rc.1`。** 将所有 `@deepseek-ai/dsh-*` 开发依赖升级至 `0.1.5-rc.1`。
 - 全面刷新双语文档，标注针对 `0.1.5-rc.1` 的验证。
 
 ### 新增
@@ -254,9 +273,9 @@
 
 ### 修复
 
-- 以真实已发布的 peer 包替换 ambient `any` 声明（`src/types/peers.d.ts`），`npm run typecheck` 现为 0 错误（此前 43 个隐式 `any`）；
-- 工具输出采用开放值 JSON schema；
-- 浏览器设置卡片正常编译并产出 `lib/client.js` 产物。
+- 以真实已发布的 peer 包替换原来的 ambient `any` peer 声明（`src/types/peers.d.ts`），版本为 `0.1.2-rc.1`（`@deepseek-ai/dsh-tools`、`dsh-settings`、`dsh-credentials`、`cordis`、`schemastery`）。`npm run typecheck` 现为 0 错误（此前 43 个隐式 `any`）；`apply` 不再以 `Context = any` 编译。凭据引用现完全按凭据缝文档的约定，经带品牌的 `credentialRef()` 辅助函数流转。
+- **设置卡片的浏览器半端现已真正构建并对外提供。** 新增 `dsh.client` 清单（`platform: web`，注入语言包与客户端设置包）、`./client` 导出，以及一份自包含的 `tsdown.config.ts`，用以复现客户端模块系统的懒加载 CJS 工厂产物（`window.__ModuleLoader__.load(...)`、`lib/client.js`）。卡片绑定 `ctx.settingsScope`（命名空间 `kingdee`），注册到 `settings.plugin.item` 槽位，注册自己的 `settings.kingdee` 语言字典，并自行渲染卡片外观（不做跨插件取值导入 —— bundle 纯净性闸门）。
+- **修正 `installSection` 钩子用法**：按设置缝契约，`setSource` 接收一个返回权威配置的 thunk（`() => Config`）；插件现经由该 thunk 重新读取，因此设置修改（或提供方脱离）都能对下一次工具调用生效。测试 7/7 通过；构建产出 `lib/`（Node 半端经 tsc，浏览器半端经 tsdown）。
 
 ---
 ## [0.2.3] - 2026-09-02
@@ -331,6 +350,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.12.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.12.0
 [0.11.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.1
 [0.11.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.0
 [0.10.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.10.0
