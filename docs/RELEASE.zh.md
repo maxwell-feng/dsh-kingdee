@@ -8,8 +8,8 @@
 
 ## 新增
 
-- **展示元数据与专属图标**：内置原生 `icon.svg` 矢量图标与中英双语展示清单（`locale/en.json`、`locale/zh.json`），完全符合 DeepSeek Harness 0.2.1-alpha.2 插件管理器规范。在 `package.json` 中配置顶层属性 `"icon": "./icon.svg"` 并导出 `"./locale/*.json"` 与 `"./icon"`。
-- **自包含构建脚本**：在 `package.json` 中配置 `"prepare": "tsc -p tsconfig.build.json && tsdown"`，支持直接通过 Git 仓库安装，不依赖宿主环境是否预装全局 `pnpm`。
+- **展示元数据与专属图标**：内置原生 `icon.svg` 矢量图标与中英双语展示清单（`locale/en.json`、`locale/zh.json`），完全符合 DeepSeek Harness 0.2.1-alpha.2 插件管理器规范。在 `package.json` 中声明顶层 `icon` 字段（指向 `./icon.svg`），并规范导出 `./locale/*.json` 与 `./icon` 资源。
+- **自包含构建脚本**：在 `package.json` 中配置 `prepare` 脚本（执行 `tsc -p tsconfig.build.json && tsdown`），支持直接通过 Git 仓库安装，不依赖宿主环境是否预装全局 `pnpm`。
 
 ## 变更
 
