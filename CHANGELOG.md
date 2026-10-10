@@ -11,14 +11,14 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Added
 
 - **Display metadata and icon.** Bundled native `icon.svg` vector artwork and bilingual manifest resources (`locale/en.json`, `locale/zh.json`) conforming to DSH 0.2.1-alpha.2 display conventions for Plugin Manager. `package.json` exports `./locale/*.json`, `./icon` and declares top-level `"icon": "./icon.svg"`.
-- **Self-contained prepare script.** Configured `"prepare": "tsc -p tsconfig.build.json && tsdown"` in `package.json` to enable frictionless direct git installs (`dsh plugin --profile web add github:maxwell-feng/dsh-kingdee`) without requiring a global `pnpm` binary.
+- **Self-contained prepare script.** Configured `"prepare": "tsc -p tsconfig.build.json && tsdown"` in `package.json` to enable direct git installs without requiring a global `pnpm` binary.
 
 ### Changed
 
-- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.0-rc.2` to `0.2.1-alpha.2`. `@deepseek-ai/cordis` remains `^4.0.4` and `@deepseek-ai/schemastery` remains `^3.18.4`.
-- **Peer ranges unchanged.** Peers stay `>=0.1.7-alpha.2 <0.3.0`, so `dsh-kingdee@0.12.0` and `dsh-kingdee@0.11.1` remain admitted on DeepSeek Harness 0.2.1-alpha.2 as well. This release is verified against 0.2.1-alpha.2.
-- **Pure TypeScript and schema typing.** Hardened schema type exports in `src/config.ts` (`export const Config: Schema<Config>`) to eliminate TS2742 non-portable type warnings under pnpm virtual store layouts while ensuring strict 100% TypeScript compliance.
-- **Documentation and CLI placement.** Updated all documentation pairs (INSTALL, CONFIG, USAGE, UPDATE, UNINSTALL, README, RELEASE) to conform to the DSH 0.2.1-alpha.1 rule requiring `--profile <name>` to precede forwarded subcommands (e.g. `dsh plugin --profile web add dsh-kingdee`).
+- **Harness alignment.** Upgraded all development dependencies to DeepSeek Harness 0.2.1-alpha.2. `@deepseek-ai/cordis` remains `^4.0.4` and `@deepseek-ai/schemastery` remains `^3.18.4`.
+- **Peer ranges compatibility.** Maintained peer dependencies range `>=0.1.7-alpha.2 <0.3.0`, so `dsh-kingdee@0.12.0` and `dsh-kingdee@0.11.1` remain admitted on DeepSeek Harness 0.2.1-alpha.2 without requiring manual exemptions.
+- **Pure TypeScript architecture.** Strengthened schema export typing in `src/config.ts` (`export const Config: Schema<Config>`) to eliminate TS2742 non-portable type warnings under pnpm virtual store layouts while ensuring strict 100% pure TypeScript compliance.
+- **CLI syntax documentation.** Updated all guides to place `--profile <name>` before forwarded subcommands such as `add`, `remove`, and `update`.
 
 ### Verification
 

@@ -8,15 +8,15 @@
 
 ## 新增
 
-- **展示元数据与专属图标**：内置原生 `icon.svg` 矢量图标与中英双语展示资源（`locale/en.json`、`locale/zh.json`），符合 DSH 0.2.1-alpha.2 插件管理器展示规范。在 `package.json` 中配置顶层 `"icon": "./icon.svg"` 以及导出 `"./locale/*.json"` 与 `"./icon"`。
-- **自包含 prepare 构建脚本**：在 `package.json` 中配置 `"prepare": "tsc -p tsconfig.build.json && tsdown"`，支持直接通过 Git 仓库安装，不依赖宿主环境是否预装全局 `pnpm`。
+- **展示元数据与专属图标**：内置原生 `icon.svg` 矢量图标与中英双语展示清单（`locale/en.json`、`locale/zh.json`），完全符合 DeepSeek Harness 0.2.1-alpha.2 插件管理器规范。在 `package.json` 中配置顶层属性 `"icon": "./icon.svg"` 并导出 `"./locale/*.json"` 与 `"./icon"`。
+- **自包含构建脚本**：在 `package.json` 中配置 `"prepare": "tsc -p tsconfig.build.json && tsdown"`，支持直接通过 Git 仓库安装，不依赖宿主环境是否预装全局 `pnpm`。
 
 ## 变更
 
-- **宿主对齐**：全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.0-rc.2` 升级至 `0.2.1-alpha.2`。`@deepseek-ai/cordis` 保持 `^4.0.4`、`@deepseek-ai/schemastery` 保持 `^3.18.4`。
-- **peer 区间不变**：`@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 仍为 `>=0.1.7-alpha.2 <0.3.0`，因此 `dsh-kingdee@0.12.0` 与 `0.11.1` 在 DeepSeek Harness 0.2.1-alpha.2 上同样被准入，**本版不是强制升级**。
-- **纯 TypeScript 与架构类型安全**：增强 `src/config.ts` 中的 `Config` 架构导出类型签名，消除 pnpm 虚拟 store 布局下的 TS2742 类型不可便携警告，保障全库 100% 纯 TypeScript。
-- **命令行选项规范更新**：全量更新文档中的 CLI 命令，遵循 DeepSeek Harness 0.2.1-alpha.1 规范，将 `--profile <name>` 参数前置于 `add`、`remove`、`update` 等子命令之前。
+- **开发依赖对齐**：全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.0-rc.2` 升级至 `0.2.1-alpha.2`；`@deepseek-ai/cordis` 保持 `^4.0.4`，`@deepseek-ai/schemastery` 保持 `^3.18.4`。
+- **兼容性区间保持稳定**：peer 依赖区间保持 `>=0.1.7-alpha.2 <0.3.0`，因此 `0.12.0` 与 `0.11.1` 在 DeepSeek Harness 0.2.1-alpha.2 上同样受支持，本版本非强制升级。
+- **纯 TypeScript 架构**：优化 `src/config.ts` 中 `Config` 架构导出类型声明，消除 TS2742 类型不可便携警告，全库保持 100% 纯 TypeScript。
+- **规范化命令行选项**：更新各文档中的 CLI 命令，遵循 DeepSeek Harness 0.2.1-alpha.1 规范，统一将 `--profile <name>` 参数置于 `add`、`remove`、`update` 等子命令之前。
 
 ## 更新说明
 
