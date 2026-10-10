@@ -4,6 +4,27 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.13.0] - 2026-10-11
+
+**DeepSeek Harness 0.2.1-alpha.2 alignment & Display Metadata Manifest Support** — display assets, self-contained prepare build, strict pure TypeScript, and latest CLI option syntax.
+
+### Added
+
+- **Display metadata and icon.** Bundled native `icon.svg` vector artwork and bilingual manifest resources (`locale/en.json`, `locale/zh.json`) conforming to DSH 0.2.1-alpha.2 display conventions for Plugin Manager. `package.json` exports `./locale/*.json`, `./icon` and declares top-level `"icon": "./icon.svg"`.
+- **Self-contained prepare script.** Configured `"prepare": "tsc -p tsconfig.build.json && tsdown"` in `package.json` to enable frictionless direct git installs (`dsh plugin --profile web add github:maxwell-feng/dsh-kingdee`) without requiring a global `pnpm` binary.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.0-rc.2` to `0.2.1-alpha.2`. `@deepseek-ai/cordis` remains `^4.0.4` and `@deepseek-ai/schemastery` remains `^3.18.4`.
+- **Peer ranges unchanged.** Peers stay `>=0.1.7-alpha.2 <0.3.0`, so `dsh-kingdee@0.12.0` and `dsh-kingdee@0.11.1` remain admitted on DeepSeek Harness 0.2.1-alpha.2 as well. This release is verified against 0.2.1-alpha.2.
+- **Pure TypeScript and schema typing.** Hardened schema type exports in `src/config.ts` (`export const Config: Schema<Config>`) to eliminate TS2742 non-portable type warnings under pnpm virtual store layouts while ensuring strict 100% TypeScript compliance.
+- **Documentation and CLI placement.** Updated all documentation pairs (INSTALL, CONFIG, USAGE, UPDATE, UNINSTALL, README, RELEASE) to conform to the DSH 0.2.1-alpha.1 rule requiring `--profile <name>` to precede forwarded subcommands (e.g. `dsh plugin --profile web add dsh-kingdee`).
+
+### Verification
+
+- `pnpm run typecheck` clean, `pnpm run build` clean, and all **15** unit tests pass (`pnpm test`) against DeepSeek Harness 0.2.1-alpha.2.
+- `node scripts/check-docs-language.ts` passing with zero language or switcher violations across all document pairs.
+
 ## [0.12.0] - 2026-09-29
 
 **DeepSeek Harness 0.2.0-rc.2 alignment** — no runtime, configuration or tool-surface change.

@@ -11,7 +11,7 @@
  */
 
 import type { Volatile } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import Schema from '@deepseek-ai/schemastery'
 import type { KdAuthMode, KdConfig, KdServiceEndpoints } from './kd-core/index.ts'
 
 /**
@@ -63,27 +63,27 @@ export interface Config {
  * field must be `.volatile()`: the Host refuses a write to a field that is not,
  * and only a volatile field becomes a `Volatile` reference in {@link Config}.
  */
-export const Config = z.object({
-  baseUrl: z.string().volatile(),
-  acctId: z.string().volatile(),
-  authMode: z.union(['user', 'app'] as const).default('user').volatile(),
-  appId: z.string().volatile(),
-  appSecretRef: z.string().default('DSH_KINGDEE_APP_SECRET').volatile(),
-  userNameRef: z.string().default('DSH_KINGDEE_USER').volatile(),
-  passwordRef: z.string().default('DSH_KINGDEE_PASSWORD').volatile(),
-  lcid: z.number().step(1).min(0).default(2052).volatile(),
-  organization: z.string().volatile(),
-  timeoutMs: z.number().step(1).min(0).max(300_000).default(30_000).volatile(),
-  mock: z.boolean().default(false).volatile(),
-  serviceEndpoints: z.object({
-    loginService: z.string(),
-    loginByAppSecretService: z.string(),
-    logOutService: z.string(),
-    dynamicFormService: z.string(),
-    listDataCenterService: z.string(),
-    stubSuffix: z.string(),
+export const Config: Schema<Config> = Schema.object({
+  baseUrl: Schema.string().volatile(),
+  acctId: Schema.string().volatile(),
+  authMode: Schema.union(['user', 'app'] as const).default('user').volatile(),
+  appId: Schema.string().volatile(),
+  appSecretRef: Schema.string().default('DSH_KINGDEE_APP_SECRET').volatile(),
+  userNameRef: Schema.string().default('DSH_KINGDEE_USER').volatile(),
+  passwordRef: Schema.string().default('DSH_KINGDEE_PASSWORD').volatile(),
+  lcid: Schema.number().step(1).min(0).default(2052).volatile(),
+  organization: Schema.string().volatile(),
+  timeoutMs: Schema.number().step(1).min(0).max(300_000).default(30_000).volatile(),
+  mock: Schema.boolean().default(false).volatile(),
+  serviceEndpoints: Schema.object({
+    loginService: Schema.string(),
+    loginByAppSecretService: Schema.string(),
+    logOutService: Schema.string(),
+    dynamicFormService: Schema.string(),
+    listDataCenterService: Schema.string(),
+    stubSuffix: Schema.string(),
   }).volatile(),
-})
+}) as unknown as Schema<Config>
 
 /**
  * One plugin {@link Config} with every live reference unwrapped to the value it

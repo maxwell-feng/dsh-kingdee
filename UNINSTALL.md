@@ -2,7 +2,7 @@
 
 English | [Chinese](UNINSTALL.zh.md)
 
-> Verified against deepseek-harness **0.2.0-rc.2** with plugin **0.12.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.12.0` on runtime `0.2.0-rc.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.2.1-alpha.2** with plugin **0.13.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.13.0` on runtime `0.2.1-alpha.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 How to remove **dsh-kingdee** from a DSH profile.
 
@@ -22,10 +22,10 @@ Stop and start the DSH process for the change to take effect.
 ## 2. Remove the bundle
 
 ```sh
-dsh plugin remove dsh-kingdee
+dsh plugin --profile web remove dsh-kingdee
 ```
 
-This removes the installed npm package and its composition layer.
+This removes the installed npm package and its composition layer. Note that `--profile <name>` must precede the `remove` subcommand.
 
 ## 3. Remove your configuration
 
@@ -56,7 +56,7 @@ After the restart the `kingdee_*` tools are gone from the agent's tool set.
 ## What it leaves behind
 
 - System-level logs and any cached session may still record past calls; remove those if your policy requires.
-- The `kd-core` library is a separate export (`dsh-kingdee/kd-core`) — if you no longer use it, uninstall the package entirely with `dsh plugin remove`.
+- The `kd-core` library is a separate export (`dsh-kingdee/kd-core`) — if you no longer use it, uninstall the package entirely with `dsh plugin --profile web remove dsh-kingdee`.
 
 ## Removing the source checkout
 

@@ -2,7 +2,7 @@
 
 [英文](UNINSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.0-rc.2** 上、以插件 **0.12.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.2` 上准入 `dsh-kingdee@0.12.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.1-alpha.2** 上、以插件 **0.13.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-alpha.2` 上准入 `dsh-kingdee@0.13.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何从 DSH profile 移除 **dsh-kingdee**。
 
@@ -22,10 +22,10 @@
 ## 2. 移除 bundle
 
 ```sh
-dsh plugin remove dsh-kingdee
+dsh plugin --profile web remove dsh-kingdee
 ```
 
-这会移除已安装的 npm 包及其组合层。
+这会移除已安装的 npm 包及其组合层。请注意 `--profile <name>` 参数必须置于 `remove` 命令之前。
 
 ## 3. 删除你的配置
 
@@ -56,7 +56,7 @@ unset DSH_KINGDEE_USER DSH_KINGDEE_PASSWORD DSH_KINGDEE_APP_SECRET
 ## 会留下什么
 
 - 系统日志与缓存会话可能仍记录到过往调用；若你的安全策略需要，请一并清理。
-- `kd-core` 库是独立导出项（`dsh-kingdee/kd-core`）——若不再使用，请用 `dsh plugin remove` 彻底卸载该包。
+- `kd-core` 库是独立导出项（`dsh-kingdee/kd-core`）——若不再使用，请用 `dsh plugin --profile web remove dsh-kingdee` 彻底卸载该包。
 
 ## 移除源码检出
 

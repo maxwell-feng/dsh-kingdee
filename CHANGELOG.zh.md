@@ -6,6 +6,29 @@
 
 ---
 
+## [0.13.0] - 2026-10-11
+
+**适配 DeepSeek Harness 0.2.1-alpha.2 与插件展示元数据规范** —— 规范展示资产、自包含 prepare 构建、纯 TypeScript 架构与最新命令行选项语法。
+
+### 新增
+
+- **展示元数据与专属图标**：内置原生 `icon.svg` 矢量图标与中英双语展示资源（`locale/en.json`、`locale/zh.json`），符合 DSH 0.2.1-alpha.2 插件管理器展示规范。在 `package.json` 中配置顶层 `"icon": "./icon.svg"` 以及导出 `"./locale/*.json"` 与 `"./icon"`。
+- **自包含 prepare 构建脚本**：在 `package.json` 中配置 `"prepare": "tsc -p tsconfig.build.json && tsdown"`，支持直接通过 Git 仓库安装（如 `dsh plugin --profile web add github:maxwell-feng/dsh-kingdee`），不依赖宿主环境是否预装全局 `pnpm`。
+
+### 变更
+
+- **宿主对齐**：全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.0-rc.2` 升级至 `0.2.1-alpha.2`；`@deepseek-ai/cordis` 保持 `^4.0.4`、`@deepseek-ai/schemastery` 保持 `^3.18.4`。
+- **peer 区间保持不变**：仍为 `>=0.1.7-alpha.2 <0.3.0`，因此 `0.12.0` 与 `0.11.1` 在 DeepSeek Harness 0.2.1-alpha.2 上同样受支持，本版本非强制升级。
+- **纯 TypeScript 与架构类型安全**：增强 `src/config.ts` 中的 `Config` 架构导出类型签名，消除 pnpm 虚拟 store 布局下的 TS2742 类型不可便携警告，保障全库 100% 纯 TypeScript。
+- **文档与 CLI 选项位置规范**：全量更新中英双语指南（安装、配置、使用、更新、卸载、自述、发布说明），全面遵循 DSH 0.2.1-alpha.1 规范，将 `--profile <name>` 参数前置于 `add`、`remove`、`update` 等子命令之前。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、`pnpm run build` 构建干净，**15** 项单元测试（`pnpm test`）在 DeepSeek Harness 0.2.1-alpha.2 上全部通过。
+- `node scripts/check-docs-language.ts` 检查全部通过，零语言混淆或链接跳转错误。
+
+---
+
 ## [0.12.0] - 2026-09-29
 
 **适配 DeepSeek Harness 0.2.0-rc.2** —— 不改运行时逻辑、不改配置项、不改工具接口。

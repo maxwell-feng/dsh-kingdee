@@ -2,7 +2,7 @@
 
 [英文](INSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.0-rc.2** 上、以插件 **0.12.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.0-rc.2` 上准入 `dsh-kingdee@0.12.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
+> 已在 deepseek-harness **0.2.1-alpha.2** 上、以插件 **0.13.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-alpha.2` 上准入 `dsh-kingdee@0.13.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
@@ -18,10 +18,14 @@
 本包以 DSH **bundle**（一个贡献配置层的 npm 包）形式发布。安装到 profile：
 
 ```sh
-dsh plugin add dsh-kingdee
+dsh plugin --profile web add dsh-kingdee
 ```
 
-> **在 DeepSeek Harness 0.2.0-rc.2 上的兼容性。** 0.12.0 把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 声明为 `>=0.1.7-alpha.2 <0.3.0`，因此宿主自带的 peer 兼容性闸门会在 `0.1.7-alpha.2` 至 `0.2.x` 上准入本插件（在 `0.1.6-alpha.2` 上仍会拒绝）。这两个 peer 区间与 0.11.0 相比没有任何变化，因此 `0.11.1` 在 0.2.0-rc.2 上同样被准入 —— 本版不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.0-rc.2 上它的行会在加载前被拒绝：宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配，闸门读取的**不是** `engines.dsh`。请执行 `dsh plugin add dsh-kingdee@0.12.0`（或 `dsh plugin update dsh-kingdee`）升级。`dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或插件管理器）只会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**：那是风险确认而非兼容性修复，插件升级与宿主升级都不会继承该授权。
+> **在 DeepSeek Harness 0.2.1-alpha.2 上的兼容性。** 0.13.0 把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 声明为 `>=0.1.7-alpha.2 <0.3.0`，因此宿主自带的 peer 兼容性闸门会在 `0.1.7-alpha.2` 至 `0.2.x` 上准入本插件（在 `0.1.6-alpha.2` 上仍会拒绝）。这两个 peer 区间与 0.11.0 相比没有任何变化，因此 `0.12.0` 与 `0.11.1` 在 0.2.1-alpha.2 上同样被准入 —— 本版不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.x 上它的行会在加载前被拒绝：宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配，闸门读取的**不是** `engines.dsh`。请执行 `dsh plugin --profile web add dsh-kingdee@0.13.0`（或 `dsh plugin --profile web update dsh-kingdee`）升级。
+>
+> **CLI 语法特别提醒**：根据 DeepSeek Harness 0.2.1-alpha.1 起的规范，`--profile <name>` 必须置于被转发的 `add`、`remove`、`update` 等子命令之前；若将 `--profile` 放置在子命令之后，会被当做 pnpm 选项转发并报错。
+>
+> `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或插件管理器）只会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**：那是风险确认而非兼容性修复，插件升级与宿主升级都不会继承该授权。
 
 或从源码检出，加进你的 `cordis.yml`（或某一层 `cordis.patch.yml`）：
 
@@ -59,15 +63,15 @@ dsh plugin add dsh-kingdee
 | `organization` | 可选的默认组织（org）id / FNumber，用于查询 |
 | `serviceEndpoints` | 高级：按你的金蝶版本覆盖 WebAPI 服务名（见下） |
 
-> 金蝶对 2022-11-29 之后开通的公有云账套拒绝账号密码登录，这类账套请使用 `authMode: "app"`。
+> `authMode: "app"` 是在 2022-11-29 之后开通的公有云账套上必须使用的模式（金蝶在该日期后开通的公有云账套上拒绝账号密码登录）。
 
 ### 高级：覆盖服务端点
 
-WebAPI 服务名（如 `LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft`、`QueryBusinessData`）可能随金蝶版本略有差异。若某工具提示未知服务，请在 `serviceEndpoints` 中覆盖对应项（如 `dynamicFormService`、`listDataCenterService`、`logOutService`、`loginService`、`loginByAppSecretService`、`stubSuffix`）。其中 `listDataCenterService` 的服务名尤其随版本而异且属社区验证结论 —— 请在产品内「公共设置 → 动态服务定义 → WebAPI」核对。
+不同金蝶版本的 WebAPI 服务名（如 `LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft`、`QueryBusinessData`）可能存在细微差异。如果工具有报未知服务，请在 `serviceEndpoints` 中配置对应的覆盖项（如 `dynamicFormService`、`listDataCenterService`、`logOutService`、`loginService`、`loginByAppSecretService`、`stubSuffix`）。其中 `listDataCenterService` 的具体名称因版本而异且为社区经验证值 —— 请在金蝶管理中心「公共设置 → 动态服务定义 → WebAPI」中核对。
 
 ## 3. 提供密钥
 
-密钥是**引用**（环境变量名），不是字面值。把值放进环境变量或凭据库即可；插件**每次操作都重新解析**，因此轮换后无需重启即可在下一次调用生效。所有系统使用相同的引用名，只是设置环境变量的方式不同。
+密钥以**引用**（环境变量名）的形式传递，而非明文字符串。请在操作系统环境变量或 DSH 凭据库中配置具体值；插件会在**每次操作执行时**动态解析凭据，因此凭据轮转能够立即在下一次调用中生效，无需重启服务。各操作系统使用相同的引用名，仅设置环境变量的方式不同。
 
 **Linux / macOS**（`sh`）：
 
@@ -76,24 +80,24 @@ WebAPI 服务名（如 `LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft`�
 export DSH_KINGDEE_USER=your_username
 export DSH_KINGDEE_PASSWORD=your_password
 
-# app 模式（此处的 DSH_KINGDEE_USER 是集成用户，且为必填）
+# app 模式（DSH_KINGDEE_USER 在此模式下代表集成用户，且为必填）
 export DSH_KINGDEE_USER=your_integration_user
 export DSH_KINGDEE_APP_SECRET=your_app_secret
 ```
 
-**Windows — PowerShell**（当前会话，然后重启 DSH）：
+**Windows — PowerShell**（当前会话生效）：
 
 ```powershell
 # user 模式
 $env:DSH_KINGDEE_USER = "your_username"
 $env:DSH_KINGDEE_PASSWORD = "your_password"
 
-# app 模式（此处的 DSH_KINGDEE_USER 是集成用户，且为必填）
+# app 模式（DSH_KINGDEE_USER 在此模式下代表集成用户，且为必填）
 $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
 
-写入用户级变量使其在新建 shell 中保留（PowerShell）：
+若要在后续新打开的终端中永久生效，请写入用户级环境变量（PowerShell）：
 
 ```powershell
 [Environment]::SetEnvironmentVariable('DSH_KINGDEE_USER', 'your_username', 'User')
@@ -104,34 +108,34 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 **Windows — 命令提示符**（`cmd`）：
 
 ```bat
-REM 当前会话
+REM 当前会话生效
 set DSH_KINGDEE_USER=your_username
 set DSH_KINGDEE_PASSWORD=your_password
 set DSH_KINGDEE_APP_SECRET=your_app_secret
 
-REM 持久化（新建 shell 生效）
+REM 永久生效（新打开的命令提示符）
 setx DSH_KINGDEE_USER your_username
 setx DSH_KINGDEE_PASSWORD your_password
 setx DSH_KINGDEE_APP_SECRET your_app_secret
 ```
 
-**DSH 凭据库**（任意系统；可避免 shell 环境变量问题）。凭据库没有对应的 CLI 子命令：在 DSH 设置界面里填一次即可（凭据值只写不读 —— 页面只能看到脱敏描述符），也可直接编辑 `$DSH_HOME/.credentials.yaml`。插件配置里携带的是引用名，值永远不会进入配置文件。
+**DSH 凭据库**（全平台适用，推荐用于生产环境，避免暴露于 shell 环境变量）。凭据库无需通过 CLI 管理：只需在 DSH 网页设置面板中配置一次（凭据字段只写不读，界面仅展示脱敏描述符），亦可直接编辑 `$DSH_HOME/.credentials.yaml` 文件。插件配置中仅保存引用名称，真实密码与密钥绝不进入版本控制或配置文件。
 
-默认引用名为 `DSH_KINGDEE_USER`、`DSH_KINGDEE_PASSWORD`、`DSH_KINGDEE_APP_SECRET`。如需改用其它名称，请调整 `userNameRef` / `passwordRef` / `appSecretRef`。`DSH_KINGDEE_USER` 在 `user` 模式下存账套用户名、在 `app` 模式下存**集成用户**（后者为必填）；`DSH_KINGDEE_PASSWORD` 仅在 `user` 模式使用。
+默认引用名称分别为 `DSH_KINGDEE_USER`、`DSH_KINGDEE_PASSWORD` 与 `DSH_KINGDEE_APP_SECRET`。若有自定义需求，可通过 `userNameRef`、`passwordRef`、`appSecretRef` 配置项更改对应名称。`DSH_KINGDEE_USER` 在 `user` 模式下为账套用户名，在 `app` 模式下为**集成用户**（必填）；`DSH_KINGDEE_PASSWORD` 仅在 `user` 模式下使用。
 
-登录服务返回的是它自身的 `{"LoginResultType": 1}` 结构，而不是其他操作返回的 `Result`/`IsSuccess` 业务信封；插件单独判定该响应，非 `1` 时以 `kd/auth-failed` 呈现。
+金蝶登录接口返回特定的 `{"LoginResultType": 1}` 结构，而非其他业务操作使用的 `Result`/`IsSuccess` 业务信封格式；插件已对该响应结构做专门分类解析，非 `1` 的返回值会准确识别为 `kd/auth-failed` 认证失败。
 
 ## 4. 验证
 
-让 agent 对已知 FormId 发起查询：
+让 agent 对已知单据类型发起查询测试：
 
 ```
-在金蝶云星空查询销售订单（SAL_SaleOrder），FBillNo 以 SO-202607 开头。
+查询销售订单（SAL_SaleOrder），单据编号以 SO-202607 开头。
 ```
 
-agent 会加载 `kingdee-bos` 技能并调用 `kingdee_query`。成功返回规范化行；失败返回类型化 `kd/*` 错误而非文本。
+agent 会自动加载 `kingdee-bos` 技能并调用 `kingdee_query`。调用成功将返回标准化行数据；调用失败则返回结构化的 `kd/*` 错误类型，而非难以解析的散落文本。
 
-无需账套也可以验证安装本身：bundle 补丁会作为 `# == dsh-kingdee` 层出现在 profile 的组合配置里：
+即使未连接真实账套，亦可验证插件安装状态：成功安装的 bundle 会在导出的 profile 配置中呈现为 `# == dsh-kingdee` 覆盖层：
 
 ```sh
 dsh plugin --profile <name> add dsh-kingdee
@@ -140,14 +144,14 @@ dsh --profile <name> --dump-config
 
 ## 可选：离线 Mock
 
-没有可达账套时，设置 `mock: true`。工具会改用内置 mock 传输，返回固化的金蝶信封（如一张 `SO-MOCK-1` 单据）。该开关没有 CLI 子命令：设置卡片会暴露非机密的连接字段，但不含 `mock`，因此请在配置中设置 —— 在 `cordis.yml`：
+在无可用金蝶账套的情况下，可配置 `mock: true` 进行演示与自动化测试。此时工具会调用内置的 Mock 传输链路，返回预置的标准金蝶数据信封（例如 `SO-MOCK-1` 单据）。由于图形设置面板为安全起见不暴露非网络连接项，该项需在配置文件中显式启用 —— 在 `cordis.yml` 中：
 
 ```yaml
 config:
   mock: true
 ```
 
-或在 profile 的 `cordis.patch.yml` 里给 `kingdee` 行加上：
+或在当前 profile 的 `cordis.patch.yml` 中配置 `kingdee` 条目：
 
 ```yaml
 - insert:
@@ -158,9 +162,9 @@ config:
         mock: true
 ```
 
-## 常见问题
+## 常见问题排查
 
-- **kingdee/auth-failed** —— 检查 `acctId` / `appId` / `appSecret` 与集成用户（`userNameRef`），并确认账套已启用 WebAPI。若账套是 2022-11-29 之后开通的公有云账套，金蝶会拒绝账号密码登录 —— 请把 `authMode` 改为 `"app"`。若账套只能经 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）访问，则完全无法使用：经典会话根本建立不起来，所有调用都会在登录环节失败。
-- **kingdee/network** —— 确认从 DSH host 能访问 `baseUrl`，且 WebAPI 端点有响应。
-- **kingdee/business-error** —— 账套拒绝了该调用；请读 `message`（例如缺必填字段，或单据状态不允许该操作）。
-- **查询返回空结果而不是报错** —— V9.1 收紧了外部用户权限，缺少查询权限可能表现为空结果。请针对每个 `FormId` 先跑一次探针查询验证，再相信空结果集；并把主机出口 IP 加入 WebAPI 限流白名单。
+- **kingdee/auth-failed** —— 请仔细核对 `acctId`、`appId`、`appSecret` 以及集成用户（`userNameRef`），并确认账套已启用 WebAPI。在 2022-11-29 之后开通的金蝶公有云账套上，金蝶官方强制拒绝传统用户名密码登录，此时必须将 `authMode` 切换为 `"app"`。若账套仅能通过公有云网关（`https://api.kingdee.com/galaxyapi/`）访问，则无法使用本插件，因为经典会话在此类接口上无法建立。
+- **kingdee/network** —— 请确认宿主服务器网络可直连目标 `baseUrl`，且该 WebAPI 端点响应正常。
+- **kingdee/business-error** —— 金蝶账套拒绝了业务请求；请查阅返回的 `message` 字段详细描述（例如缺少必填字段，或者单据当前状态不支持所请求的操作）。
+- **查询无结果且不报错** —— 金蝶 V9.1 对外部用户权限进行了严格管控，缺少单据查询权限时常常表现为空数据而非错误。请在排查时对指定 `FormId` 执行最小化探针查询，并务必将 DSH 宿主出口 IP 加入金蝶服务器 WebAPI 限流白名单。
