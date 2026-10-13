@@ -7,11 +7,17 @@ assignees: ""
 ---
 
 ## Summary
-> One sentence describing the issue.
+> One sentence describing the issue. If the plugin never loads or cannot log in at all, use the setup template instead.
 
 ## Steps to reproduce
 1. …
 2. …
+
+## Isolation
+- [ ] Reproduced with `mock` enabled — so it is not a tenant-side problem
+- [ ] Reproduced against a live tenant
+- [ ] Fails in mock only
+- [ ] Fails on the live tenant only
 
 ## Expected vs actual
 - **Expected:** …

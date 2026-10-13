@@ -1,5 +1,11 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Questions & general chat (GitHub Discussions)
+    url: https://github.com/maxwell-feng/dsh-kingdee/discussions
+    about: Ask a question, brainstorm, or compare notes with other users
+  - name: 提问与日常沟通（Discussions）
+    url: https://github.com/maxwell-feng/dsh-kingdee/discussions
+    about: 提问、交流经验，或与其他使用者讨论
   - name: README (English)
     url: https://github.com/maxwell-feng/dsh-kingdee#readme
     about: Project overview and quick start
