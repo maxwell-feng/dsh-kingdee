@@ -4,6 +4,28 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.14.0] - 2026-10-16
+
+**DeepSeek Harness 0.2.1-alpha.4 alignment & license-statement correction** — no runtime, configuration or tool-surface change.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.1-alpha.2` to `0.2.1-alpha.4`, and the lockfile is regenerated against 0.2.1-alpha.4. `@deepseek-ai/cordis` stays `^4.0.4` and `@deepseek-ai/schemastery` stays `^3.18.4`.
+- **Supply-chain gate.** The workspace file exempts the 0.2.1-alpha.4 package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases. The previous exemption list also carried a duplicate `minimumReleaseAgeExclude` key whose stale `0.2.0-rc.2` entries made pnpm reject the regenerated lockfile; the list is now a single, lockfile-derived block.
+- **Peer ranges are unchanged.** They stay `>=0.1.7-alpha.2 <0.3.0`, so this release is **not a mandatory upgrade**: `dsh-kingdee@0.13.0` is still admitted on DeepSeek Harness 0.2.1-alpha.4.
+- **Source change.** None. No file under `src/`, `test/`, `scripts/`, `.github/`, `skills/`, `cordis.patch.yml` or the build configuration changed, and no configuration field moved: the plugin behaves exactly as 0.13.0. The 0.2.1-alpha.3 and 0.2.1-alpha.4 releases changed no `@deepseek-ai/dsh-web`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-credentials` or `ctx.configForms.get()` contract this plugin consumes.
+
+### Fixed
+
+- **The README license section contradicted the LICENSE file in both languages.** `README.md` and `README.zh.md` described this repository as under a "proprietary license (all rights reserved)" while `LICENSE` and `package.json.license` have carried the MIT License since `0.5.0`; GitHub and npm both report `MIT` for the published package. Both README files now state MIT and link the LICENSE file.
+- **The changelog never recorded the license revert.** The `0.2.0` entry still described the proprietary grant as current. It now marks that grant as reversed, and the `0.5.0` entry records the MIT restoration, so the version history matches the shipped artifacts.
+
+### Verification
+
+- `pnpm run typecheck` clean, `pnpm run build` clean (`tsc -p tsconfig.build.json` plus the `tsdown` client bundle), and all **15** unit tests pass (`pnpm test`) against DeepSeek Harness 0.2.1-alpha.4.
+- `node scripts/check-docs-language.ts` passing with zero language or switcher violations across all document pairs.
+- Not verified: a live boot into a real 0.2.1-alpha.4 profile, and — as always — no live Kingdee tenant.
+
 ## [0.13.0] - 2026-10-11
 
 **DeepSeek Harness 0.2.1-alpha.2 alignment & Display Metadata Manifest Support** — display assets, self-contained prepare build, strict pure TypeScript, and latest CLI option syntax.
@@ -168,29 +190,29 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Changed
 
 - **DeepSeek Harness 0.1.6-alpha.2 Alignment**:
- - **Client configuration slot migration**: DeepSeek Harness `0.1.6-alpha.2` migrated plugin settings surfaces from the deprecated `settings.plugin.item` slot to the dedicated Plugins Manager page (`ui-plugin-manager`). `dsh-kingdee` now registers into `plugins.row.config` (keyed by `dsh-kingdee#kingdee`) and `plugins.bundle.config` (keyed by `dsh-kingdee`).
- - **Dual-view rendering (`summary` & `page`)**: Conforming to the new `PluginConfigViewProps` contract, the card now renders the concise summary description in `view: 'summary'` (used under titles on card heads and detail headers) and mounts the full interactive revision-fenced configuration form in `view: 'page'`.
- - **Dependency and engine bounds**: All `@deepseek-ai/dsh-*` peerDependencies updated to `^0.1.6-alpha.2`, devDependencies pinned to `0.1.6-alpha.2`, and `engines.dsh` updated to `^0.1.6-alpha.2`. Added `@deepseek-ai/dsh-client-ui-plugin-manager` to devDependencies.
- - **Refreshed all bilingual documentation** (`README`, `INSTALL`, `USAGE`, `CONFIG`, `UPDATE`, `UNINSTALL`, `CHANGELOG`, `docs/RELEASE`) for the `0.1.6-alpha.2` release.
+  - **Client configuration slot migration**: DeepSeek Harness `0.1.6-alpha.2` migrated plugin settings surfaces from the deprecated `settings.plugin.item` slot to the dedicated Plugins Manager page (`ui-plugin-manager`). `dsh-kingdee` now registers into `plugins.row.config` (keyed by `dsh-kingdee#kingdee`) and `plugins.bundle.config` (keyed by `dsh-kingdee`).
+  - **Dual-view rendering (`summary` & `page`)**: Conforming to the new `PluginConfigViewProps` contract, the card now renders the concise summary description in `view: 'summary'` (used under titles on card heads and detail headers) and mounts the full interactive revision-fenced configuration form in `view: 'page'`.
+  - **Dependency and engine bounds**: All `@deepseek-ai/dsh-*` peerDependencies updated to `^0.1.6-alpha.2`, devDependencies pinned to `0.1.6-alpha.2`, and `engines.dsh` updated to `^0.1.6-alpha.2`. Added `@deepseek-ai/dsh-client-ui-plugin-manager` to devDependencies.
+  - **Refreshed all bilingual documentation** (`README`, `INSTALL`, `USAGE`, `CONFIG`, `UPDATE`, `UNINSTALL`, `CHANGELOG`, `docs/RELEASE`) for the `0.1.6-alpha.2` release.
 
 ## [0.7.0] - 2026-09-16
 
 ### Added
 
 - **Kingdee Cloud Starry Sky V9.1 Enterprise Edition conformance**:
- - **Third-party application login (`AuthService.LoginByAppSecret`)**: `authMode: "app"` now performs a real `LoginByAppSecret` login (payload `acctID` / `username` / `appid` / `appsecret` / `lcid`) and requires `userNameRef` (the integration user) in addition to `appId` / `appSecret`, establishing the same `kdservice-sessionid` session as `user` mode. Kingdee refuses account/password login on public-cloud tenants opened after 2022-11-29, so those tenants must use this mode.
- - **`lcid` config key**: New optional locale id (number, default `2052` = zh-CN), sent to both login services.
- - **New endpoint fields**: `serviceEndpoints` gained `loginByAppSecretService` (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`) and `stubSuffix` (default `.common.kdsvc`).
- - **Session on both channels**: the session is attached as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`).
+  - **Third-party application login (`AuthService.LoginByAppSecret`)**: `authMode: "app"` now performs a real `LoginByAppSecret` login (payload `acctID` / `username` / `appid` / `appsecret` / `lcid`) and requires `userNameRef` (the integration user) in addition to `appId` / `appSecret`, establishing the same `kdservice-sessionid` session as `user` mode. Kingdee refuses account/password login on public-cloud tenants opened after 2022-11-29, so those tenants must use this mode.
+  - **`lcid` config key**: New optional locale id (number, default `2052` = zh-CN), sent to both login services.
+  - **New endpoint fields**: `serviceEndpoints` gained `loginByAppSecretService` (default `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`) and `stubSuffix` (default `.common.kdsvc`).
+  - **Session on both channels**: the session is attached as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`).
 
 ### Changed
 
 - **Breaking-ish**:
- - `app` mode no longer fabricates a `KDAuthentication` header: it authenticates through `LoginByAppSecret` and then reuses the session exactly as `user` mode does, and the integration user name (`userNameRef`) is now required.
- - Every stub URL now ends with `.common.kdsvc`; the login stub is `AuthService.ValidateUser` and the logout stub `AuthService.LogOut` (previously documented through `LoginService.*`).
- - `kingdee_invoke` / `KdInvokeParams.serviceName` now takes the custom-stub path `{namespace}.{class}.{method},{assembly}` (e.g. `GetCust.GetCust.ExecuteService,GetCust`), which **replaces** the dynamic-form URL segment; `.common.kdsvc` is appended automatically.
- - `serviceEndpoints.servicePrefix` was removed, replaced by `loginByAppSecretService` + `stubSuffix`.
- - DSH pinned to `0.1.6-alpha.1` (peer ranges, devDependencies, `engines.dsh`).
+  - `app` mode no longer fabricates a `KDAuthentication` header: it authenticates through `LoginByAppSecret` and then reuses the session exactly as `user` mode does, and the integration user name (`userNameRef`) is now required.
+  - Every stub URL now ends with `.common.kdsvc`; the login stub is `AuthService.ValidateUser` and the logout stub `AuthService.LogOut` (previously documented through `LoginService.*`).
+  - `kingdee_invoke` / `KdInvokeParams.serviceName` now takes the custom-stub path `{namespace}.{class}.{method},{assembly}` (e.g. `GetCust.GetCust.ExecuteService,GetCust`), which **replaces** the dynamic-form URL segment; `.common.kdsvc` is appended automatically.
+  - `serviceEndpoints.servicePrefix` was removed, replaced by `loginByAppSecretService` + `stubSuffix`.
+  - DSH pinned to `0.1.6-alpha.1` (peer ranges, devDependencies, `engines.dsh`).
 - **Refreshed all bilingual documentation** (`README`, `INSTALL`, `USAGE`, `CONFIG`, `UPDATE`, `UNINSTALL`, `CHANGELOG`, `docs/RELEASE`) for the V9.1 target and the `0.1.6-alpha.1` verification.
 
 ### Fixed
@@ -209,9 +231,9 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Removed
 
 - **Cleaned up dead code and unused legacy interfaces**:
- - Removed unused legacy `KdToolResult` interface in `src/kd-core/types.ts` and its re-export from `src/kd-core/index.ts` (tool outputs are unified on the canonical open-value `JsonValue` schema).
- - Removed redundant utility function `parseEnvelopeFromText` in `src/kd-core/envelope.ts` and its isolated unit test (response parsing is safely handled at the transport seam).
- - Removed dead error code `kd/not-found` from `KdErrorCode` union type in `src/kd-core/errors.ts` (Kingdee WebAPI returns business errors or empty records rather than not-found).
+  - Removed unused legacy `KdToolResult` interface in `src/kd-core/types.ts` and its re-export from `src/kd-core/index.ts` (tool outputs are unified on the canonical open-value `JsonValue` schema).
+  - Removed redundant utility function `parseEnvelopeFromText` in `src/kd-core/envelope.ts` and its isolated unit test (response parsing is safely handled at the transport seam).
+  - Removed dead error code `kd/not-found` from `KdErrorCode` union type in `src/kd-core/errors.ts` (Kingdee WebAPI returns business errors or empty records rather than not-found).
  - Pruned legacy multi-version exclusion rules in `pnpm-workspace.yaml`, pinning directly to `0.1.5-rc.2`.
 
 ## [0.6.0] - 2026-09-13
@@ -219,19 +241,19 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Added
 
 - **Kingdee Cloud Starry Sky V9.0 Enterprise Edition Adaptation**:
- - **Standard Session Cookie (`kdservice-sessionid`)**: Supported extracting and forwarding Kingdee Cloud Starry Sky V9.0 official standard session cookie `kdservice-sessionid` alongside backward-compatible `kdsvc`.
- - **Query Pagination & Sorting (`orderString`, `limit`, `startRow`)**: Added `OrderString`, `Limit`, and `StartRow` to `ExecuteBillQuery` and `QueryBusinessData` to comply with Kingdee V9.0 anti-table-scan best practices and guarantee stable cursor pagination.
- - **Bill Number Direct Operations (`numbers`)**: Exposed `numbers` array parameter for `kingdee_audit`, `kingdee_unaudit`, `kingdee_delete`, `kingdee_unsubmit`, and `kingdee_delete_draft`, enabling AI agents to act directly using document numbers (e.g., `SO-20260901`) without pre-resolving internal surrogate `FID`s.
- - **View by Bill Number**: Enhanced `kingdee_view` to accept `number` parameter as an alternative to `id`.
- - **Save with Auto-Submit & Audit (`isAutoSubmitAndAudit`)**: Added `isAutoSubmitAndAudit` parameter to `kingdee_save` and `kingdee_batch_save` matching Kingdee V9.0 one-step save-submit-audit capability.
+  - **Standard Session Cookie (`kdservice-sessionid`)**: Supported extracting and forwarding Kingdee Cloud Starry Sky V9.0 official standard session cookie `kdservice-sessionid` alongside backward-compatible `kdsvc`.
+  - **Query Pagination & Sorting (`orderString`, `limit`, `startRow`)**: Added `OrderString`, `Limit`, and `StartRow` to `ExecuteBillQuery` and `QueryBusinessData` to comply with Kingdee V9.0 anti-table-scan best practices and guarantee stable cursor pagination.
+  - **Bill Number Direct Operations (`numbers`)**: Exposed `numbers` array parameter for `kingdee_audit`, `kingdee_unaudit`, `kingdee_delete`, `kingdee_unsubmit`, and `kingdee_delete_draft`, enabling AI agents to act directly using document numbers (e.g., `SO-20260901`) without pre-resolving internal surrogate `FID`s.
+  - **View by Bill Number**: Enhanced `kingdee_view` to accept `number` parameter as an alternative to `id`.
+  - **Save with Auto-Submit & Audit (`isAutoSubmitAndAudit`)**: Added `isAutoSubmitAndAudit` parameter to `kingdee_save` and `kingdee_batch_save` matching Kingdee V9.0 one-step save-submit-audit capability.
 
 ### Security
 
 - **SSRF Defenses and Strict Host Validation**:
- - Implemented zero-dependency protocol and host safety assertions in `src/kd-core/security.ts`.
- - **Protocol Whitelist**: Only `http:` and `https:` protocols are permitted; all other protocols (`file:`, `ftp:`, `gopher:`, etc.) are strictly rejected.
- - **Network Boundary Checks**: Automatically blocks requests targeting `localhost`, loopback addresses (`127.0.0.0/8`, `::1`), RFC1918 private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local (`169.254.0.0/16`), CGNAT (`100.64.0.0/10`), IPv6 Link-Local (`fe80::/10`), and Unique Local Addresses (`fc00::/7`).
- - Integrated pre-flight validation in both configuration verification (`validateConfig`) and outbound HTTP dispatch (`HttpTransport.request`).
+  - Implemented zero-dependency protocol and host safety assertions in `src/kd-core/security.ts`.
+  - **Protocol Whitelist**: Only `http:` and `https:` protocols are permitted; all other protocols (`file:`, `ftp:`, `gopher:`, etc.) are strictly rejected.
+  - **Network Boundary Checks**: Automatically blocks requests targeting `localhost`, loopback addresses (`127.0.0.0/8`, `::1`), RFC1918 private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local (`169.254.0.0/16`), CGNAT (`100.64.0.0/10`), IPv6 Link-Local (`fe80::/10`), and Unique Local Addresses (`fc00::/7`).
+  - Integrated pre-flight validation in both configuration verification (`validateConfig`) and outbound HTTP dispatch (`HttpTransport.request`).
 
 ## [0.5.0] - 2026-09-11
 
@@ -242,6 +264,7 @@ All notable changes to this project are documented here. The format follows [Kee
   - Added explicit host engine compatibility in `package.json.engines`: `"dsh": "^0.1.5-rc.2"`.
   - Upgraded `@deepseek-ai/dsh-*` peerDependencies and devDependencies to `0.1.5-rc.2`.
   - Refreshed all bilingual documentation (`README.md`, `README.zh.md`, `INSTALL.md`, `INSTALL.zh.md`, `UPDATE.md`, `UPDATE.zh.md`, `USAGE.md`, `USAGE.zh.md`, `CONFIG.md`, `CONFIG.zh.md`, `UNINSTALL.md`, `UNINSTALL.zh.md`) for `0.1.5-rc.2` verification.
+- **License reverted to MIT.** The proprietary license introduced in `0.2.0` was replaced by the MIT License, aligning this package with the harness core and its sibling plugins; `LICENSE` and `package.json.license` both carry MIT from here on. This is the first changelog record of that revert. The `0.2.0` entry below still describes what `0.2.0` shipped, and the `README` license section kept the obsolete proprietary wording until `0.14.0` corrected it.
 
 ## [0.4.0] - 2026-09-10
 
@@ -312,7 +335,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Changed
 
 - Added cross-platform secrets documentation to `INSTALL.md` / `INSTALL.zh.md` and `README.md` / `README.zh.md` — Linux/macOS `export`, Windows PowerShell `$env:`, Windows CMD `set` / `setx`, and the DSH credential store.
-- License changed from MIT to a **proprietary (all rights reserved)** license. The repository is read/evaluation-only: copying, forking, re-hosting, re-publishing, modifying, or creating derivative works is prohibited without prior written permission.
+- License changed from MIT to a **proprietary (all rights reserved)** license, under which the repository was read/evaluation-only: copying, forking, re-hosting, re-publishing, modifying, or creating derivative works was prohibited without prior written permission. **This grant was reversed in `0.5.0`, which restored the MIT License.**
 
 ## [0.1.0] - 2026-09-01
 

@@ -6,6 +6,30 @@
 
 ---
 
+## [0.14.0] - 2026-10-16
+
+**适配 DeepSeek Harness 0.2.1-alpha.4，并修正许可证声明** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **宿主对齐**：`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.1-alpha.2` 升至 `0.2.1-alpha.4`，锁文件按 `0.2.1-alpha.4` 重新生成；`@deepseek-ai/cordis` 保持 `^4.0.4`、`@deepseek-ai/schemastery` 保持 `^3.18.4`。
+- **供应链闸门**：工作区文件现对 `0.2.1-alpha.4` 的各包豁免 pnpm 的最小发布年龄闸门 —— 否则 DSH 持续发布的预发行版会被拦下。此前的豁免名单还含有一个重复的 `minimumReleaseAgeExclude` 键，其过期的 `0.2.0-rc.2` 条目会让 pnpm 拒绝重新生成的锁文件；该名单现为单一且由锁文件推导的区块。
+- **peer 区间不变**：仍为 `>=0.1.7-alpha.2 <0.3.0`，因此本版**不是**强制升级：`dsh-kingdee@0.13.0` 在 DeepSeek Harness 0.2.1-alpha.4 上同样被准入。
+- **源码改动**：无。`src/`、`test/`、`scripts/`、`.github/`、`skills/`、`cordis.patch.yml` 与构建配置下均无文件改动，配置字段也没有任何迁移：插件行为与 0.13.0 完全一致。0.2.1-alpha.3 与 0.2.1-alpha.4 两个版本未改动本插件所消费的 `@deepseek-ai/dsh-web`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-credentials` 或 `ctx.configForms.get()` 契约。
+
+### 修复
+
+- **两个语种的 README 许可证章节都与 LICENSE 文件矛盾。** `README.md` 与 `README.zh.md` 把本仓库描述为采用「专有许可证（保留所有权利）」，而 `LICENSE` 与 `package.json.license` 自 `0.5.0` 起一直是 MIT 许可证；GitHub 与 npm 对已发布包的识别结果也都是 `MIT`。两个 README 现均写明 MIT 并链接 LICENSE 文件。
+- **更新日志从未记录许可证回退。** `0.2.0` 条目仍把专有授权描述为现行状态。该条目现标注该授权已被撤销，并在 `0.5.0` 条目中记录 MIT 的恢复，使版本历史与实际发布物一致。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、`pnpm run build` 干净（`tsc -p tsconfig.build.json` 加 `tsdown` 客户端 bundle），**15** 项单元测试（`pnpm test`）在 DeepSeek Harness 0.2.1-alpha.4 上全部通过。
+- `node scripts/check-docs-language.ts` 检查全部通过，零语言混淆或链接跳转错误。
+- 未验证项：在真实 `0.2.1-alpha.4` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
+
+---
+
 ## [0.13.0] - 2026-10-11
 
 **适配 DeepSeek Harness 0.2.1-alpha.2 与插件展示元数据规范** —— 规范展示资产、自包含 prepare 构建、纯 TypeScript 架构与最新命令行选项语法。
@@ -262,6 +286,7 @@
   - 在 `package.json.engines` 中显式约束宿主引擎兼容范围：`"dsh": "^0.1.5-rc.2"`；
   - 将所有 `@deepseek-ai/dsh-*` peerDependencies 与 devDependencies 升级至 `0.1.5-rc.2`；
   - 全面刷新双语文档，标注针对 `0.1.5-rc.2` 的验证。
+- **许可证改回 MIT。** `0.2.0` 引入的专有许可被替换为 MIT 许可证，使本包与 harness 核心及其姊妹插件保持一致；自此 `LICENSE` 与 `package.json.license` 均为 MIT。本条是该回退的首次更新日志记录。下方 `0.2.0` 条目仍描述该版本实际发布的状态，而 `README` 的许可证章节误留专有措辞，直至 `0.14.0` 才修正。
 
 ---
 ## [0.4.0] - 2026-09-10
@@ -340,7 +365,7 @@
 ### 变更
 
 - 在 `INSTALL.md` / `INSTALL.zh.md` 与 `README.md` / `README.zh.md` 中补充跨平台密钥配置说明 —— Linux/macOS 的 `export`、Windows PowerShell 的 `$env:`、Windows CMD 的 `set` / `setx`，以及 DSH 凭据存储。
-- 许可证由 MIT 变更为**专有许可（保留所有权利）**，仓库仅供阅读/评估：未经所有者事先书面许可，禁止在整体或部分上复制、复刻/fork、再托管、再发布、修改或制作衍生作品。
+- 许可证由 MIT 变更为**专有许可（保留所有权利）**，仓库仅供阅读/评估：未经所有者事先书面许可，禁止在整体或部分上复制、复刻/fork、再托管、再发布、修改或制作衍生作品。**该授权已在 `0.5.0` 中撤销，并恢复为 MIT 许可证。**
 
 ---
 

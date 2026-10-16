@@ -2,7 +2,7 @@
 
 English | [Chinese](UPDATE.zh.md)
 
-> Verified against deepseek-harness **0.2.1-alpha.2** with plugin **0.13.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.13.0` on runtime `0.2.1-alpha.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.2.1-alpha.4** with plugin **0.14.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.14.0` on runtime `0.2.1-alpha.4`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 
 How to move **dsh-kingdee** to a newer version.
 
@@ -18,7 +18,7 @@ How to move **dsh-kingdee** to a newer version.
 dsh plugin --profile web update dsh-kingdee
 
 # Or pin to the exact version
-dsh plugin --profile web add dsh-kingdee@0.13.0
+dsh plugin --profile web add dsh-kingdee@0.14.0
 
 # 2. (Recommended) rebuild / reinstall if you build the host half from source
 pnpm install && pnpm run build
@@ -28,6 +28,7 @@ pnpm install && pnpm run build
 
 ## After you upgrade
 
+- **0.14.0 aligns with DeepSeek Harness 0.2.1-alpha.4 and corrects the license statement — and it is not a mandatory upgrade.** No runtime code, configuration or tool surface change: the plugin behaves exactly as 0.13.0. Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.1-alpha.2` to `0.2.1-alpha.4`, the lockfile is regenerated against 0.2.1-alpha.4, and the workspace supply-chain exemption is refreshed to the 0.2.1-alpha.4 package set. The `@deepseek-ai/dsh-credentials` and `@deepseek-ai/dsh-tools` peers are **unchanged** at `>=0.1.7-alpha.2 <0.3.0`, so `0.13.0` is admitted on 0.2.1-alpha.4 as well and nothing forces this upgrade. The 0.2.1-alpha.3 and 0.2.1-alpha.4 releases changed no seam this plugin consumes. This release also fixes a documentation defect: both README files described the repository as under a proprietary license while `LICENSE` and `package.json.license` have carried MIT since `0.5.0`, and no changelog entry had ever recorded that revert. Upgrade with `dsh plugin --profile web add dsh-kingdee@0.14.0` (or `dsh plugin --profile web update dsh-kingdee`).
 - **0.13.0 aligns with DeepSeek Harness 0.2.1-alpha.2 and adds display metadata manifest support.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.0-rc.2` to `0.2.1-alpha.2`. This release packages native `icon.svg` artwork and bilingual manifest resources (`locale/en.json`, `locale/zh.json`) conforming to DSH 0.2.1-alpha.2 display conventions for Plugin Manager. A self-contained `prepare` script is configured for git installations. The peer ranges remain unchanged at `>=0.1.7-alpha.2 <0.3.0`, so `0.12.0` and `0.11.1` remain admitted on 0.2.1-alpha.2 as well and this upgrade is not forced.
 - **0.12.0 aligns with DeepSeek Harness 0.2.0-rc.2 — and it is not a mandatory upgrade.** No runtime code, configuration or tool surface change: the plugin behaves exactly as 0.11.1. Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.0-rc.1` to `0.2.0-rc.2`, the lockfile is regenerated against 0.2.0-rc.2, and the workspace supply-chain exemption is refreshed to the 0.2.0-rc.2 package set. The `@deepseek-ai/dsh-credentials` and `@deepseek-ai/dsh-tools` peers are **unchanged** at `>=0.1.7-alpha.2 <0.3.0`, so `0.11.1` is admitted on 0.2.0-rc.2 as well and nothing forces this upgrade. 0.12.0 is verified against 0.2.0-rc.2 (typecheck clean, build clean, 15 unit tests passing) and is admitted on `0.2.0-rc.2`, `0.2.0-rc.1`, `0.2.0`, `0.1.7-rc.2` and `0.1.7-alpha.2`, while it is still refused on `0.1.6-alpha.2`; the earlier `0.10.0` (`^0.1.7-alpha.2`) remains **refused on 0.2.0-rc.2**. Upgrade with `dsh plugin --profile web add dsh-kingdee@0.12.0` (or `dsh plugin --profile web update dsh-kingdee`).
 - **0.11.1 corrects the documentation; no code, manifest or behavior change.** The package content is identical to 0.11.0 — the same sources, the same peers, the same configuration — so upgrading from 0.11.0 needs no action at all. This release closes five documentation defects found by a full bilingual proofread: the English 0.7.0 changelog entry was missing the third-party `LoginByAppSecret` login, the `app`-mode `KDAuthentication` removal with its new `userNameRef` requirement, and the login-response fix that had made authentication fail on a real tenant; the Chinese 0.6.1 entry carried a heading that did not match the English category and one vague item with no counterpart; the configuration guide used two different placeholder hosts for the same example; the Chinese configuration guide stated the credential-seam contract as prose where English used two bullets; and the Chinese install guide omitted the `172.16.0.0/12` range from the blocked private networks.
