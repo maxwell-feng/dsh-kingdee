@@ -1,6 +1,6 @@
 # Configuration Guide
 
-English | [Chinese](CONFIG.zh.md)
+English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.zh.md)
 
 > Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.2.1-rc.2** with plugin **0.15.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.15.0` on runtime `0.2.1-rc.2`). The `@deepseek-ai/dsh-*` peers are `>=0.1.7-alpha.2 <0.3.0`. **No live-tenant verification was performed.**
 

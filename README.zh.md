@@ -1,6 +1,6 @@
 # dsh-kingdee
 
-[英文](README.md) | 中文
+[英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/README.md) | 中文
 
 > 面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）的金蝶云星空二次开发插件。
 

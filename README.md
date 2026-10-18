@@ -1,6 +1,6 @@
 # dsh-kingdee
 
-English | [Chinese](README.zh.md)
+English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/README.zh.md)
 
 > Kingdee Cloud Starry Sky secondary-development plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH).
 

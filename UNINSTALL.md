@@ -1,6 +1,6 @@
 # Uninstall
 
-English | [Chinese](UNINSTALL.zh.md)
+English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UNINSTALL.zh.md)
 
 > Verified against deepseek-harness **0.2.1-rc.2** with plugin **0.15.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.15.0` on runtime `0.2.1-rc.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
 

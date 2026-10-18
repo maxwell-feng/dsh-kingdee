@@ -1,8 +1,25 @@
 # 更新日志
 
-[英文](CHANGELOG.md) | 中文
+[英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGELOG.md) | 中文
 
 **dsh-kingdee** 的所有关键版本演进记录均归档于此。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，并严格遵循 [语义化版本规范](https://semver.org/lang/zh-CN/)。
+
+---
+
+## [0.15.1] - 2026-10-18
+
+**文档渲染修复** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 修复
+
+- **更新日志的版本标题被渲染成了字面方括号。** `CHANGELOG.md` 与 `CHANGELOG.zh.md` 的链接引用块只写到 `[0.12.0]`，导致 `[0.15.0]`、`[0.14.0]`、`[0.13.0]` 三个标题没有可解析的定义，GitHub 把它们渲染为原始文本 `[0.15.0]` 而不是链接，读起来就是文字错乱。现补齐这三条定义，两个文件中的每个标题都能正确解析。
+- **语言切换链接在 npm 上无法跳转。** npm registry 为本包判定 `readmeFilename: README.zh.md`——它把 `README*` 候选文件排序后取最后一个——因此 npm 页面展示的是中文文档。其中指回英文 README 的链接是相对路径，npm 在 `www.npmjs.com` 上无法解析，点击无效。现两种语言的切换链接一律改用绝对地址 `https://github.com/.../blob/main/...`，在 GitHub、npm 及其他任何渲染器中均可跳转。
+- **双语文档闸门同时接受两种写法。** `scripts/check-docs-language.ts` 原先要求切换链接必须是不带路径的相对文件名。现在相对文件名与绝对仓库 URL 都接受，但仍校验目标必须指向对应文件，因此闸门的保证不变，也不再强制使用那种在 npm 上失效的写法。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、`pnpm run build` 构建干净，**15** 项单元测试全部通过。
+- `node scripts/check-docs-language.ts` 在全部文档对上通过，零发现。
 
 ---
 
@@ -423,6 +440,10 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1
+[0.15.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.0
+[0.14.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.14.0
+[0.13.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.13.0
 [0.12.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.12.0
 [0.11.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.1
 [0.11.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.11.0

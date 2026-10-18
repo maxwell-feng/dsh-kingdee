@@ -1,6 +1,6 @@
-# Release notes — v0.15.0
+# Release notes — v0.15.1
 
-English | [Chinese](RELEASE.zh.md)
+English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/docs/RELEASE.zh.md)
 
 Release date: 2026-10-18
 
