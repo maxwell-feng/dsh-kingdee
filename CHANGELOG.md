@@ -4,6 +4,29 @@ English | [Chinese](CHANGELOG.zh.md)
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.15.0] - 2026-10-18
+
+**DeepSeek Harness 0.2.1-rc.2 alignment** — no runtime, configuration or tool-surface change.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.1-alpha.4` to `0.2.1-rc.2`, and the lockfile is regenerated against 0.2.1-rc.2. `@deepseek-ai/cordis` moves to `^4.0.5` and `@deepseek-ai/schemastery` moves to `^3.18.5`.
+- **Supply-chain gate.** The workspace file exempts the 0.2.1-rc.2 package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases. The list stays a single, lockfile-derived block.
+- **`engines.dsh` range is unchanged.** It stays `>=0.1.7-alpha.2 <0.3.0`, so this release is **not a mandatory upgrade**: `dsh-kingdee@0.14.0` is still admitted on DeepSeek Harness 0.2.1-rc.2. Since DeepSeek Harness 0.2.1-alpha.4 an own `engines.dsh` range decides admission alone, and the peers no longer participate in that check.
+- **Source change.** None. No file under `src/`, `test/`, `scripts/`, `.github/`, `skills/`, `cordis.patch.yml` or the build configuration changed, and no configuration field moved: the plugin behaves exactly as 0.14.0. The `ctx.configForms.get()`, slots, locale and remote contracts this plugin consumes are declaration-identical between `0.2.1-alpha.4` and `0.2.1-rc.2`.
+
+### Documentation
+
+- The bilingual docs' verification baseline is now `0.2.1-rc.2` / plugin `0.15.0`.
+- Corrected a stale statement about the compatibility gate in the compatibility notes: the old text claimed the gate reads only the peers and does **not** read `engines.dsh`. Since 0.2.1-alpha.4 an own `engines.dsh` range decides alone.
+- Corrected several Chinese-language typos that wrote the runtime version as `0.2.1-alpha.2` in the opening verification note of INSTALL / USAGE / CONFIG / UPDATE / UNINSTALL.
+
+### Verification
+
+- `pnpm run typecheck` clean, `pnpm run build` clean (`tsc -p tsconfig.build.json` plus the `tsdown` client bundle), and all **15** unit tests pass (`pnpm test`) against DeepSeek Harness 0.2.1-rc.2.
+- `node scripts/check-docs-language.ts` passing with zero language or switcher violations across all document pairs.
+- Not verified: a live boot into a real 0.2.1-rc.2 profile, and — as always — no live Kingdee tenant.
+
 ## [0.14.0] - 2026-10-16
 
 **DeepSeek Harness 0.2.1-alpha.4 alignment & license-statement correction** — no runtime, configuration or tool-surface change.

@@ -6,6 +6,31 @@
 
 ---
 
+## [0.15.0] - 2026-10-18
+
+**适配 DeepSeek Harness 0.2.1-rc.2** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **宿主对齐**：`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.1-alpha.4` 升至 `0.2.1-rc.2`，锁文件按 `0.2.1-rc.2` 重新生成；`@deepseek-ai/cordis` 升至 `^4.0.5`、`@deepseek-ai/schemastery` 升至 `^3.18.5`。
+- **供应链闸门**：工作区文件现对 `0.2.1-rc.2` 的各包豁免 pnpm 的最小发布年龄闸门 —— 否则 DSH 持续发布的预发行版会被拦下。该名单保持单一且由锁文件推导的区块。
+- **`engines.dsh` 区间不变**：仍为 `>=0.1.7-alpha.2 <0.3.0`，因此本版**不是**强制升级：`dsh-kingdee@0.14.0` 在 DeepSeek Harness 0.2.1-rc.2 上同样被准入。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定准入，peer 不再参与该项校验。
+- **源码改动**：无。`src/`、`test/`、`scripts/`、`.github/`、`skills/`、`cordis.patch.yml` 与构建配置下均无文件改动，配置字段也没有任何迁移：插件行为与 0.14.0 完全一致。本插件消费的 `ctx.configForms.get()`、slots、locale 与 remote 契约在 `0.2.1-alpha.4` 与 `0.2.1-rc.2` 之间声明完全一致。
+
+### 文档
+
+- 中英双语文档的验证基线更新为 `0.2.1-rc.2` / 插件 `0.15.0`。
+- 修正了 compatibility 说明中关于兼容性闸门的过时表述（旧文称闸门只读 peer、「不读取 `engines.dsh`」）；自 0.2.1-alpha.4 起实为自有 `engines.dsh` 优先独占判定。
+- 修正了中文文档中把运行时版本误写为 `0.2.1-alpha.2` 的多处笔误（INSTALL / USAGE / CONFIG / UPDATE / UNINSTALL 的首段验证说明）。
+
+### 验证
+
+- `pnpm run typecheck` 零错误、`pnpm run build` 干净（`tsc -p tsconfig.build.json` 加 `tsdown` 客户端 bundle），**15** 项单元测试（`pnpm test`）在 DeepSeek Harness 0.2.1-rc.2 上全部通过。
+- `node scripts/check-docs-language.ts` 检查全部通过，零语言混淆或链接跳转错误。
+- 未验证项：在真实 `0.2.1-rc.2` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
+
+---
+
 ## [0.14.0] - 2026-10-16
 
 **适配 DeepSeek Harness 0.2.1-alpha.4，并修正许可证声明** —— 不改运行时逻辑、不改配置项、不改工具接口。

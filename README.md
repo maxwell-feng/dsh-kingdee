@@ -13,7 +13,7 @@ English | [Chinese](README.zh.md)
 - **typed tools** — query, save, submit, audit, un-audit, view, delete and invoke BOS custom services through the `kingdee_*` tools. Each one is listed below in the Tools table.
 - **full state machine** — create/update → submit → audit → un-audit flow, off the shelf.
 - **offline mock** — a `mock: true` flag swaps in a local transport so you can demo and test the pipeline without a reachable tenant.
-- **display metadata and icon** — bundled with official `icon.svg` artwork and bilingual manifest resources (`locale/en.json`, `locale/zh.json`) conforming to DSH 0.2.1-alpha.4 display conventions for Plugin Manager.
+- **display metadata and icon** — bundled with official `icon.svg` artwork and bilingual manifest resources (`locale/en.json`, `locale/zh.json`) conforming to DSH 0.2.1-rc.2 display conventions for Plugin Manager.
 - **pure TypeScript** — 100% TypeScript throughout source, tooling, and build declarations.
 - **bilingual docs** — English and Simplified Chinese.
 
@@ -26,13 +26,13 @@ English | [Chinese](README.zh.md)
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **DeepSeek Harness 0.2.1-alpha.4 compatibility.** 0.14.0 is verified against DeepSeek Harness 0.2.1-alpha.4 and moves its `@deepseek-ai/dsh-*` devDependencies to that release. Its `@deepseek-ai/dsh-credentials` and `@deepseek-ai/dsh-tools` peers are **unchanged** at `>=0.1.7-alpha.2 <0.3.0`, so **0.13.0 remains admitted on 0.2.1-alpha.4 as well** — 0.14.0 is not a mandatory upgrade. The older `0.10.0` declares `^0.1.7-alpha.2`, which excludes 0.2.x, and is **refused at load** on 0.2.x: the harness checks every `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer entry against the single running runtime version before a plugin row loads, with prereleases participating in range matching (`engines.dsh` is **not** what the gate reads). An incompatible row is refused and an incompatible bundle is skipped. On 0.2.x, upgrade with `dsh plugin --profile web add dsh-kingdee@0.14.0`.
+> **DeepSeek Harness 0.2.1-rc.2 compatibility.** 0.15.0 is verified against DeepSeek Harness 0.2.1-rc.2 and moves its `@deepseek-ai/dsh-*` devDependencies to that release. Its own `engines.dsh` range is **unchanged** at `>=0.1.7-alpha.2 <0.3.0` (the range widened in 0.11.0), so **0.14.0 remains admitted on 0.2.1-rc.2 as well** — 0.15.0 is not a mandatory upgrade. Since DeepSeek Harness 0.2.1-alpha.4 an own `engines.dsh` range decides admission alone and the `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peers are ignored for that check; both rules match prereleases against the range. The older `0.10.0` declares `^0.1.7-alpha.2`, which excludes 0.2.x, and is **refused at load** on 0.2.x. An incompatible row is refused and an incompatible bundle is skipped. On 0.2.x, upgrade with `dsh plugin --profile web add dsh-kingdee@0.15.0`.
 >
 > Note on CLI syntax: per DeepSeek Harness 0.2.1-alpha.1 upgrade specifications, `--profile <name>` must precede forwarded subcommands such as `add`, `remove`, or `update`. Putting `--profile` after the subcommand forwards the flag to pnpm and fails.
 >
 > The remedy the harness prints for a refusal is `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk` (or the plugin manager), which records an **exact-version exemption** in the profile's `compatibility.json`. That is a risk acknowledgement, not a compatibility fix, and it grants one exact plugin version on one exact runtime: a plugin upgrade or a harness upgrade does not inherit the grant.
 
-> Verified against deepseek-harness **0.2.1-alpha.4** with plugin **0.14.0**: `pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing (`pnpm test`), and the harness's own compatibility check admitting `dsh-kingdee@0.14.0` on runtime `0.2.1-alpha.4`. **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.2.1-rc.2** with plugin **0.15.0**: `pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing (`pnpm test`), and the harness's own compatibility check admitting `dsh-kingdee@0.15.0` on runtime `0.2.1-rc.2`. **No live-tenant verification was performed.**
 
 See [CONFIG.md](./CONFIG.md) for full configuration, [INSTALL.md](./INSTALL.md) for setup, [USAGE.md](./USAGE.md) for the tool reference, and [UPDATE.md](./UPDATE.md) / [UNINSTALL.md](./UNINSTALL.md) for upgrades and removal. Release history is in [CHANGELOG.md](./CHANGELOG.md) / [CHANGELOG.zh.md](./CHANGELOG.zh.md).
 

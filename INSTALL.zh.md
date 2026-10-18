@@ -2,7 +2,7 @@
 
 [英文](INSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.1-alpha.4** 上、以插件 **0.14.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-alpha.2` 上准入 `dsh-kingdee@0.14.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
+> 已在 deepseek-harness **0.2.1-rc.2** 上、以插件 **0.15.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-rc.2` 上准入 `dsh-kingdee@0.15.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
@@ -21,7 +21,7 @@
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **在 DeepSeek Harness 0.2.1-alpha.4 上的兼容性。** 0.14.0 把 `@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 声明为 `>=0.1.7-alpha.2 <0.3.0`，因此宿主自带的 peer 兼容性闸门会在 `0.1.7-alpha.2` 至 `0.2.x` 上准入本插件（在 `0.1.6-alpha.2` 上仍会拒绝）。这两个 peer 区间与 0.11.0 相比没有任何变化，因此 `0.13.0` 在 0.2.1-alpha.4 上同样被准入 —— 本版不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.x 上它的行会在加载前被拒绝：宿主会用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配，闸门读取的**不是** `engines.dsh`。请执行 `dsh plugin --profile web add dsh-kingdee@0.14.0`（或 `dsh plugin --profile web update dsh-kingdee`）升级。
+> **在 DeepSeek Harness 0.2.1-rc.2 上的兼容性。** 0.15.0 声明了自己的 `engines.dsh` 区间 `>=0.1.7-alpha.2 <0.3.0`。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略，因此这一条区间就让本插件在 `0.1.7-alpha.2` 至 `0.2.x` 上被准入（在 `0.1.6-alpha.2` 上仍会拒绝）。两种规则都会把预发行版与区间做匹配。该区间与 0.11.0 相比没有任何变化，因此 `0.14.0` 在 0.2.1-rc.2 上同样被准入 —— 本版不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.x 上它的行会在加载前被拒绝。请执行 `dsh plugin --profile web add dsh-kingdee@0.15.0`（或 `dsh plugin --profile web update dsh-kingdee`）升级。
 >
 > **CLI 语法特别提醒**：根据 DeepSeek Harness 0.2.1-alpha.1 起的规范，`--profile <name>` 必须置于被转发的 `add`、`remove`、`update` 等子命令之前；若将 `--profile` 放置在子命令之后，会被当做 pnpm 选项转发并报错。
 >

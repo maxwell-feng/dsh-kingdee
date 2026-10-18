@@ -13,7 +13,7 @@
 - **类型化工具** —— 通过 `kingdee_*` 工具完成查询、保存、提交、审核、反审核、查看、删除与调用 BOS 自定义服务，具体见下方工具表。
 - **完整状态机** —— 创建/更新 → 提交 → 审核 → 反审核，开箱即用。
 - **离线 Mock** —— 配置 `mock: true` 即切换到本地固化传输，无需可连通账套即可演示与测试。
-- **展示元数据与专属图标** —— 内置官方 `icon.svg` 矢量图标与中英双语清单资源（`locale/en.json`、`locale/zh.json`），完全符合 DSH 0.2.1-alpha.4 插件管理器展示规范。
+- **展示元数据与专属图标** —— 内置官方 `icon.svg` 矢量图标与中英双语清单资源（`locale/en.json`、`locale/zh.json`），完全符合 DSH 0.2.1-rc.2 插件管理器展示规范。
 - **纯 TypeScript 开发** —— 全库源码、工具链配置与验证脚本 100% 采用纯 TypeScript，零外部杂质语言。
 - **双语文档** —— 英文与简体中文。
 
@@ -26,13 +26,13 @@
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **面向 DeepSeek Harness 0.2.1-alpha.4 的兼容性。** 0.14.0 已针对 DeepSeek Harness 0.2.1-alpha.4 完成验证，并把 `@deepseek-ai/dsh-*` 开发依赖升至该版本。`@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 两个 peer **保持** `>=0.1.7-alpha.2 <0.3.0`（即 0.11.0 放宽后的区间），因此 **`0.13.0` 在 0.2.1-alpha.4 上同样被准入** —— 0.14.0 不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，在 0.2.x 上**会在加载阶段被拒绝**：宿主会在插件行加载之前，用唯一的运行时版本校验每一处名为 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` 的 peer 依赖，且预发行版参与区间匹配（闸门读取的**不是** `engines.dsh`）。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。在 0.2.x 上请用 `dsh plugin --profile web add dsh-kingdee@0.14.0` 升级。
+> **面向 DeepSeek Harness 0.2.1-rc.2 的兼容性。** 0.15.0 已针对 DeepSeek Harness 0.2.1-rc.2 完成验证，并把 `@deepseek-ai/dsh-*` 开发依赖升至该版本。其自有的 `engines.dsh` 区间**保持** `>=0.1.7-alpha.2 <0.3.0`（即 0.11.0 放宽后的区间），因此 **`0.14.0` 在 0.2.1-rc.2 上同样被准入** —— 0.15.0 不是强制升级。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略；两种规则都会把预发行版与区间做匹配。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，在 0.2.x 上**会在加载阶段被拒绝**。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。在 0.2.x 上请用 `dsh plugin --profile web add dsh-kingdee@0.15.0` 升级。
 >
 > 命令行语法特别提示：依据 DeepSeek Harness 0.2.1-alpha.1 规范，`--profile <name>` 参数必须置于转发的 `add`、`remove`、`update` 等子命令之前；若写在子命令之后，该参数会被原样转发给下游 pnpm 导致命令执行失败。
 >
 > 被拒时宿主会打印的补救方式是 `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或使用插件管理器），它会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**。这是风险确认，而不是兼容性修复；且它只对一个确切插件版本、一个确切运行时生效：插件升级或宿主升级都不会继承该授权。
 
-> 已在 deepseek-harness **0.2.1-alpha.4** 上、以插件 **0.14.0** 验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-alpha.4` 上准入 `dsh-kingdee@0.14.0`。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.1-rc.2** 上、以插件 **0.15.0** 验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-rc.2` 上准入 `dsh-kingdee@0.15.0`。**未进行真实账套联调验证。**
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 
