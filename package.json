@@ -1,6 +1,6 @@
 {
   "name": "dsh-kingdee",
-  "version": "0.15.1",
+  "version": "0.16.0",
   "description": "Kingdee Cloud Starry Sky secondary-development plugin for DeepSeek Harness (DSH). Typed tools over the Kingdee Cloud WebAPI, credential-safe config, and a companion domain skill.",
   "type": "module",
   "main": "./lib/index.js",
@@ -70,10 +70,10 @@
     }
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.4",
+    "@deepseek-ai/cordis": "^4.0.4 || ^4.0.6-alpha.1",
     "@deepseek-ai/dsh-credentials": ">=0.1.7-alpha.2 <0.3.0",
     "@deepseek-ai/dsh-tools": ">=0.1.7-alpha.2 <0.3.0",
-    "@deepseek-ai/schemastery": "^3.18.4"
+    "@deepseek-ai/schemastery": "^3.18.4 || ~3.18.6-alpha.1"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -90,18 +90,18 @@
     }
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "^4.0.5",
-    "@deepseek-ai/dsh-api-remotes": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-client-connection": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-client-locale": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-plugin-manager": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-renderer": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-settings": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-slots": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-credentials": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
-    "@deepseek-ai/dsh-util-values": "0.2.1-rc.2",
-    "@deepseek-ai/schemastery": "^3.18.5",
+    "@deepseek-ai/cordis": "~4.0.6-alpha.1",
+    "@deepseek-ai/dsh-api-remotes": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-connection": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-locale": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-plugin-manager": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-renderer": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-settings": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-slots": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-credentials": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-tools": "0.2.2-alpha.2",
+    "@deepseek-ai/dsh-util-values": "0.2.2-alpha.2",
+    "@deepseek-ai/schemastery": "~3.18.6-alpha.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.3.0",
     "react": "^19.3.0",

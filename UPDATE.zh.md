@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UPDATE.md) | 中文
 
-> 已在 deepseek-harness **0.2.1-rc.2** 上、以插件 **0.15.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-rc.2` 上准入 `dsh-kingdee@0.15.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.2-alpha.2** 上、以插件 **0.16.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.16.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
 
 如何将 **dsh-kingdee** 升级到更新版本。
 
@@ -18,7 +18,7 @@
 dsh plugin --profile web update dsh-kingdee
 
 # 或者指定确切版本安装升级
-dsh plugin --profile web add dsh-kingdee@0.15.0
+dsh plugin --profile web add dsh-kingdee@0.16.0
 
 # 2.（建议）若从源码构建 host 半区，请重新安装与构建
 pnpm install && pnpm run build
@@ -28,6 +28,7 @@ pnpm install && pnpm run build
 
 ## 升级后
 
+- **0.16.0 完成与 DeepSeek Harness 0.2.2-alpha.2 的对齐 —— 且本版并非强制升级。** 不改运行时逻辑、不改配置、不改工具接口：插件行为与 0.15.1 完全一致。`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.1-rc.2` 升至 `0.2.2-alpha.2`，锁文件按 `0.2.2-alpha.2` 重新生成，工作区的供应链豁免清单也刷新为 `0.2.2-alpha.2` 的包集合；`@deepseek-ai/cordis` 升至 `~4.0.6-alpha.1`、`@deepseek-ai/schemastery` 升至 `~3.18.6-alpha.1`。自有的 `engines.dsh` 区间**保持不变**，仍为 `>=0.1.7-alpha.2 <0.3.0`，因此 `0.15.1` 在 0.2.2-alpha.2 上同样被准入，没有任何因素强制本次升级。0.2.2-alpha.2 公布的三项破坏性变更均已逐条核对，均不影响本插件：同步上游的 Cordis Timer 只改变 `ctx.timer.*` 的返回值，而 `src/kd-core/transport.ts` 使用的是全局 `setTimeout` / `clearTimeout`；`defineTool` 与 `ToolDefinition` 声明完全一致，`ctx.tools.register` 只是新增了一个可选第二参数；`dsh.client.inject` 列表中的每个包在 0.2.2-alpha.2 上仍然存在，且都带有 `platform: "web"` 的客户端 bundle。`ctx.configForms.get()`、`slots` 与 `remote` 在两个版本之间声明完全一致，locale 的唯一改动是放宽 `LocaleRuntime.register()`，卡片所用的 `{ en, zh }` 调用仍可编译。升级请执行 `dsh plugin --profile web add dsh-kingdee@0.16.0`（或 `dsh plugin --profile web update dsh-kingdee`）。
 - **0.15.0 完成与 DeepSeek Harness 0.2.1-rc.2 的对齐 —— 且本版并非强制升级。** 不改运行时逻辑、不改配置、不改工具接口：插件行为与 0.14.0 完全一致。`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.1-alpha.4` 升至 `0.2.1-rc.2`，锁文件按 `0.2.1-rc.2` 重新生成，工作区的供应链豁免清单也刷新为 `0.2.1-rc.2` 的包集合；`@deepseek-ai/cordis` 升至 `^4.0.5`、`@deepseek-ai/schemastery` 升至 `^3.18.5`。自有的 `engines.dsh` 区间**保持不变**，仍为 `>=0.1.7-alpha.2 <0.3.0`，因此 `0.14.0` 在 0.2.1-rc.2 上同样被准入，没有任何因素强制本次升级。本插件消费的 `ctx.configForms.get()`、slots、locale 与 remote 契约在 `0.2.1-alpha.4` 与 `0.2.1-rc.2` 之间声明完全一致，无需任何迁移。升级请执行 `dsh plugin --profile web add dsh-kingdee@0.15.0`（或 `dsh plugin --profile web update dsh-kingdee`）。
 - **0.14.0 完成与 DeepSeek Harness 0.2.1-alpha.4 的对齐，并修正许可证声明 —— 且本版并非强制升级。** 不改运行时逻辑、不改配置、不改工具接口：插件行为与 0.13.0 完全一致。`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.1-alpha.2` 升至 `0.2.1-alpha.4`，锁文件按 `0.2.1-alpha.4` 重新生成，工作区的供应链豁免清单也刷新为 `0.2.1-alpha.4` 的包集合。`@deepseek-ai/dsh-credentials` 与 `@deepseek-ai/dsh-tools` 的 peer 区间**保持不变**，仍为 `>=0.1.7-alpha.2 <0.3.0`，因此 `0.13.0` 在 0.2.1-alpha.4 上同样被准入，没有任何因素强制本次升级。0.2.1-alpha.3 与 0.2.1-alpha.4 两个版本均未改动本插件所使用的任何服务缝。本版还修复了一处文档缺陷：两个语种的 README 都把仓库描述为采用专有许可，而 `LICENSE` 与 `package.json.license` 自 `0.5.0` 起一直是 MIT，且此前没有任何更新日志条目记录过这次回退。升级请执行 `dsh plugin --profile web add dsh-kingdee@0.14.0`（或 `dsh plugin --profile web update dsh-kingdee`）。
 - **0.13.0 适配 DeepSeek Harness 0.2.1-alpha.2 并支持展示元数据规范。** 全部 `@deepseek-ai/dsh-*` 开发依赖更新至 `0.2.1-alpha.2`。本版本封装了原生 `icon.svg` 矢量图标与中英双语展示资源（`locale/en.json`、`locale/zh.json`），完全符合 DSH 0.2.1-alpha.2 插件管理器展示规范。配置了自包含 `prepare` 脚本以支持直接从源码或 Git 仓库安装。peer 依赖区间继续保持 `>=0.1.7-alpha.2 <0.3.0`，因此 `0.12.0` 与 `0.11.1` 在 0.2.1-alpha.2 上同样受支持，本版本非强制升级。

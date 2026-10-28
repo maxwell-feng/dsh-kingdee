@@ -6,6 +6,40 @@
 
 ---
 
+## [0.16.0] - 2026-10-28
+
+**适配 DeepSeek Harness 0.2.2-alpha.2** —— 不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **宿主对齐**：`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.1-rc.2` 升至 `0.2.2-alpha.2`，锁文件按 `0.2.2-alpha.2` 重新生成；`@deepseek-ai/cordis` 升至 `~4.0.6-alpha.1`、`@deepseek-ai/schemastery` 升至 `~3.18.6-alpha.1`。
+- **为新的预发行版放宽 peer 区间**：`@deepseek-ai/cordis` 改为 `^4.0.4 || ^4.0.6-alpha.1`，`@deepseek-ai/schemastery` 改为 `^3.18.4 || ~3.18.6-alpha.1`，因此本插件既继续接受此前验证过的 4.0.4 / 4.0.5 / 3.18.4 / 3.18.5，也接受新的预发行版。`engines.dsh` 仍为 `>=0.1.7-alpha.2 <0.3.0`。
+- **供应链闸门**：工作区文件现对 `0.2.2-alpha.2` 的各包豁免 pnpm 的最小发布年龄闸门 —— 否则 DSH 持续发布的预发行版会被拦下。该名单保持单一且由锁文件推导的区块。
+- **`engines.dsh` 区间不变**：仍为 `>=0.1.7-alpha.2 <0.3.0`，因此本版**不是**强制升级：`dsh-kingdee@0.15.1` 在 DeepSeek Harness 0.2.2-alpha.2 上同样被准入。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定准入，peer 不再参与该项校验。
+- **源码改动**：无。`src/`、`test/`、`scripts/`、`.github/`、`skills/`、`cordis.patch.yml` 与构建配置下均无文件改动，配置字段也没有任何迁移：插件行为与 0.15.1 完全一致。
+
+### 已对照 0.2.2-alpha.2 核对（均确认为无影响）
+
+- **Cordis Timer 同步上游实现，返回值发生变化。** 无影响：`src/kd-core/transport.ts` 使用全局 `setTimeout` / `clearTimeout` 设定请求超时，从不经过 `ctx.timer.*`，因此变化后的 `timeout()` / `interval()` / `throttle()` / `debounce()` 返回值不会触及本插件。
+- **`dsh-tools` 把契约拆分为 `Contracts` / `ToolExecutor` / pipeline 等模块。** 无影响：本插件在 `src/tools.ts` 中使用的 `defineTool({ … })` 加 `ctx.tools.register(definition)` 调用仍能通过类型检查。`DefineToolOptions` 与 `ToolDefinition`（含其必需的 `output.schema` / `render` 投影）在两个版本之间声明完全一致，`ToolsService.register` 只是新增了一个用于按步骤条件启用的可选参数 —— 原有的单参数调用依然有效。
+- **`dsh.client` manifest（`platform` / `inject`）语义。** 无影响：`dsh.client.inject` 中的每个包（`dsh-client-locale`、`dsh-client-ui-settings`、`dsh-client-ui-plugin-manager`、`dsh-api-remotes`、`dsh-client-connection`）在 `0.2.2-alpha.2` 上仍照常发布，仍各自声明 `dsh.client.platform: "web"`，也仍各自导出 `./client` bundle。bundle 作为外部模块请求的 `react` 没有变化。
+- **设置卡片与 locale 契约。** 无影响：`ctx.configForms.get()`、`slots` 与 `remote` 在两个版本之间声明完全一致；locale 唯一的改动是放宽而非破坏 —— `LocaleRuntime.register()` 的带类型重载新增了额外语种字典（rc2 为 `Record<BuiltInLocaleId, LocaleDictOf<N>>`；alpha2 为该类型与 `Record<LocaleId, LocaleDictOf<N>>` 的交叉类型）。卡片所用的 `{ en, zh }` 双语字典调用仍满足放宽后的签名，并由 `npx tsc -p tsconfig.json --noEmit` 验证通过。
+
+### 文档
+
+- 中英双语文档的验证基线更新为 `0.2.2-alpha.2` / 插件 `0.16.0`。
+- 每处兼容性说明都写明核对了 0.2.2-alpha.2 的哪些破坏性变更、以及为何都不适用，读者可以据此复核结论而不是仅凭信任。
+
+### 验证
+
+- `node scripts/check-docs-language.ts` 在全部文档对上通过，零语言或切换链接违规。
+- `npx tsc -p tsconfig.json --noEmit` 零错误。
+- `npm run build` 构建干净（`tsc -p tsconfig.build.json` 加 `tsdown` 客户端 bundle）。
+- **15** 项单元测试（`npm test`）在 DeepSeek Harness 0.2.2-alpha.2 上全部通过。
+- 未验证项：在真实 `0.2.2-alpha.2` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
+
+---
+
 ## [0.15.1] - 2026-10-18
 
 **文档渲染修复** —— 不改运行时逻辑、不改配置项、不改工具接口。
@@ -440,6 +474,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
 [0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1
 [0.15.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.0
 [0.14.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.14.0

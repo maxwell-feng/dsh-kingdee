@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.zh.md)
 
-> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.2.1-rc.2** with plugin **0.15.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.15.0` on runtime `0.2.1-rc.2`). The `@deepseek-ai/dsh-*` peers are `>=0.1.7-alpha.2 <0.3.0`. **No live-tenant verification was performed.**
+> Targets **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x) and verified on DeepSeek Harness **0.2.2-alpha.2** with plugin **0.16.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.16.0` on runtime `0.2.2-alpha.2`). The `@deepseek-ai/dsh-*` peers are `>=0.1.7-alpha.2 <0.3.0`. **No live-tenant verification was performed.** No configuration field moved: the `.volatile()` config contract this plugin relies on is unchanged, and `ctx.configForms.get()`, `slots` and `remote` are declaration-identical between 0.2.1-rc.2 and 0.2.2-alpha.2. The one locale change widens `LocaleRuntime.register()` rather than breaking it, so the settings card still compiles.
 
 This document details all configuration options, authentication modes, credential security mechanisms, environment variables, SSRF protection policies, and profile configuration methods for the `dsh-kingdee` plugin in DeepSeek Harness (DSH).
 

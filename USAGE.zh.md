@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.md) | 中文
 
-> 已在 deepseek-harness **0.2.1-rc.2** 上、以插件 **0.15.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.1-rc.2` 上准入 `dsh-kingdee@0.15.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.2-alpha.2** 上、以插件 **0.16.0** 验证（`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.16.0`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 工具接口未变：`defineTool` 与 `ToolDefinition` 在 DeepSeek Harness 0.2.1-rc.2 与 0.2.2-alpha.2 之间声明完全一致，`ctx.tools.register` 只是新增了一个可选第二参数，因此下文每个 `kingdee_*` 工具在新宿主上的行为相同。
 
 本文档列出本插件注册的全部 `kingdee_*` 工具（见 `src/tools.ts`）。agent 在会话中调用这些工具；每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
 

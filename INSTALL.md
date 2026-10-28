@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.zh.md)
 
-> Verified against deepseek-harness **0.2.1-rc.2** with plugin **0.15.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.15.0` on runtime `0.2.1-rc.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.** For full configuration details, see [CONFIG.md](./CONFIG.md).
+> Verified against deepseek-harness **0.2.2-alpha.2** with plugin **0.16.0** (`pnpm run typecheck` clean, `pnpm run build` clean, **15** unit tests passing via `pnpm test`, and the harness's own compatibility check admitting `dsh-kingdee@0.16.0` on runtime `0.2.2-alpha.2`) and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.** No source migration was needed across 0.2.1-rc.2 → 0.2.2-alpha.2: the synchronized Cordis Timer only changes `ctx.timer.*` return values, `defineTool` and `ToolDefinition` are declaration-identical while `ctx.tools.register` merely gained an optional parameter, and every `dsh.client.inject` entry still ships. For full configuration details, see [CONFIG.md](./CONFIG.md).
 
 This guide covers installing and configuring **dsh-kingdee** in a DeepSeek Harness (DSH) profile.
 
@@ -21,7 +21,7 @@ The package ships as a DSH **bundle** (an npm package that contributes a configu
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **Compatibility on DeepSeek Harness 0.2.1-rc.2.** 0.15.0 declares its own `engines.dsh` range `>=0.1.7-alpha.2 <0.3.0`. Since DeepSeek Harness 0.2.1-alpha.4, an own `engines.dsh` range decides admission alone and the `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peers are ignored for that check, so that single range admits the plugin on `0.1.7-alpha.2` through `0.2.x` (and still refuses it on `0.1.6-alpha.2`). Both rules match prereleases against the range. That range is unchanged from 0.11.0, so `0.14.0` remains admitted on 0.2.1-rc.2 as well — this release is not a mandatory upgrade. The older `0.10.0` declares `^0.1.7-alpha.2`, which excludes 0.2.x, so on 0.2.x its row is refused before it loads. Upgrade with `dsh plugin --profile web add dsh-kingdee@0.15.0` (or `dsh plugin --profile web update dsh-kingdee`).
+> **Compatibility on DeepSeek Harness 0.2.2-alpha.2.** 0.16.0 declares its own `engines.dsh` range `>=0.1.7-alpha.2 <0.3.0`. Since DeepSeek Harness 0.2.1-alpha.4, an own `engines.dsh` range decides admission alone and the `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peers are ignored for that check, so that single range admits the plugin on `0.1.7-alpha.2` through `0.2.x` (and still refuses it on `0.1.6-alpha.2`). Both rules match prereleases against the range. That range is unchanged from 0.11.0, so `0.15.1` remains admitted on 0.2.2-alpha.2 as well — this release is not a mandatory upgrade. The older `0.10.0` declares `^0.1.7-alpha.2`, which excludes 0.2.x, so on 0.2.x its row is refused before it loads. Upgrade with `dsh plugin --profile web add dsh-kingdee@0.16.0` (or `dsh plugin --profile web update dsh-kingdee`).
 >
 > **CLI syntax notice**: Under DeepSeek Harness 0.2.1-alpha.1+, `--profile <name>` must always be placed before forwarded subcommands such as `add`, `remove`, or `update`. Putting `--profile` after the subcommand causes CLI argument validation failures.
 >

@@ -4,6 +4,38 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGE
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.16.0] - 2026-10-28
+
+**DeepSeek Harness 0.2.2-alpha.2 alignment** — no runtime, configuration or tool-surface change.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.1-rc.2` to `0.2.2-alpha.2`, and the lockfile is regenerated against 0.2.2-alpha.2. `@deepseek-ai/cordis` moves to `~4.0.6-alpha.1` and `@deepseek-ai/schemastery` moves to `~3.18.6-alpha.1`.
+- **Peer ranges widened for the new prereleases.** `@deepseek-ai/cordis` becomes `^4.0.4 || ^4.0.6-alpha.1` and `@deepseek-ai/schemastery` becomes `^3.18.4 || ~3.18.6-alpha.1`, so the plugin still accepts the 4.0.4 / 4.0.5 / 3.18.4 / 3.18.5 releases it was previously verified against while also accepting the new prereleases. `engines.dsh` stays `>=0.1.7-alpha.2 <0.3.0`.
+- **Supply-chain gate.** The workspace file exempts the 0.2.2-alpha.2 package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases. The list stays a single, lockfile-derived block.
+- **`engines.dsh` range is unchanged.** It stays `>=0.1.7-alpha.2 <0.3.0`, so this release is **not a mandatory upgrade**: `dsh-kingdee@0.15.1` is still admitted on DeepSeek Harness 0.2.2-alpha.2. Since DeepSeek Harness 0.2.1-alpha.4 an own `engines.dsh` range decides admission alone, and the peers no longer participate in that check.
+- **Source change.** None. No file under `src/`, `test/`, `scripts/`, `.github/`, `skills/`, `cordis.patch.yml` or the build configuration changed, and no configuration field moved: the plugin behaves exactly as 0.15.1.
+
+### Checked against 0.2.2-alpha.2 (all confirmed as no impact)
+
+- **Cordis Timer, synchronized with upstream, changed its return values.** Not affected: `src/kd-core/transport.ts` schedules its request deadline with the global `setTimeout` / `clearTimeout` pair, never through `ctx.timer.*`, so the changed `timeout()` / `interval()` / `throttle()` / `debounce()` return values never reach this plugin.
+- **`dsh-tools` split its contracts into `Contracts` / `ToolExecutor` / pipeline modules.** Not affected: the `defineTool({ … })` plus `ctx.tools.register(definition)` call this plugin makes in `src/tools.ts` still type-checks. `DefineToolOptions` and `ToolDefinition` (including its mandatory `output.schema` / `render` projections) are declaration-identical between the two releases, and `ToolsService.register` only gained an optional second parameter for step-time activation — the existing single-argument call remains valid.
+- **`dsh.client` manifest (`platform` / `inject`) semantics.** Not affected: every package in `dsh.client.inject` (`dsh-client-locale`, `dsh-client-ui-settings`, `dsh-client-ui-plugin-manager`, `dsh-api-remotes`, `dsh-client-connection`) still publishes at `0.2.2-alpha.2`, each still declares `dsh.client.platform: "web"`, and each still exports a `./client` bundle. The client package the bundle requests as an external module (`react`) is unchanged.
+- **Settings-card and locale contracts.** Not affected: `ctx.configForms.get()`, `slots` and `remote` are declaration-identical between the two releases, and the one locale change is a widening rather than a break — `LocaleRuntime.register()` gained extra-locale dictionaries in its typed overload (rc2: `Record<BuiltInLocaleId, LocaleDictOf<N>>`; alpha2: that intersection with `Record<LocaleId, LocaleDictOf<N>>`). The card's two-dictionary `{ en, zh }` call still satisfies the widened signature, which `npx tsc -p tsconfig.json --noEmit` confirms.
+
+### Documentation
+
+- The bilingual docs' verification baseline is now `0.2.2-alpha.2` / plugin `0.16.0`.
+- Every compatibility note states which 0.2.2-alpha.2 breaking changes were checked and why none of them applies, so a reader can audit the conclusion instead of trusting it.
+
+### Verification
+
+- `node scripts/check-docs-language.ts` passing with zero language or switcher violations across all document pairs.
+- `npx tsc -p tsconfig.json --noEmit` clean.
+- `npm run build` clean (`tsc -p tsconfig.build.json` plus the `tsdown` client bundle).
+- All **15** unit tests pass (`npm test`) against DeepSeek Harness 0.2.2-alpha.2.
+- Not verified: a live boot into a real 0.2.2-alpha.2 profile, and — as always — no live Kingdee tenant.
+
 ## [0.15.1] - 2026-10-18
 
 **Documentation rendering fix** — no runtime, configuration or tool-surface change.
@@ -403,6 +435,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
 [0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1
 [0.15.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.0
 [0.14.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.14.0
