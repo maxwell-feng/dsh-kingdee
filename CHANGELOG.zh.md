@@ -6,6 +6,39 @@
 
 ---
 
+## [0.17.0] - 2026-11-02
+
+**双版本线验证版本** —— 在钉定的 **0.2.2-alpha.2** master 预览线之外，额外针对 DeepSeek Harness **0.2.1-rc.5**（npm `latest` 标签、最新正式发布、桌面版实际内置的运行时）完成验证。不改运行时逻辑、不改配置项、不改工具接口。
+
+### 变更
+
+- **两条已验证版本线。** 构建仍钉定 `0.2.2-alpha.2`；rc.5 线在独立环境中验证，钉定 `@deepseek-ai/dsh-*@0.2.1-rc.5`、`@deepseek-ai/cordis@4.0.5` 与 `@deepseek-ai/schemastery@3.18.5`。两条线上 15 项单元测试、`tsc --noEmit` 与 `npm run build` 全部通过。
+- **同一份源码，以哈希为证。** rc.5 环境的 `src/` 目录与本仓库逐文件逐字节相同，因此第二份结论描述的是本包本身，而非某个变体。
+- **依赖零改动。** `cordis` 4.0.5 本就落在 `^4.0.4` peer 区间内，`schemastery` 3.18.5 落在 `^3.18.4` 内，因此 0.16.0 引入的放宽（`^4.0.4 || ^4.0.6-alpha.1`、`^3.18.4 || ~3.18.6-alpha.1`）原封不动即容纳 rc.5 那一对版本。`devDependencies` 仍保持 `0.2.2-alpha.2`，因为清单只能声明一个构建基线。
+- **源码改动：无。** `src/`、`test/`、`scripts/`、`.github/`、`skills/`、`cordis.patch.yml` 与构建配置下均无文件改动，配置字段也没有任何迁移：插件行为与 0.16.0 完全一致。
+- **`engines.dsh` 区间不变**，仍为 `>=0.1.7-alpha.2 <0.3.0`，因此 0.17.0 **不是强制升级**：`dsh-kingdee@0.16.0` 与 `0.15.1` 在两条线上同样被准入。
+
+### 已对照 0.2.1-rc.5 线核对（均确认为无影响）
+
+从上次对齐的基线（`0.2.1-rc.2`）到 `0.2.1-rc.5` 共 19 个提交，其中恰有两条面向插件的升级指南，均已完整阅读：
+
+- **空会话复用**（`v0.2.1-rc.2/new-session-blank-reuse`）—— 「新建会话」改为复用第一个未启动的空会话，而不是每次调用都新建 Agent。属于 Web/桌面端会话生命周期，不读取本插件所用的任何接口。
+- **Reasoning body 槽位**（`v0.2.1-rc.4/reasoning-body-props`）—— 向 `conversation.chat.reasoning.body` 的贡献新增 `rawText` 承载模型原始输出，`text` 改为 Chat 预处理后的展示文本。本插件不注册 reasoning 渲染器，也不向 Chat 槽位投稿。
+
+逐接口比对是**直接以 rc.5 构建**得出的，而非读发布说明推断：`defineTool` 加 `ctx.tools.register` 在 `dsh-tools@0.2.1-rc.5` 下编译通过，`DefineToolOptions` / `ToolDefinition` 未变；`credentialRef` / `ctx.credentials.resolve` 的 `{ value }` 形状未变；`Schema.string().volatile()` 与整个 `Config` 对象在 `schemastery@3.18.5` + `cordis@4.0.5` 下通过类型检查；`ctx.configForms.get()`、`slots` 与 `remote` 在 `dsh-client-ui-settings@0.2.1-rc.5` 下编译通过；卡片的 `{ en, zh }` `LocaleRuntime.register()` 在 `dsh-client-locale@0.2.1-rc.5` 下编译通过；`dsh.client.inject` 所列五个包在 `0.2.1-rc.5` 上均照常发布且带 web 客户端 bundle。
+
+### 文档
+
+- 全部中英双语文件改用双线验证矩阵表述，而不再写单一基线，并明确标注构建钉定的是哪一条线。
+- `docs/RELEASE.md` / `docs/RELEASE.zh.md` 按 0.17.0 重写。
+
+### 验证
+
+- rc.5 线（`0.2.1-rc.5` / `cordis` 4.0.5 / `schemastery` 3.18.5）：`npx tsc -p tsconfig.json --noEmit` 零错误、`npm run build` 干净、`npm test` 15/15 通过。
+- alpha.2 线（`0.2.2-alpha.2` / `cordis` 4.0.6-alpha.1 / `schemastery` 3.18.6-alpha.1）：同样三项检查干净，15/15 通过。
+- `node scripts/check-docs-language.ts` 与结构/文字排版检查器均为零发现。
+- 未验证项：在真实 rc.5 或 alpha.2 profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
+
 ## [0.16.0] - 2026-10-28
 
 **适配 DeepSeek Harness 0.2.2-alpha.2** —— 不改运行时逻辑、不改配置项、不改工具接口。
@@ -474,6 +507,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
 [0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
 [0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1
 [0.15.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.0

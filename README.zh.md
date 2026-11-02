@@ -26,15 +26,20 @@
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **面向 DeepSeek Harness 0.2.2-alpha.2 的兼容性。** 0.16.0 已针对 DeepSeek Harness 0.2.2-alpha.2 完成验证，并把 `@deepseek-ai/dsh-*` 开发依赖升至该版本。其自有的 `engines.dsh` 区间**保持** `>=0.1.7-alpha.2 <0.3.0`（即 0.11.0 放宽后的区间），因此 **`0.15.1` 在 0.2.2-alpha.2 上同样被准入** —— 0.16.0 不是强制升级。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略；两种规则都会把预发行版与区间做匹配。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，在 0.2.x 上**会在加载阶段被拒绝**。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。在 0.2.x 上请用 `dsh plugin --profile web add dsh-kingdee@0.16.0` 升级。
+> **DeepSeek Harness 兼容性：两条已验证的版本线。** 0.17.0 同时针对 DeepSeek Harness **0.2.1-rc.5**（npm `latest` 标签、最新正式发布、桌面版实际内置的运行时）与 **0.2.2-alpha.2**（本插件构建所对齐的 master 预览线）完成验证。构建钉在 `0.2.2-alpha.2`；rc.5 线则在逐字节相同的源码上单独验证 —— 见下方矩阵。其自有的 `engines.dsh` 区间**保持** `>=0.1.7-alpha.2 <0.3.0`（即 0.11.0 放宽后的区间），因此 **`0.16.0` 与 `0.15.1` 在两条线上同样被准入** —— 0.17.0 不是强制升级。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略；两种规则都会把预发行版与区间做匹配。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，在 0.2.x 上**会在加载阶段被拒绝**。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。在 0.2.x 上请用 `dsh plugin --profile web add dsh-kingdee@0.17.0` 升级。
 >
 > 命令行语法特别提示：依据 DeepSeek Harness 0.2.1-alpha.1 规范，`--profile <name>` 参数必须置于转发的 `add`、`remove`、`update` 等子命令之前；若写在子命令之后，该参数会被原样转发给下游 pnpm 导致命令执行失败。
 >
 > 被拒时宿主会打印的补救方式是 `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或使用插件管理器），它会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**。这是风险确认，而不是兼容性修复；且它只对一个确切插件版本、一个确切运行时生效：插件升级或宿主升级都不会继承该授权。
 
-> 已在 deepseek-harness **0.2.2-alpha.2** 上、以插件 **0.16.0** 验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），且宿主自带的兼容性校验在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.16.0`。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.1-rc.5** 与 **0.2.2-alpha.2** 两条线上、以插件 **0.17.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）。其中钉版线（`0.2.2-alpha.2`）另通过宿主自带的兼容性校验，在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.17.0`。**未进行真实账套联调验证。**
 >
-> 从 0.2.1-rc.2 到 0.2.2-alpha.2 无需任何源码迁移。该版本公布的三项破坏性变更均已逐条核对：同步上游的 Cordis Timer 只改变 `ctx.timer.*` 的返回值，而 `src/kd-core/transport.ts` 使用的是全局 `setTimeout` / `clearTimeout`；本插件所用的 `defineTool` 加 `ctx.tools.register` 调用仍能通过类型检查 —— `DefineToolOptions` 与 `ToolDefinition` 声明完全一致，`ToolsService.register` 只是新增了一个可选参数（按步骤的条件启用）；`dsh.client.inject` 列表中的每个包在 0.2.2-alpha.2 上仍然存在，且都带有 `platform: "web"` 的客户端 bundle。locale 的唯一改动是放宽而非破坏：`LocaleRuntime.register()` 现在也接受额外语种字典，卡片所用的 `{ en, zh }` 调用仍可编译。
+> | 版本线 | 构建钉定的运行时 | `cordis` / `schemastery` | 结果 |
+> |---|---|---|---|
+> | `latest`（最新正式发布） | 0.2.1-rc.5 | 4.0.5 / 3.18.5 | typecheck + build + 15 项测试全通过 |
+> | master 预览线 | 0.2.2-alpha.2 | 4.0.6-alpha.1 / 3.18.6-alpha.1 | typecheck + build + 15 项测试全通过，兼容性校验准入 |
+>
+> 从 0.2.1-rc.2 到 0.2.2-alpha.2 无需任何源码迁移，rc.5 线同样无需迁移。0.2.2-alpha.2 公布的三项破坏性变更均已逐条核对：同步上游的 Cordis Timer 只改变 `ctx.timer.*` 的返回值，而 `src/kd-core/transport.ts` 使用的是全局 `setTimeout` / `clearTimeout`；本插件所用的 `defineTool` 加 `ctx.tools.register` 调用仍能通过类型检查 —— `DefineToolOptions` 与 `ToolDefinition` 声明完全一致，`ToolsService.register` 只是新增了一个可选参数（按步骤的条件启用）；`dsh.client.inject` 列表中的每个包在两条线上都仍然存在，且都带有 `platform: "web"` 的客户端 bundle。locale 的唯一改动是放宽而非破坏：`LocaleRuntime.register()` 现在也接受额外语种字典，卡片所用的 `{ en, zh }` 调用仍可编译。rc.5 线自带两条面向插件的升级指南（空会话复用、reasoning body 的 `rawText` 字段），二者都不涉及本插件所用的工具、凭据、设置卡片或 locale 接口。
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 

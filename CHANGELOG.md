@@ -4,6 +4,39 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGE
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.17.0] - 2026-11-02
+
+**Dual-line verification release** — verified against DeepSeek Harness **0.2.1-rc.5** (the `latest` dist-tag, newest published release, and the runtime the desktop app ships) in addition to the pinned **0.2.2-alpha.2** master preview. No runtime, configuration or tool-surface change.
+
+### Changed
+
+- **Two verified lines.** The build keeps pinning `0.2.2-alpha.2`; the rc.5 line was verified in a separate environment pinned to `@deepseek-ai/dsh-*@0.2.1-rc.5`, `@deepseek-ai/cordis@4.0.5` and `@deepseek-ai/schemastery@3.18.5`. All 15 unit tests, `tsc --noEmit` and `npm run build` pass on both lines.
+- **Same source, proven by hash.** The rc.5 environment's `src/` tree is byte-identical to this repository, file by file, so the second result describes this package rather than a variant.
+- **No dependency change.** `cordis` 4.0.5 already falls inside the `^4.0.4` peer range and `schemastery` 3.18.5 inside `^3.18.4`, so the widening introduced in 0.16.0 (`^4.0.4 || ^4.0.6-alpha.1`, `^3.18.4 || ~3.18.6-alpha.1`) admits the rc.5 pair unchanged. `devDependencies` stay at `0.2.2-alpha.2` because the manifest names one build baseline.
+- **Source change: none.** No file under `src/`, `test/`, `scripts/`, `.github/`, `skills/`, `cordis.patch.yml` or the build configuration changed, and no configuration field moved: the plugin behaves exactly as 0.16.0.
+- **`engines.dsh` range unchanged** at `>=0.1.7-alpha.2 <0.3.0`, so 0.17.0 is **not a mandatory upgrade**: `dsh-kingdee@0.16.0` and `0.15.1` remain admitted on both lines.
+
+### Checked against the 0.2.1-rc.5 line (all confirmed as no impact)
+
+The run from the previously-aligned baseline (`0.2.1-rc.2`) to `0.2.1-rc.5` adds 19 commits, of which exactly two are plugin-facing upgrade guides. Both were read:
+
+- **Blank-Session reuse** (`v0.2.1-rc.2/new-session-blank-reuse`) — New Session reuses the first unstarted blank Session instead of creating a fresh Agent per call. Web/Desktop Session lifecycle; reads no seam this plugin consumes.
+- **Reasoning body slots** (`v0.2.1-rc.4/reasoning-body-props`) — `conversation.chat.reasoning.body` contributions gain `rawText` for the original output while `text` carries Chat's prepared display text. This plugin registers no reasoning renderer and contributes no Chat slot.
+
+The seam-by-seam comparison was made by building against rc.5, not by reading release prose: `defineTool` + `ctx.tools.register` compiles against `dsh-tools@0.2.1-rc.5` with `DefineToolOptions` / `ToolDefinition` unchanged; `credentialRef` / `ctx.credentials.resolve` keep their resolved `{ value }` shape; `Schema.string().volatile()` and the whole `Config` object type-check under `schemastery@3.18.5` + `cordis@4.0.5`; `ctx.configForms.get()`, `slots` and `remote` compile against `dsh-client-ui-settings@0.2.1-rc.5`; the card's `{ en, zh }` `LocaleRuntime.register()` call compiles against `dsh-client-locale@0.2.1-rc.5`; and all five `dsh.client.inject` packages publish at `0.2.1-rc.5` with a web client bundle.
+
+### Documentation
+
+- Every bilingual pair now states the two-line verification matrix instead of a single baseline, and names which line the build pins.
+- `docs/RELEASE.md` / `docs/RELEASE.zh.md` are rewritten for 0.17.0.
+
+### Verification
+
+- rc.5 line (`0.2.1-rc.5` / `cordis` 4.0.5 / `schemastery` 3.18.5): `npx tsc -p tsconfig.json --noEmit` clean, `npm run build` clean, `npm test` 15/15 pass.
+- alpha.2 line (`0.2.2-alpha.2` / `cordis` 4.0.6-alpha.1 / `schemastery` 3.18.6-alpha.1): same three checks clean, 15/15 pass.
+- `node scripts/check-docs-language.ts` and the structural/typography document linter both report zero findings.
+- Not verified: a live boot into a real rc.5 or alpha.2 profile, and — as always — no live Kingdee tenant.
+
 ## [0.16.0] - 2026-10-28
 
 **DeepSeek Harness 0.2.2-alpha.2 alignment** — no runtime, configuration or tool-surface change.
@@ -435,6 +468,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
 [0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
 [0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1
 [0.15.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.0
