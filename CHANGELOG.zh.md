@@ -6,6 +6,44 @@
 
 ---
 
+## [0.18.0] - 2026-11-05
+
+**适配 DeepSeek Harness 0.2.2-rc.1** —— 不改运行时逻辑、不改配置项、不改工具接口。构建基准由 `0.2.2-alpha.2` master 预览线迁移到 `0.2.2-rc.1`（npm `next` 标签，2026-11-04 发布），并同时针对 `0.2.2-rc.1` 与 `latest` 线 `0.2.1-rc.5` 完成验证。
+
+### 变更
+
+- **宿主对齐**：`@deepseek-ai/dsh-*` 的全部开发依赖由 `0.2.2-alpha.2` 升至 `0.2.2-rc.1`，锁文件按 `0.2.2-rc.1` 重新生成；`@deepseek-ai/cordis` 升至 `~4.1.0`、`@deepseek-ai/schemastery` 升至 `~3.19.0`。
+- **peer 区间有意保持原样**：`@deepseek-ai/cordis` 仍为 `^4.0.4 || ^4.0.6-alpha.1`，`@deepseek-ai/schemastery` 仍为 `^3.18.4 || ~3.18.6-alpha.1`，因为 `^4.0.4` 本已覆盖 cordis 4.1.0、`^3.18.4` 本已覆盖 schemastery 3.19.0：两条线都不被排除，因此无需放宽，此前验证过的 4.0.4 / 4.0.5 / 3.18.4 / 3.18.5 也继续被接受。
+- **供应链闸门**：工作区文件现对 `0.2.2-rc.1` 的各包豁免 pnpm 的最小发布年龄闸门 —— 否则 DSH 持续发布的预发行版会被拦下。该名单保持单一且由锁文件推导的区块。
+- **`engines.dsh` 区间不变**：仍为 `>=0.1.7-alpha.2 <0.3.0`，按区间语义本身就把 `0.2.2-rc.1` 纳入准入（这是区间推导结论，不是另行实测的结果），因此本版**不是**强制升级：`dsh-kingdee@0.17.0`、`0.16.0` 与 `0.15.1` 同样仍被准入。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定准入，peer 不再参与该项校验。本结论未使用真实 profile 启动，也未使用真实金蝶账套。
+- **源码改动：无。** `src/`、`test/`、`scripts/`、`locale/`、`skills/`、`.github/`、`cordis.patch.yml`、`tsconfig*.json` 与 `tsdown.config.ts` 下均无文件改动，配置字段也没有任何迁移：插件行为与 0.17.0 完全一致。相对 0.17.0 的 `git diff --stat` 只列出 `package.json`、`pnpm-lock.yaml` 与 `pnpm-workspace.yaml`，因此两条验证线跑的就是同一份代码。
+
+### 已对照 0.2.2-rc.1 核对（均确认为无影响）
+
+本次审计比对的是本插件实际消费的包，而不是读发布说明推断：
+
+- **本插件读取的每一份声明都逐字节相同。** `dsh-tools`、`dsh-web` 与 `dsh-credentials` 三个包与 `0.2.2-alpha.2` 的对应版本**仅 `package.json` 不同**，本插件消费的 `.d.ts` 无一改动。因此 `DefineToolOptions`、`ToolDefinition`、`ToolsService.register`、`credentialRef` / `ctx.credentials.resolve`、`ctx.configForms.get()`、`slots` 与 `remote` 均无需迁移。
+- **`dsh-util-values` 做了内部重构。** 仅涉及实现，本插件调用的配置取值辅助函数没有任何声明变化。
+- **`dsh-llm` 的 `GenerateOptions.purpose` 改为泛型。** 无影响：本插件从不构造辅助 LLM 请求，因此该项从未被传入。
+- **`dsh-client-ui-settings` 新增可选 slot `settings.section.icon`。** 纯增量；本插件不注册该 slot，其设置卡片无需改动即可编译。
+- **`dsh-client-ui-plugin-manager` 的 `InstallState` 新增诊断字段。** 纯增量；本插件不读取任何 `InstallState` 字段。
+- **`cordis` 4.1.0 与 4.0.6-alpha.2 声明完全一致**，因此 `Schema.string().volatile()` 的配置契约与整个 `Config` 对象仍通过类型检查。
+- **0.2.2-rc.1 公布的破坏性变更均不触及本插件。** 最低 Node.js 提升到 **24.9**（本包自有的 `engines.node` 仍为 `>=22`，但在这样的宿主上实际需要 24.9+）；Cordis Core 升到 **4.1.0**，配套 Loader **1.1.0** 与 Include **1.1.0**；`web_fetch` 不再拒绝私网地址。最后一项针对的是宿主的 fetch provider —— 本插件从不调用该工具。本插件本身不是 fetch provider：它经 `src/kd-core/transport.ts` 自行发起 HTTP 请求，并用 `src/kd-core/security.ts` 中的 `isPrivateOrLocalHost` 校验每个主机，因此自带的 SSRF 防御保持不变，也没有任何配置字段受该宿主策略影响。
+
+### 文档
+
+- 中英双语文档的验证基线更新为 `0.2.2-rc.1` / 插件 `0.18.0`，每处兼容性说明都同时标明两条已验证版本线与构建钉定的那条。
+- `docs/RELEASE.md` / `docs/RELEASE.zh.md` 按 0.18.0 重写。
+
+### 验证
+
+- `node scripts/check-docs-language.ts` 在全部文档对上通过，零语言或切换链接违规。
+- `0.2.2-rc.1` 线（`cordis` 4.1.0 / `schemastery` 3.19.0）：`tsc -p tsconfig.json --noEmit` 零错误、`npm run build` 干净、`npm test` 15/15 通过。
+- `0.2.1-rc.5` 线（`cordis` 4.0.5 / `schemastery` 3.18.5）：同样三项检查干净，15/15 通过。
+- 未验证项：在真实 0.2.2-rc.1 或 0.2.1-rc.5 profile 中的实际启动；宿主自带的插件兼容性准入校验（需真实 profile）；以及一如既往，未做真实金蝶账套联调。
+
+---
+
 ## [0.17.0] - 2026-11-02
 
 **双版本线验证版本** —— 在钉定的 **0.2.2-alpha.2** master 预览线之外，额外针对 DeepSeek Harness **0.2.1-rc.5**（npm `latest` 标签、最新正式发布、桌面版实际内置的运行时）完成验证。不改运行时逻辑、不改配置项、不改工具接口。
@@ -38,6 +76,8 @@
 - alpha.2 线（`0.2.2-alpha.2` / `cordis` 4.0.6-alpha.1 / `schemastery` 3.18.6-alpha.1）：同样三项检查干净，15/15 通过。
 - `node scripts/check-docs-language.ts` 与结构/文字排版检查器均为零发现。
 - 未验证项：在真实 rc.5 或 alpha.2 profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
+
+---
 
 ## [0.16.0] - 2026-10-28
 
@@ -199,6 +239,8 @@
 - `pnpm run typecheck` 零错误、`pnpm run build` 干净，**15** 项单元测试在 DeepSeek Harness 0.2.0-rc.1 上全部通过；`package.json` 仅版本号变化，peer 声明与已被闸门准入的 0.11.0 相同。
 - `node scripts/check-docs-language.ts` 通过；另对全部双语文档做了两遍机械校对（结构与代码围栏对齐、乱码与控制字符扫描、更新日志由新到旧排序、链接引用覆盖、逐节条目对应）。
 
+---
+
 ## [0.11.0] - 2026-09-28
 
 **适配 DeepSeek Harness 0.2.0-rc.1，并放宽 peer 区间** —— 不改运行时逻辑、不改配置项、不改工具接口。
@@ -309,6 +351,8 @@
 ### 新增
 
 - `scripts/check-docs-language.mjs` 在本地与 CI 中检查文档、源码文案与配对（CI 在安装依赖前运行）。
+
+---
 
 ## [0.8.0] - 2026-09-18
 
@@ -507,6 +551,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
 [0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
 [0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
 [0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1

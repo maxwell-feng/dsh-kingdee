@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.md) | 中文
 
-> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）与 **0.2.2-alpha.2**（构建钉定的 master 预览线）、以插件 **0.17.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）；其中钉版线另通过宿主自带的兼容性校验，在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.17.0`。`@deepseek-ai/dsh-*` peer 区间为 `>=0.1.7-alpha.2 <0.3.0`。**未进行真实账套联调验证。** 配置字段没有任何迁移：`.volatile()` 的配置契约在本插件用到的范围内保持稳定，`ctx.configForms.get()`、`slots` 与 `remote` 在 0.2.1-rc.2、0.2.1-rc.5 与 0.2.2-alpha.2 之间声明完全一致。locale 的唯一改动是放宽 `LocaleRuntime.register()` 而非破坏，因此设置卡片在两条线上仍可编译。
+> 面向 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x），并经 DeepSeek Harness **0.2.2-rc.1**（npm `next` 发布、2026-11-04 发布、构建钉定的运行时）与 **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）、以插件 **0.18.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）。`@deepseek-ai/dsh-*` peer 区间为 `>=0.1.7-alpha.2 <0.3.0`；插件自有的 `engines.dsh` 区间 `>=0.1.7-alpha.2 <0.3.0` 按区间语义本身就把 `0.2.2-rc.1` 纳入准入，这是区间推导结论，不是另行实测的结果。**既未做真实 profile 启动验证，也未做真实账套联调验证。** 配置字段没有任何迁移：`.volatile()` 的配置契约在本插件用到的范围内保持稳定，本插件读取的每份声明在 0.2.1-rc.5 与 0.2.2-rc.1 之间都逐字节相同（含 `ctx.configForms.get()`、`slots` 与 `remote`），客户端侧的改动全部是可选项（`settings.section.icon`、`InstallState` 的诊断字段），因此设置卡片在两条线上都无需改动即可编译。
 
 本文档详细说明 `dsh-kingdee` 插件在 DeepSeek Harness（DSH）中的所有配置项、认证模式、凭据安全机制、SSRF 安全基线、环境变量以及配置文件配置方法。
 

@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）与 **0.2.2-alpha.2**（构建钉定的 master 预览线）两条线上、以插件 **0.17.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）；其中钉版线另通过宿主自带的兼容性校验，在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.17.0`，并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。** 从 0.2.1-rc.2 到 0.2.2-alpha.2 无需任何源码迁移：同步上游的 Cordis Timer 只改变 `ctx.timer.*` 的返回值，`defineTool` 与 `ToolDefinition` 声明完全一致而 `ctx.tools.register` 仅新增了一个可选参数，`dsh.client.inject` 中的每个包也都仍然存在。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
+> 已在 deepseek-harness **0.2.2-rc.1**（npm `next` 发布、2026-11-04 发布、构建钉定的运行时）与 **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）两条线上、以插件 **0.18.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**既未做真实 profile 启动验证，也未做真实账套联调验证。** 从 0.2.2-alpha.2 到 0.2.2-rc.1 无需任何 API 迁移：本插件读取的每份 `.d.ts` 声明都逐字节相同，库侧唯一的实质变化是 `dsh-util-values` 的内部实现重构，客户端侧的改动（`settings.section.icon`、`InstallState` 的诊断字段）均为可选项。详细配置项请参阅 [CONFIG.zh.md](./CONFIG.zh.md)。
 
 本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装与配置 **dsh-kingdee**。
 
@@ -21,7 +21,7 @@
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **两条已验证版本线（0.2.1-rc.5 与 0.2.2-alpha.2）上的兼容性。** 0.17.0 声明了自己的 `engines.dsh` 区间 `>=0.1.7-alpha.2 <0.3.0`。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略，因此这一条区间就让本插件在 `0.1.7-alpha.2` 至 `0.2.x` 上被准入（在 `0.1.6-alpha.2` 上仍会拒绝）。两种规则都会把预发行版与区间做匹配。该区间与 0.11.0 相比没有任何变化，因此 `0.16.0` 与 `0.15.1` 在两条线上同样被准入 —— 本版不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.x 上它的行会在加载前被拒绝。请执行 `dsh plugin --profile web add dsh-kingdee@0.17.0`（或 `dsh plugin --profile web update dsh-kingdee`）升级。
+> **两条已验证版本线（0.2.2-rc.1 与 0.2.1-rc.5）上的兼容性。** 0.18.0 声明了自己的 `engines.dsh` 区间 `>=0.1.7-alpha.2 <0.3.0`。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略，因此这一条区间就让本插件在 `0.1.7-alpha.2` 至 `0.2.x` 上被准入（在 `0.1.6-alpha.2` 上仍会拒绝）。两种规则都会把预发行版与区间做匹配。`0.2.2-rc.1` 落在这条区间之内，因此准入是区间语义的直接结论，而不是另行实测的结果。该区间与 0.11.0 相比没有任何变化，因此 `0.17.0`、`0.16.0` 与 `0.15.1` 在两条线上同样被准入 —— 本版不是强制升级。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，因此在 0.2.x 上它的行会在加载前被拒绝。请执行 `dsh plugin --profile web add dsh-kingdee@0.18.0`（或 `dsh plugin --profile web update dsh-kingdee`）升级。
 >
 > **CLI 语法特别提醒**：根据 DeepSeek Harness 0.2.1-alpha.1 起的规范，`--profile <name>` 必须置于被转发的 `add`、`remove`、`update` 等子命令之前；若将 `--profile` 放置在子命令之后，会被当做 pnpm 选项转发并报错。
 >

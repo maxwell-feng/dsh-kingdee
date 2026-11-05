@@ -4,6 +4,42 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGE
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.18.0] - 2026-11-05
+
+**DeepSeek Harness 0.2.2-rc.1 alignment** — no runtime, configuration or tool-surface change. The build baseline moves from the `0.2.2-alpha.2` master preview to `0.2.2-rc.1` (the `next` dist-tag, published 2026-11-04), and the plugin is verified against both `0.2.2-rc.1` and the `latest` line `0.2.1-rc.5`.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.2-alpha.2` to `0.2.2-rc.1`, and the lockfile is regenerated against 0.2.2-rc.1. `@deepseek-ai/cordis` moves to `~4.1.0` and `@deepseek-ai/schemastery` to `~3.19.0`.
+- **Peer ranges deliberately unchanged.** `@deepseek-ai/cordis` stays `^4.0.4 || ^4.0.6-alpha.1` and `@deepseek-ai/schemastery` stays `^3.18.4 || ~3.18.6-alpha.1`, because `^4.0.4` already covers cordis 4.1.0 and `^3.18.4` already covers schemastery 3.19.0: neither line is excluded, so no widening is needed and the previously verified 4.0.4 / 4.0.5 / 3.18.4 / 3.18.5 releases stay admitted.
+- **Supply-chain gate.** The workspace file exempts the 0.2.2-rc.1 package set from pnpm's minimum-release-age gate, which otherwise rejects DSH's continuously published prereleases. The list stays a single, lockfile-derived block.
+- **`engines.dsh` range is unchanged.** It stays `>=0.1.7-alpha.2 <0.3.0`, which admits `0.2.2-rc.1` by range semantics — not as a separately measured result — so this release is **not a mandatory upgrade**: `dsh-kingdee@0.17.0`, `0.16.0` and `0.15.1` remain admitted. Since DeepSeek Harness 0.2.1-alpha.4 an own `engines.dsh` range decides admission alone, and the peers no longer participate in that check. No live profile boot and no live Kingdee tenant were used for this conclusion.
+- **Source change: none.** No file under `src/`, `test/`, `scripts/`, `locale/`, `skills/`, `.github/`, `cordis.patch.yml`, `tsconfig*.json` or `tsdown.config.ts` changed, and no configuration field moved: the plugin behaves exactly as 0.17.0. `git diff --stat` against 0.17.0 lists only `package.json`, `pnpm-lock.yaml` and `pnpm-workspace.yaml`, so both verification lines exercise the same code.
+
+### Checked against 0.2.2-rc.1 (all confirmed as no impact)
+
+The audit compared the packages this plugin actually consumes rather than reading release prose:
+
+- **Every declaration the plugin reads is byte-identical.** The `dsh-tools`, `dsh-web` and `dsh-credentials` packages differ from their `0.2.2-alpha.2` counterparts **only in `package.json`**; no `.d.ts` this plugin consumes changed. `DefineToolOptions`, `ToolDefinition`, `ToolsService.register`, `credentialRef` / `ctx.credentials.resolve`, `ctx.configForms.get()`, `slots` and `remote` therefore need no migration.
+- **`dsh-util-values` was refactored internally.** Implementation-only; no declaration change reaches the config-value helpers this plugin calls.
+- **`dsh-llm` made `GenerateOptions.purpose` generic.** Not affected: this plugin builds no auxiliary LLM request, so it never supplies that option.
+- **`dsh-client-ui-settings` added the optional `settings.section.icon` slot.** Pure addition; this plugin registers no such slot and its card compiles unchanged.
+- **`dsh-client-ui-plugin-manager` added diagnostic fields to `InstallState`.** Pure addition; the plugin reads no `InstallState` field.
+- **`cordis` 4.1.0 is declaration-identical to 4.0.6-alpha.2**, so the `Schema.string().volatile()` config contract and the whole `Config` object still type-check.
+- **The announced 0.2.2-rc.1 breaking changes do not reach this plugin.** The minimum Node.js rises to **24.9** (this package's own `engines.node` stays `>=22`, but running on such a host effectively requires 24.9+); Cordis Core moves to **4.1.0** with Loader **1.1.0** and Include **1.1.0**; and `web_fetch` no longer rejects private addresses. The last one concerns the host's fetch provider — a tool this plugin never calls. The plugin is not a fetch provider: it issues its own HTTP requests through `src/kd-core/transport.ts` and validates every host with `isPrivateOrLocalHost` in `src/kd-core/security.ts`, so its SSRF defense is unchanged and no configuration field governs the host policy.
+
+### Documentation
+
+- The bilingual docs' verification baseline is now `0.2.2-rc.1` / plugin `0.18.0`, and every compatibility note names both verified lines plus the pinned one.
+- `docs/RELEASE.md` / `docs/RELEASE.zh.md` are rewritten for 0.18.0.
+
+### Verification
+
+- `node scripts/check-docs-language.ts` passing with zero language or switcher violations across all document pairs.
+- `0.2.2-rc.1` line (`cordis` 4.1.0 / `schemastery` 3.19.0): `tsc -p tsconfig.json --noEmit` clean, `npm run build` clean, `npm test` 15/15 pass.
+- `0.2.1-rc.5` line (`cordis` 4.0.5 / `schemastery` 3.18.5): the same three checks clean, 15/15 pass.
+- Not verified: a live boot into a real 0.2.2-rc.1 or 0.2.1-rc.5 profile, the host's own plugin compatibility check (it needs a real profile), and — as always — no live Kingdee tenant.
+
 ## [0.17.0] - 2026-11-02
 
 **Dual-line verification release** — verified against DeepSeek Harness **0.2.1-rc.5** (the `latest` dist-tag, newest published release, and the runtime the desktop app ships) in addition to the pinned **0.2.2-alpha.2** master preview. No runtime, configuration or tool-surface change.
@@ -468,6 +504,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
 [0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
 [0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
 [0.15.1]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.15.1

@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UNINSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）与 **0.2.2-alpha.2**（构建钉定的 master 预览线）两条线上、以插件 **0.17.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）；其中钉版线另通过宿主自带的兼容性校验，在运行时 `0.2.2-alpha.2` 上准入 `dsh-kingdee@0.17.0`，并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**未进行真实账套联调验证。**
+> 已在 deepseek-harness **0.2.2-rc.1**（npm `next` 发布、2026-11-04 发布、构建钉定的运行时）与 **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）两条线上、以插件 **0.18.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**既未做真实 profile 启动验证，也未做真实账套联调验证。**
 
 如何从 DSH profile 移除 **dsh-kingdee**。
 

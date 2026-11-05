@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UNINSTALL.zh.md)
 
-> Verified against deepseek-harness **0.2.1-rc.5** (the `latest` release, and the runtime the desktop app ships) and **0.2.2-alpha.2** (the master preview the build pins) with plugin **0.17.0** on byte-identical sources: `pnpm run typecheck` clean, `pnpm run build` clean, and **15** unit tests passing via `pnpm test` on both lines; the pinned line additionally passes the harness's own compatibility check admitting `dsh-kingdee@0.17.0` on runtime `0.2.2-alpha.2` and adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **No live-tenant verification was performed.**
+> Verified against deepseek-harness **0.2.2-rc.1** (the `next` release, published 2026-11-04, and the runtime the build pins) and **0.2.1-rc.5** (the `latest` release, and the runtime the desktop app ships) with plugin **0.18.0** on byte-identical sources: `pnpm run typecheck` clean, `pnpm run build` clean, and **15** unit tests passing via `pnpm test` on both lines, adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **Neither a live profile boot nor a live-tenant verification was performed.**
 
 How to remove **dsh-kingdee** from a DSH profile.
 
