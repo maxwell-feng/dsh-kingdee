@@ -4,6 +4,42 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGE
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.19.0] - 2026-11-12
+
+**DeepSeek Harness 0.2.2-rc.2 alignment** — no runtime, configuration or tool-surface change. The build baseline moves from `0.2.2-rc.1` to `0.2.2-rc.2` (the `next` dist-tag, published 2026-11-11), and the plugin is verified against both `0.2.2-rc.2` and the `latest` line `0.2.2-rc.1`.
+
+### Changed
+
+- **Harness alignment.** Every `@deepseek-ai/dsh-*` devDependency moves from `0.2.2-rc.1` to `0.2.2-rc.2`, and the lockfile is regenerated against 0.2.2-rc.2. `@deepseek-ai/cordis` stays `~4.1.0` and `@deepseek-ai/schemastery` stays `~3.19.0`.
+- **Peer ranges deliberately unchanged.** `@deepseek-ai/cordis` stays `^4.0.4 || ^4.0.6-alpha.1` and `@deepseek-ai/schemastery` stays `^3.18.4 || ~3.18.6-alpha.1`, covering the 4.0.4 / 4.0.5 / 3.18.4 / 3.18.5 and 4.1.0 / 3.19.0 revisions alike.
+- **Supply-chain gate.** The workspace file exempts the 0.2.2-rc.2 package set from pnpm's minimum-release-age gate; the list stays a single, lockfile-derived block.
+- **`engines.dsh` range is unchanged.** It stays `>=0.1.7-alpha.2 <0.3.0`, which admits `0.2.2-rc.2` by range semantics — not as a separately measured result — so this release is **not a mandatory upgrade**: `dsh-kingdee@0.18.0`, `0.17.0`, `0.16.0` and `0.15.1` remain admitted.
+- **Source change: none.** No file under `src/`, `test/`, `scripts/`, `locale/`, `skills/`, `.github/`, `cordis.patch.yml`, `tsconfig*.json` or `tsdown.config.ts` changed, and no configuration field moved: the plugin behaves exactly as 0.18.0. `git diff --stat` against 0.18.0 lists only `package.json`, `pnpm-lock.yaml` and `pnpm-workspace.yaml`.
+
+### Checked against 0.2.2-rc.2 (all confirmed as no impact)
+
+The audit compared the packages this plugin actually consumes rather than reading release prose:
+
+- **`dsh-credentials` adds an optional `masked` preview.** The credential view gains `masked?: string` and a doc note that the full credential never rides in it. Pure addition; the plugin reads only `value`, so no migration.
+- **`dsh-tools` adds structured error identity.** A new `ToolContextUnavailableError` and an optional `ToolErrorInfo` on denial results are additive; `defineTool`, `ToolDefinition` and `ctx.tools.register` are unchanged, so the `kingdee_*` tools compile as before.
+- **`dsh-client-ui-settings` widens `openSettings`.** It now takes an optional `sectionId`; backward compatible, and the card never calls it.
+- **`dsh-client-ui-slots` adds an `hoc` slot kind.** `SlotKind` gains `'hoc'` with `HocRenderOpts` and renderer notes; additive, and the card still registers its `keyed` `plugins.row.config` / `plugins.bundle.config` slots.
+- **`dsh-api-remotes` re-exports more remote type modules.** The additions (agent-team, mcp-manager, web, deepseek-account, office-kit) are type-only re-exports; the credential-domain `remote` merge the card uses is unchanged.
+- **Declaration-identical packages.** `dsh-client-locale`, `dsh-client-ui-renderer`, `dsh-client-ui-plugin-manager` and `dsh-util-values` carry no declaration change between 0.2.2-rc.1 and 0.2.2-rc.2.
+- **The announced 0.2.2-rc.2 breaking changes do not reach this plugin.** Web search defaults to the DeepSeek Search API, AgentTeam moves to named subagents, plugins gain per-language code-block renderers and dynamic MCP registration, tool failures gain structured error types and codes, sessions support batch appends, Office uses native tools, PTC gains call budgets, and the host minimum Node.js stays **24.9** (this package's own `engines.node` stays `>=22`, but running on such a host effectively requires 24.9+). None touches a tool, credential, settings-card or locale seam this plugin consumes; its own SSRF check in `src/kd-core/security.ts` is unchanged.
+
+### Documentation
+
+- The bilingual docs' verification baseline is now `0.2.2-rc.2` / plugin `0.19.0`, and every compatibility note names both verified lines plus the pinned one.
+- `docs/RELEASE.md` / `docs/RELEASE.zh.md` are rewritten for 0.19.0.
+
+### Verification
+
+- `node scripts/check-docs-language.ts` passing with zero language or switcher violations across all document pairs.
+- `0.2.2-rc.2` line (`cordis` 4.1.0 / `schemastery` 3.19.0): `tsc -p tsconfig.json --noEmit` clean, `npm run build` clean, `npm test` 15/15 pass.
+- `0.2.2-rc.1` line (`cordis` 4.1.0 / `schemastery` 3.19.0): the same three checks clean, 15/15 pass.
+- Not verified: a live boot into a real 0.2.2-rc.2 or 0.2.2-rc.1 profile, the host's own plugin compatibility check (it needs a real profile), and — as always — no live Kingdee tenant.
+
 ## [0.18.0] - 2026-11-05
 
 **DeepSeek Harness 0.2.2-rc.1 alignment** — no runtime, configuration or tool-surface change. The build baseline moves from the `0.2.2-alpha.2` master preview to `0.2.2-rc.1` (the `next` dist-tag, published 2026-11-04), and the plugin is verified against both `0.2.2-rc.1` and the `latest` line `0.2.1-rc.5`.
@@ -504,6 +540,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0
 [0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
 [0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
 [0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0

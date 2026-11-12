@@ -6,6 +6,42 @@
 
 ---
 
+## [0.19.0] - 2026-11-12
+
+**对齐 DeepSeek Harness 0.2.2-rc.2** —— 不改运行时逻辑、配置或工具接口。构建基线由 `0.2.2-rc.1` 移至 `0.2.2-rc.2`（`next` 标签，2026-11-11 发布），并同时针对 `0.2.2-rc.2` 与 `latest` 线 `0.2.2-rc.1` 完成验证。
+
+### 变更
+
+- **harness 对齐。** 全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.2-rc.1` 移至 `0.2.2-rc.2`，锁文件按 0.2.2-rc.2 重新生成。`@deepseek-ai/cordis` 保持 `~4.1.0`，`@deepseek-ai/schemastery` 保持 `~3.19.0`。
+- **peer 区间有意保持原样。** `@deepseek-ai/cordis` 仍为 `^4.0.4 || ^4.0.6-alpha.1`，`@deepseek-ai/schemastery` 仍为 `^3.18.4 || ~3.18.6-alpha.1`，同时覆盖 4.0.4 / 4.0.5 / 3.18.4 / 3.18.5 与 4.1.0 / 3.19.0 各修订。
+- **供应链闸门。** 工作区文件将 0.2.2-rc.2 包集合排除在 pnpm 的最低发布年龄闸门之外；清单仍是单一、由锁文件派生的块。
+- **`engines.dsh` 区间不变。** 仍为 `>=0.1.7-alpha.2 <0.3.0`，按区间语义本身就把 `0.2.2-rc.2` 纳入准入（并非另行实测结果），因此本版**不是强制升级**：`dsh-kingdee@0.18.0`、`0.17.0`、`0.16.0` 与 `0.15.1` 同样仍被准入。
+- **源码无改动。** `src/`、`test/`、`scripts/`、`locale/`、`skills/`、`.github/`、`cordis.patch.yml`、`tsconfig*.json` 与 `tsdown.config.ts` 下无任何文件改动，也没有配置字段变动：插件行为与 0.18.0 完全一致。相对 0.18.0 的 `git diff --stat` 只列出 `package.json`、`pnpm-lock.yaml` 与 `pnpm-workspace.yaml`。
+
+### 针对 0.2.2-rc.2 的核对（均确认无影响）
+
+本次审计逐个比对本插件实际消费的包，而非只读发布说明：
+
+- **`dsh-credentials` 新增可选 `masked` 预览。** 凭据视图新增 `masked?: string` 及“完整凭据绝不会出现在其中”的文档说明。纯增量；插件只读取 `value`，无需迁移。
+- **`dsh-tools` 新增结构化错误标识。** 新增 `ToolContextUnavailableError` 以及拒绝结果上可选的 `ToolErrorInfo`，均为增量；`defineTool`、`ToolDefinition` 与 `ctx.tools.register` 未变，`kingdee_*` 工具照旧编译。
+- **`dsh-client-ui-settings` 放宽 `openSettings`。** 现接受可选 `sectionId`；向后兼容，且卡片从不调用它。
+- **`dsh-client-ui-slots` 新增 `hoc` slot 类型。** `SlotKind` 新增 `'hoc'` 与 `HocRenderOpts` 及相关渲染器说明；属增量，卡片仍注册其 `keyed` 的 `plugins.row.config` / `plugins.bundle.config` slot。
+- **`dsh-api-remotes` 再导出更多 remote 类型模块。** 新增项（agent-team、mcp-manager、web、deepseek-account、office-kit）均为纯类型再导出；卡片使用的凭据域 `remote` 合并不变。
+- **声明完全一致的包。** `dsh-client-locale`、`dsh-client-ui-renderer`、`dsh-client-ui-plugin-manager` 与 `dsh-util-values` 在 0.2.2-rc.1 与 0.2.2-rc.2 之间无声明变化。
+- **0.2.2-rc.2 公布给宿主的破坏性变更都不会触及本插件。** 网页搜索默认改用 DeepSeek Search API、AgentTeam 改用具名子代理、插件可按语言扩展代码块渲染并动态注册 MCP、工具失败提供结构化错误类型与代码、会话支持批量追加事件、Office 改用原生工具、PTC 增加调用预算，且宿主最低 Node.js 维持 **24.9**（本包自有 `engines.node` 仍为 `>=22`，但在该宿主上实际要求 24.9+）。这些都不涉及本插件所用的工具、凭据、设置卡片或 locale 接口；`src/kd-core/security.ts` 中自带的 SSRF 校验保持不变。
+
+### 文档
+
+- 中英双语文档的验证基线现为 `0.2.2-rc.2` / 插件 `0.19.0`，每处兼容性说明都同时列出两条验证线与钉定线。
+- `docs/RELEASE.md` / `docs/RELEASE.zh.md` 已按 0.19.0 重写。
+
+### 验证
+
+- `node scripts/check-docs-language.ts` 通过，全部文档对无语言或切换器违规。
+- `0.2.2-rc.2` 线（`cordis` 4.1.0 / `schemastery` 3.19.0）：`tsc -p tsconfig.json --noEmit` 干净、`npm run build` 干净、`npm test` 15/15 通过。
+- `0.2.2-rc.1` 线（`cordis` 4.1.0 / `schemastery` 3.19.0）：同上三项检查干净，15/15 通过。
+- 未验证：真实 0.2.2-rc.2 或 0.2.2-rc.1 profile 的启动、宿主自身的插件兼容性检查（需要真实 profile），以及 —— 一如既往 —— 未做真实金蝶账套联调。
+
 ## [0.18.0] - 2026-11-05
 
 **适配 DeepSeek Harness 0.2.2-rc.1** —— 不改运行时逻辑、不改配置项、不改工具接口。构建基准由 `0.2.2-alpha.2` master 预览线迁移到 `0.2.2-rc.1`（npm `next` 标签，2026-11-04 发布），并同时针对 `0.2.2-rc.1` 与 `latest` 线 `0.2.1-rc.5` 完成验证。
@@ -551,6 +587,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0
 [0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
 [0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
 [0.16.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.16.0
