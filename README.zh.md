@@ -13,7 +13,7 @@
 - **类型化工具** —— 通过 `kingdee_*` 工具完成查询、保存、提交、审核、反审核、查看、删除与调用 BOS 自定义服务，具体见下方工具表。
 - **完整状态机** —— 创建/更新 → 提交 → 审核 → 反审核，开箱即用。
 - **离线 Mock** —— 配置 `mock: true` 即切换到本地固化传输，无需可连通账套即可演示与测试。
-- **展示元数据与专属图标** —— 内置官方 `icon.svg` 矢量图标与中英双语清单资源（`locale/en.json`、`locale/zh.json`），完全符合 DSH 0.2.2-rc.1 插件管理器展示规范。
+- **展示元数据与专属图标** —— 内置官方 `icon.svg` 矢量图标与中英双语清单资源（`locale/en.json`、`locale/zh.json`），完全符合 DSH 0.2.2-rc.2 插件管理器展示规范。
 - **纯 TypeScript 开发** —— 全库源码、工具链配置与验证脚本 100% 采用纯 TypeScript，零外部杂质语言。
 - **双语文档** —— 英文与简体中文。
 
@@ -26,20 +26,20 @@
 dsh plugin --profile web add dsh-kingdee
 ```
 
-> **DeepSeek Harness 兼容性：两条已验证的版本线。** 0.18.0 同时针对 DeepSeek Harness **0.2.2-rc.1**（npm `next` 标签、2026-11-04 发布、构建基准）与 **0.2.1-rc.5**（npm `latest` 标签、最新正式发布、桌面版实际内置的运行时）完成验证。构建钉在 `0.2.2-rc.1`；rc.5 线则在逐字节相同的源码上单独验证 —— 见下方矩阵。其自有的 `engines.dsh` 区间**保持** `>=0.1.7-alpha.2 <0.3.0`（即 0.11.0 放宽后的区间），按区间语义**本身就把 `0.2.2-rc.1` 纳入准入**（这是区间推导结论，不是另行实测的结果），因此 **`0.17.0`、`0.16.0` 与 `0.15.1` 在两条线上同样被准入** —— 0.18.0 不是强制升级。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略；两种规则都会把预发行版与区间做匹配。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，在 0.2.x 上**会在加载阶段被拒绝**。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。在 0.2.x 上请用 `dsh plugin --profile web add dsh-kingdee@0.18.0` 升级。
+> **DeepSeek Harness 兼容性：两条已验证的版本线。** 0.19.0 同时针对 DeepSeek Harness **0.2.2-rc.2**（npm `next` 标签、2026-11-11 发布、构建基准）与 **0.2.2-rc.1**（npm `latest` 标签、该标签上的最新正式发布）完成验证。构建钉在 `0.2.2-rc.2`；rc.1 线则在逐字节相同的源码上单独验证 —— 见下方矩阵。其自有的 `engines.dsh` 区间**保持** `>=0.1.7-alpha.2 <0.3.0`（即 0.11.0 放宽后的区间），按区间语义**本身就把 `0.2.2-rc.2` 纳入准入**（这是区间推导结论，不是另行实测的结果），因此 **`0.18.0`、`0.17.0`、`0.16.0` 与 `0.15.1` 在两条线上同样被准入** —— 0.19.0 不是强制升级。自 DeepSeek Harness 0.2.1-alpha.4 起，插件自有的 `engines.dsh` 区间单独决定是否准入，相应的 `@deepseek-ai/dsh` / `@deepseek-ai/dsh-*` peer 在该项校验中被忽略；两种规则都会把预发行版与区间做匹配。此前的 `0.10.0` 声明的是 `^0.1.7-alpha.2`，该区间不含 0.2.x，在 0.2.x 上**会在加载阶段被拒绝**。不兼容的行会被拒绝，不兼容的 bundle 会被跳过。在 0.2.x 上请用 `dsh plugin --profile web add dsh-kingdee@0.19.0` 升级。
 >
 > 命令行语法特别提示：依据 DeepSeek Harness 0.2.1-alpha.1 规范，`--profile <name>` 参数必须置于转发的 `add`、`remove`、`update` 等子命令之前；若写在子命令之后，该参数会被原样转发给下游 pnpm 导致命令执行失败。
 >
 > 被拒时宿主会打印的补救方式是 `dsh plugin allow-version <package@version> --dsh-version <runtime> --accept-risk`（或使用插件管理器），它会在 profile 的 `compatibility.json` 中记录一条**确切版本豁免**。这是风险确认，而不是兼容性修复；且它只对一个确切插件版本、一个确切运行时生效：插件升级或宿主升级都不会继承该授权。
 
-> 已在 deepseek-harness **0.2.2-rc.1** 与 **0.2.1-rc.5** 两条线上、以插件 **0.18.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）。**既未做真实 profile 启动验证，也未做真实账套联调验证。** 本版没有任何源文件改动，因此两条线跑的就是同一份代码：相对 0.17.0 的 `git diff --stat` 只列出 `package.json`、`pnpm-lock.yaml` 与 `pnpm-workspace.yaml` 三个文件。
+> 已在 deepseek-harness **0.2.2-rc.2** 与 **0.2.2-rc.1** 两条线上、以插件 **0.19.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`）。**既未做真实 profile 启动验证，也未做真实账套联调验证。** 本版没有任何源文件改动，因此两条线跑的就是同一份代码：相对 0.18.0 的 `git diff --stat` 只列出 `package.json`、`pnpm-lock.yaml` 与 `pnpm-workspace.yaml` 三个文件。
 >
 > | 版本线 | 构建钉定的运行时 | `cordis` / `schemastery` | 结果 |
 > |---|---|---|---|
-> | `latest`（该标签上的最新正式发布） | 0.2.1-rc.5 | 4.0.5 / 3.18.5 | typecheck + build + 15 项测试全通过 |
-> | `next`（构建基准） | 0.2.2-rc.1 | 4.1.0 / 3.19.0 | typecheck + build + 15 项测试全通过 |
+> | `latest`（该标签上的最新正式发布） | 0.2.2-rc.1 | 4.1.0 / 3.19.0 | typecheck + build + 15 项测试全通过 |
+> | `next`（构建基准） | 0.2.2-rc.2 | 4.1.0 / 3.19.0 | typecheck + build + 15 项测试全通过 |
 >
-> **从 0.2.2-alpha.2 到 0.2.2-rc.1 无需任何 API 迁移。** 本次审计逐个比对了本插件用到的每一个包：`dsh-tools`、`dsh-web` 与 `dsh-credentials` 三个包与 alpha.2 的对应版本**仅 `package.json` 不同**，插件读取的每一份 `.d.ts` 声明都**逐字节相同**。实际变化比“基线升级”听起来要窄：开发依赖的钉版本身；`dsh-util-values` 的内部实现重构，声明无变化；`dsh-llm` 的 `GenerateOptions.purpose` 改为泛型，但本插件从不构造辅助 LLM 请求，触达不到；`dsh-client-ui-settings` 新增可选 slot `settings.section.icon`，属纯增量且本插件不注册；`dsh-client-ui-plugin-manager` 的 `InstallState` 新增诊断字段，同样是纯增量；以及 `cordis` 4.1.0 与 4.0.6-alpha.2 声明完全一致。0.2.2-rc.1 确实公布的破坏性变更 —— 最低 Node.js 提升到 **24.9**、Cordis Core 升到 **4.1.0**（配套 Loader **1.1.0** 与 Include **1.1.0**）、`web_fetch` 不再拒绝私网地址 —— 均已在 [UPDATE.zh.md](./UPDATE.zh.md) 中说明，且都不影响本插件。`web_fetch` 是宿主的 fetch provider 工具，本插件从不调用它：请求走自己的传输层，每个主机 URL 都由插件自行校验（`src/kd-core/security.ts` 中的 `isPrivateOrLocalHost`），因此自带的 SSRF 防御保持不变。
+> **从 0.2.2-rc.1 到 0.2.2-rc.2 无需任何 API 迁移。** 本次审计逐个比对了本插件用到的每一个包。所有变化都是增量的，且都停留在卡片与工具从不调用的契约之后：`dsh-credentials` 的凭据视图新增可选 `masked?: string` 预览（插件只读取 `value`）；`dsh-tools` 新增 `ToolContextUnavailableError` 与拒绝结果上可选的 `ToolErrorInfo`，`defineTool` 仍照旧接受；`dsh-client-ui-settings` 的 `openSettings` 增加可选 `sectionId`；`dsh-client-ui-slots` 新增 `hoc` slot 类型（卡片仍注册其 `keyed` 行与 bundle slot）；`dsh-api-remotes` 只额外再导出若干 remote 类型模块（内部账号/Office 包改名）。`dsh-client-locale`、`dsh-client-ui-renderer`、`dsh-client-ui-plugin-manager` 与 `dsh-util-values` 声明完全一致。rc.2 为 harness 公布的破坏性变更 —— 网页搜索默认改用 DeepSeek Search API、AgentTeam 改用具名子代理、插件可按语言扩展代码块渲染并动态注册 MCP、工具失败提供结构化错误类型、会话支持批量追加事件、Office 改用原生工具、PTC 调用预算，以及 Node.js **24.9** —— 均已在 [UPDATE.zh.md](./UPDATE.zh.md) 中说明，且都不影响本插件。插件保留自带的 SSRF 校验（`src/kd-core/security.ts` 中的 `isPrivateOrLocalHost`），且从不调用宿主 `web_fetch` 工具。
 
 详细配置见 [CONFIG.zh.md](./CONFIG.zh.md)，安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，工具说明见 [USAGE.zh.md](./USAGE.zh.md)，升级/卸载见 [UPDATE.zh.md](./UPDATE.zh.md) 与 [UNINSTALL.zh.md](./UNINSTALL.zh.md)。版本历史见 [CHANGELOG.zh.md](./CHANGELOG.zh.md) / [CHANGELOG.md](./CHANGELOG.md)。
 
