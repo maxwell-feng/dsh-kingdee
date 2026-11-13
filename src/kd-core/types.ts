@@ -24,8 +24,8 @@ export type KdAuthMode = 'user' | 'app'
  * every stub URL ends in `.common.kdsvc`; set a field here to override it for
  * your deployment. Only the fields you set replace the default.
  *
- * The authoritative per-tenant list lives in the product itself: sign in as an
- * administrator, then open Common Settings → Dynamic Service Definition → WebAPI, pick the business
+ * The authoritative per-tenant list lives in the product itself: sign in to the
+ * tenant, then open Common Settings → Dynamic Service Definition → WebAPI, pick the business
  * object and operation, and read the parameter help and sample call.
  */
 export interface KdServiceEndpoints {

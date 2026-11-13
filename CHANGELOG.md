@@ -4,6 +4,24 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGE
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.20.0] - 2026-11-13
+
+**DeepSeek Harness 0.2.2-rc.3 alignment** — dependency-only release, with no API, configuration or behavior change. DSH 0.2.2-rc.3 has no plugin-facing breaking changes.
+
+### Changed
+
+- Moved every `@deepseek-ai/dsh-*` devDependency from `0.2.2-rc.2` to `0.2.2-rc.3`; regenerated the lockfile and refreshed the workspace supply-chain exemption.
+- `engines.dsh` stays `>=0.1.7-alpha.2 <0.3.0`, so 0.19.0 remains admitted on the `0.2.x` line; this upgrade is optional.
+
+### Documentation
+
+- Rewrote every guide in plain, concise language, updated all DSH version references to `0.2.2-rc.3`, aligned the tool tables with the tool reference, and fixed the text and ordering defects in both languages.
+
+### Verification
+
+- `pnpm typecheck`, `pnpm build` and `pnpm test` (15 tests) pass against DeepSeek Harness 0.2.2-rc.3.
+- No live profile boot and no live Kingdee tenant verification was performed.
+
 ## [0.19.0] - 2026-11-12
 
 **DeepSeek Harness 0.2.2-rc.2 alignment** — no runtime, configuration or tool-surface change. The build baseline moves from `0.2.2-rc.1` to `0.2.2-rc.2` (the `next` dist-tag, published 2026-11-11), and the plugin is verified against both `0.2.2-rc.2` and the `latest` line `0.2.2-rc.1`.
@@ -540,6 +558,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.20.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.20.0
 [0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0
 [0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
 [0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0

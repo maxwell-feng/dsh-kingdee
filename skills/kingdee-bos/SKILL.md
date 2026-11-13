@@ -11,6 +11,7 @@ whenToUse: >-
 # Kingdee BOS 二次开发（kingdee-bos）
 
 本技能是 **dsh-kingdee** 插件的伴生领域知识，覆盖两件事：
+
 1. 如何用插件提供的 `kingdee_*` 工具在金蝶云星空上做**数据/服务层**二开。
 2. 金蝶业务对象的字段、枚举、状态机约定，以及**平台插件层**（C# 服务端插件/界面扩展）无法用 WebAPI 触达的边界。
 
@@ -21,19 +22,19 @@ whenToUse: >-
 | 工具 | 作用 | 关键入参 |
 |---|---|---|
 | `kingdee_query` | ExecuteBillQuery 查单据/基础资料 | `formId`, `fieldKeys[]`, `filter?`, `orderString?`, `topCount?`, `limit?`, `startRow?`, `organization?` |
+| `kingdee_query_business_data` | 新版**结构化**查询 | `formId`, `fieldKeys[]`, `filter?`, `orderString?`, `topCount?`, `limit?`, `startRow?`, `organization?` |
 | `kingdee_save` | 保存/新增单据或基础资料 | `formId`, `data`, `interaction?`, `isAutoSubmitAndAudit?` |
 | `kingdee_batch_save` | 单次批量保存多条 | `formId`, `records[]`, `interaction?`, `isAutoSubmitAndAudit?` |
-| `kingdee_submit` | 提交 | `formId`, `ids[]`, `numbers?` |
-| `kingdee_audit` | 审核 | `formId`, `ids[]`, `numbers?` |
-| `kingdee_unaudit` | 反审核 | `formId`, `ids[]`, `numbers?` |
-| `kingdee_unsubmit` | 反提交 | `formId`, `ids[]`, `numbers?` |
-| `kingdee_delete` | 删除 | `formId`, `ids[]`, `numbers?` |
-| `kingdee_delete_draft` | 删除草稿/暂存单 | `formId`, `ids[]`, `numbers?` |
-| `kingdee_view` | 查看单据详情 | `formId`, `id?`, `number?` |
-| `kingdee_query_business_data` | 新版**结构化**查询 | `formId`, `fieldKeys[]`, `filter?`, `orderString?`, `topCount?`, `limit?`, `startRow?`, `organization?` |
+| `kingdee_submit` | 提交 | `formId`, `ids[]` / `numbers[]` |
+| `kingdee_unsubmit` | 反提交 | `formId`, `ids[]` / `numbers[]` |
+| `kingdee_audit` | 审核 | `formId`, `ids[]` / `numbers[]` |
+| `kingdee_unaudit` | 反审核 | `formId`, `ids[]` / `numbers[]` |
+| `kingdee_view` | 查看单据详情 | `formId`, `id` / `number` |
+| `kingdee_delete` | 删除 | `formId`, `ids[]` / `numbers[]` |
+| `kingdee_delete_draft` | 删除草稿/暂存单 | `formId`, `ids[]` / `numbers[]` |
 | `kingdee_invoke` | 调 BOS 自定义服务 | `serviceName`, `payload?`, `formId?` |
-| `kingdee_list_datacenters` | 列出地址可达的数据中心/账套 | — |
 | `kingdee_logout` | 退出当前会话 | — |
+| `kingdee_list_datacenters` | 列出地址可达的数据中心/账套 | — |
 
 没有独立的“登录”工具：会话由任意业务工具在首个调用时按需建立并自动复用，`kingdee_logout` 用于显式释放。
 
@@ -54,7 +55,7 @@ whenToUse: >-
 ## 关键字段与枚举约定
 
 - **FDocumentStatus**（单据状态）：`Z`=创建/暂存，`A`=已提交，`C`=已审核，`D`=已作废，`E`=重新审核。
-- **单据编号**：`FBillNo`；**内码**：`FID`；**单据头内码**：`FID`。
+- **单据编号**：`FBillNo`；**内码**：`FID`。
 - **物料**：`FMATERIALID`（内码引用）、`FMaterialNumber`（编码）；**客户/供应商**：`FCUSTID`/`FSUPPLIERID`。
 - **组织**：`FUSEORGID`（使用组织），业务对象常按组织/单据类型隔离。
 - **计量单位**：`FUNITID`；**仓库**：`FSTOCKID`。

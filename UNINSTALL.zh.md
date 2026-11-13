@@ -2,13 +2,11 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UNINSTALL.md) | 中文
 
-> 已在 deepseek-harness **0.2.2-rc.1**（npm `next` 发布、2026-11-04 发布、构建钉定的运行时）与 **0.2.1-rc.5**（npm `latest` 发布、桌面版内置运行时）两条线上、以插件 **0.18.0** 在逐字节相同的源码上验证：`pnpm run typecheck` 零错误、`pnpm run build` 构建干净、**15** 项单元测试通过（`pnpm test`），并全面适配 **金蝶云·星空 V9.1 企业版**（向下兼容 V9.0 / V8.x）。**既未做真实 profile 启动验证，也未做真实账套联调验证。**
-
 如何从 DSH profile 移除 **dsh-kingdee**。
 
 ## 1. 禁用插件
 
-通常第一步是移除 bundle 而保留配置；插件会从工具集与设置页消失。没有专门的禁用子命令 —— 请在 profile 的 `cordis.patch.yml` 里把该行的 `enabled` 置为 `false`（随包发布的 bundle 补丁中该值为 `true`）：
+没有专门的禁用子命令。请在 profile 的 `cordis.patch.yml` 中把该行的 `enabled` 置为 `false`（随包发布的 bundle 补丁中该值为 `true`），然后重启 DSH：
 
 ```yaml
 - insert:
@@ -17,47 +15,32 @@
       enabled: false
 ```
 
-停止并重新启动 DSH 进程使其生效。
-
 ## 2. 移除 bundle
 
 ```sh
 dsh plugin --profile web remove dsh-kingdee
 ```
 
-这会移除已安装的 npm 包及其组合层。请注意 `--profile <name>` 参数必须置于 `remove` 命令之前。
+这会移除已安装的 npm 包及其组合层。`--profile <name>` 必须放在 `remove` 之前。
 
-## 3. 删除你的配置
+## 3. 删除配置
 
-连接设置存放在 profile 的 `cordis.yml` / 设置文档中。请删除 `kingdee` 插件行（及其 `kingdee.*` 配置键），以免移除后残留：
-
-```yaml
-# 删除这一行
-- id: kingdee
-  name: ...
-```
+连接设置存放在 profile 的 `cordis.yml` 或设置文档中。请删除第 1 步插入的 `kingdee` 行以及所有 `kingdee.*` 配置键。
 
 ## 4. 删除密钥
 
-密钥存放在插件之外（环境变量，或 DSH 凭据库 `$DSH_HOME/.credentials.yaml` / 设置界面中只写不读的字段）。请删除，避免留下任何值：
+密钥存放在插件之外：环境变量，或 DSH 凭据库 `$DSH_HOME/.credentials.yaml` / 设置界面中只写不读的字段。请删除：
 
 ```sh
 unset DSH_KINGDEE_USER DSH_KINGDEE_PASSWORD DSH_KINGDEE_APP_SECRET
 ```
 
-若你把值存进了 DSH 凭据库而不是 shell 环境变量，请在凭据库里删除同名引用 —— 凭据库没有 CLI 子命令，请在设置界面删除对应条目，或直接编辑 `$DSH_HOME/.credentials.yaml`。
+如果值存放在 DSH 凭据库中，请在凭据库删除同名引用。凭据库没有 CLI 子命令，请在设置界面删除，或编辑 `$DSH_HOME/.credentials.yaml`。
 
 ## 5. 重启
 
-停止并重新启动 DSH 进程（重新启动 `dsh` 应用 / 你的 DSH host）；没有 restart 子命令。
+停止并重新启动 DSH 进程（重新启动 `dsh` 应用或宿主）。没有 restart 子命令。重启后，`kingdee_*` 工具会从 agent 的工具集中消失。
 
-重启后，`kingdee_*` 工具会从 agent 的工具集中消失。
+## 会留下的内容
 
-## 会留下什么
-
-- 系统日志与缓存会话可能仍记录到过往调用；若你的安全策略需要，请一并清理。
-- `kd-core` 库是独立导出项（`dsh-kingdee/kd-core`）——若不再使用，请用 `dsh plugin --profile web remove dsh-kingdee` 彻底卸载该包。
-
-## 移除源码检出
-
-若是从 Git 检出安装的，直接删除仓库目录（如 `dsh-kingdee/`）即可。删除文件夹不会改动你的 DSH profile，因此请先完成上述步骤。
+系统日志与缓存会话可能仍记录过往调用；若安全策略要求，请一并清理。如果是从 Git 检出安装的，请在完成上述步骤后删除仓库目录（如 `dsh-kingdee/`）。删除文件夹不会改动 DSH profile。

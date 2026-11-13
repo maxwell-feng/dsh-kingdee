@@ -2,13 +2,11 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UNINSTALL.zh.md)
 
-> Verified against deepseek-harness **0.2.2-rc.1** (the `next` release, published 2026-11-04, and the runtime the build pins) and **0.2.1-rc.5** (the `latest` release, and the runtime the desktop app ships) with plugin **0.18.0** on byte-identical sources: `pnpm run typecheck` clean, `pnpm run build` clean, and **15** unit tests passing via `pnpm test` on both lines, adapted for **Kingdee Cloud Starry Sky V9.1 Enterprise Edition** (backward-compatible with V9.0 / V8.x). **Neither a live profile boot nor a live-tenant verification was performed.**
-
 How to remove **dsh-kingdee** from a DSH profile.
 
 ## 1. Disable the plugin
 
-Removing the bundle without losing your config is often the first step; the plugin disappears from the tool set and the settings page. There is no disable verb — flip the row's `enabled` flag to `false` in your profile's `cordis.patch.yml` (the shipped bundle patch sets it to `true`):
+There is no disable verb. Set the row's `enabled` flag to `false` in your profile's `cordis.patch.yml` (the shipped bundle patch sets it to `true`), then restart DSH:
 
 ```yaml
 - insert:
@@ -17,47 +15,32 @@ Removing the bundle without losing your config is often the first step; the plug
       enabled: false
 ```
 
-Stop and start the DSH process for the change to take effect.
-
 ## 2. Remove the bundle
 
 ```sh
 dsh plugin --profile web remove dsh-kingdee
 ```
 
-This removes the installed npm package and its composition layer. Note that `--profile <name>` must precede the `remove` subcommand.
+This removes the installed npm package and its composition layer. `--profile <name>` must precede `remove`.
 
 ## 3. Remove your configuration
 
-Connection settings live in the profile's `cordis.yml` / settings document. Delete the `kingdee` plugin row (and any `kingdee.*` config keys) so it does not linger after removal:
-
-```yaml
-# remove this row
-- id: kingdee
-  name: ...
-```
+Connection settings live in the profile's `cordis.yml` or settings document. Delete the `kingdee` row inserted in step 1 and any `kingdee.*` config keys.
 
 ## 4. Remove the secrets
 
-Secrets are stored outside the plugin (environment variables, or the DSH credential store at `$DSH_HOME/.credentials.yaml` / the write-only fields in the settings UI). Remove them so no value is left behind:
+Secrets live outside the plugin: in environment variables, or in the DSH credential store at `$DSH_HOME/.credentials.yaml` / the write-only fields in the settings UI. Remove them:
 
 ```sh
 unset DSH_KINGDEE_USER DSH_KINGDEE_PASSWORD DSH_KINGDEE_APP_SECRET
 ```
 
-If you stored the values in the DSH credential store instead of the shell environment, remove the same reference names there — the store has no CLI verb, so delete the entries in the settings UI or edit `$DSH_HOME/.credentials.yaml`.
+If the values are in the DSH credential store, delete the same reference names there. The store has no CLI verb; use the settings UI or edit `$DSH_HOME/.credentials.yaml`.
 
 ## 5. Restart
 
-Stop and start the DSH process (relaunch the `dsh` app / your DSH host); there is no restart verb.
+Stop and start the DSH process (relaunch the `dsh` app or your host). There is no restart verb. After the restart the `kingdee_*` tools are gone from the agent's tool set.
 
-After the restart the `kingdee_*` tools are gone from the agent's tool set.
+## What stays
 
-## What it leaves behind
-
-- System-level logs and any cached session may still record past calls; remove those if your policy requires.
-- The `kd-core` library is a separate export (`dsh-kingdee/kd-core`) — if you no longer use it, uninstall the package entirely with `dsh plugin --profile web remove dsh-kingdee`.
-
-## Removing the source checkout
-
-If you installed from a Git checkout, simply delete the repository directory (e.g. `dsh-kingdee/`). Removing the folder does not edit your DSH profile, so complete the steps above first.
+System logs and any cached session may still record past calls; remove them if your policy requires it. If you installed from a Git checkout, delete the repository directory (e.g. `dsh-kingdee/`) after the steps above. Removing the folder does not edit your DSH profile.

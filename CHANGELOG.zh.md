@@ -6,6 +6,24 @@
 
 ---
 
+## [0.20.0] - 2026-11-13
+
+**对齐 DeepSeek Harness 0.2.2-rc.3** —— 仅更新依赖，不改 API、配置或行为。DSH 0.2.2-rc.3 没有影响插件的破坏性变更。
+
+### 变更
+
+- 全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.2-rc.2` 移至 `0.2.2-rc.3`；重新生成锁文件并刷新工作区供应链豁免。
+- `engines.dsh` 保持 `>=0.1.7-alpha.2 <0.3.0`，0.19.0 在 `0.2.x` 上仍被准入，本次升级可选。
+
+### 文档
+
+- 全部指南改为简洁、平实的写法，DSH 版本引用统一更新为 `0.2.2-rc.3`，工具表与工具参考顺序保持一致，并修复中英文档中的文字和排序缺陷。
+
+### 验证
+
+- 在 DeepSeek Harness 0.2.2-rc.3 上，`pnpm typecheck`、`pnpm build` 与 `pnpm test`（15 项测试）全部通过。
+- 未做真实 profile 启动，也未做真实金蝶账套验证。
+
 ## [0.19.0] - 2026-11-12
 
 **对齐 DeepSeek Harness 0.2.2-rc.2** —— 不改运行时逻辑、配置或工具接口。构建基线由 `0.2.2-rc.1` 移至 `0.2.2-rc.2`（`next` 标签，2026-11-11 发布），并同时针对 `0.2.2-rc.2` 与 `latest` 线 `0.2.2-rc.1` 完成验证。
@@ -587,6 +605,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.20.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.20.0
 [0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0
 [0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
 [0.17.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.17.0
