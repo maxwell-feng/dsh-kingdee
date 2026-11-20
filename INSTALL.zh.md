@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.md) | 中文
 
-本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装 **dsh-kingdee** 0.20.0（DSH 基线 0.2.2-rc.3）。
+本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装 **dsh-kingdee** 0.21.0（DSH 基线 0.2.2-rc.5）。
 
 ## 前置条件
 
@@ -36,7 +36,7 @@ dsh plugin --profile web add dsh-kingdee
 | `mock` | 使用本地 mock 传输；默认 `false` |
 | `serviceEndpoints` | 可选的 WebAPI 服务名覆盖，详见 [CONFIG.zh.md](./CONFIG.zh.md) |
 
-在 2022-11-29 之后开通的公有云账套上必须使用 `authMode: "app"`，因为金蝶拒绝账号密码登录。该模式需要 `appId` + `appSecretRef` + `userNameRef`（集成用户）。
+在 2022-11-29 之后开通的 V8.1 及以后公有云账套上必须使用 `authMode: "app"`，因为金蝶拒绝账号密码登录。该模式需要 `appId` + `appSecretRef` + `userNameRef`（集成用户）。
 
 ## 3. 提供密钥
 
@@ -93,7 +93,7 @@ config:
 
 ## 常见问题排查
 
-- **`kd/auth-failed`** —— 检查 `acctId`、`appId`、`appSecretRef` 与集成用户（`userNameRef`），并确认账套已启用 WebAPI。2022-11-29 之后开通的公有云账套需把 `authMode` 切换为 `"app"`。仅开放 OpenAPI 网关的账套无法使用。
+- **`kd/auth-failed`** —— 检查 `acctId`、`appId`、`appSecretRef` 与集成用户（`userNameRef`），并确认账套已启用 WebAPI。2022-11-29 之后开通的 V8.1 及以后公有云账套需把 `authMode` 切换为 `"app"`。仅开放 OpenAPI 网关的账套无法使用。
 - **`kd/network` / `kd/invalid-config`** —— 确认 `baseUrl` 可达、是合法的 `http:` / `https:` 地址，且不是 localhost、环回或私网地址。
 - **`kd/business-error`** —— 账套拒绝了调用；查看 `message` 中的缺失字段或阻止该操作的单据状态。
 - **查询无结果且不报错** —— 可能缺少查询权限。请针对每个 `FormId` 跑探针查询，并把宿主出口 IP 加入 WebAPI 限流白名单。

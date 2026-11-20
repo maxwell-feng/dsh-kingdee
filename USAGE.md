@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.zh.md)
 
-This guide documents every `kingdee_*` tool registered by `dsh-kingdee` 0.20.0 (DSH baseline 0.2.2-rc.3). Each tool is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
+This guide documents every `kingdee_*` tool registered by `dsh-kingdee` 0.21.0 (DSH baseline 0.2.2-rc.5). Each tool is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 
 ## Conventions
 
@@ -97,7 +97,7 @@ Submit one or more records.
 
 ## kingdee_unsubmit
 
-Un-submit records, reversing a submit. The service name may be version-specific; see `serviceEndpoints` in [CONFIG.md](./CONFIG.md).
+Un-submit records, reversing a submit. The `UnSubmit` operation name may be version-specific; it cannot be overridden through `serviceEndpoints`, so confirm it in the tenant's WebAPI definition.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
@@ -154,7 +154,7 @@ Delete one or more records.
 
 ## kingdee_delete_draft
 
-Delete draft records in the created state (`FDocumentStatus` `Z`, not yet submitted).
+Delete draft records in the temporary state (`FDocumentStatus` `Z`, not yet submitted).
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|

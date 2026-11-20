@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.md) | 中文
 
-本文档说明 `dsh-kingdee` 0.20.0 在 DeepSeek Harness（DSH）0.2.2-rc.3 上的全部配置。配置由 `@deepseek-ai/schemastery` 校验，采用易失（volatile）schema：宿主读取导出的 `Config` schema，渲染该条目的设置表单（以 profile 行 id 为键，通常为 `kingdee`），并为每个字段传入一个活引用。每次操作开始时一次性捕获全部引用，因此保存的修改无需重启即可在下一次操作生效。
+本文档说明 `dsh-kingdee` 0.21.0 在 DeepSeek Harness（DSH）0.2.2-rc.5 上的全部配置。配置由 `@deepseek-ai/schemastery` 校验，采用易变（volatile）schema：宿主读取导出的 `Config` schema，渲染该条目的设置表单（以 profile 行 id 为键，通常为 `kingdee`），并为每个字段传入一个活引用。每次操作开始时一次性捕获全部引用，因此保存的修改无需重启即可在下一次操作生效。
 
 ## 配置字段
 
@@ -16,7 +16,7 @@
 | `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | 凭据引用 | 保存账套用户名的凭据引用；`app` 模式下为集成用户。两种模式均必填。 |
 | `passwordRef` | `string` | `"DSH_KINGDEE_PASSWORD"` | 凭据引用 | 保存账套密码的凭据引用，仅 `user` 模式使用。 |
 | `lcid` | `number` | `2052` | 普通 | 发送给两个登录服务的区域 id。`2052` 即 zh-CN。 |
-| `organization` | `string` | `undefined` | 普通 | 可选的查询默认组织 id 或 FNumber。 |
+| `organization` | `string` | `undefined` | 普通 | 可选的组织 id 或 FNumber。查询工具只发送每次调用传入的 `organization`；此配置字段当前不会生效。 |
 | `timeoutMs` | `number` | `30000` | 普通 | 请求超时（毫秒），范围 0–300000。 |
 | `mock` | `boolean` | `false` | 普通 | 使用本地 mock 传输，不连接真实金蝶服务器。 |
 | `serviceEndpoints` | `object` | `undefined` | 高级 | 可选的 WebAPI 服务名覆盖。 |
@@ -102,7 +102,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 `app` 模式改为设置 `authMode: "app"`、`appId`、`appSecretRef` 与 `userNameRef`（集成用户）。
 
-同样的字段可在 **设置 → 插件 → kingdee** 页面编辑。宿主渲染 schema 表单，插件叠加自带的浏览器卡片（`src/client/settings-card.ts`，构建为 `lib/client.js`），绑定 `plugins.row.config` 与 `plugins.bundle.config`。写入带修订号栅栏：宿主拒绝时会重新加载宿主状态，而不是猜测。
+大多数字段可在 **插件 → kingdee** 页面编辑；`mock` 与 `serviceEndpoints` 仅能在配置文件中设置。宿主渲染 schema 表单，插件叠加自带的浏览器卡片（`src/client/settings-card.ts`，构建为 `lib/client.js`），绑定 `plugins.row.config` 与 `plugins.bundle.config`。写入按修订号校验：宿主拒绝时会重新加载宿主状态，而不是猜测。
 
 ## 金蝶 V9.1
 

@@ -4,7 +4,7 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/README
 
 Kingdee Cloud Starry Sky secondary-development plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH). It gives the agent typed `kingdee_*` tools over the classic Kingdee WebAPI: query, save, submit, audit, un-audit, view, delete, and invoke BOS custom services. A companion skill (`kingdee-bos`) documents the field, enum and status conventions.
 
-- Plugin version: 0.20.0. DSH baseline: 0.2.2-rc.3 (released 2026-11-13).
+- Plugin version: 0.21.0. DSH baseline: 0.2.2-rc.5 (released 2026-11-18).
 - Target: Kingdee Cloud Starry Sky V9.1 Enterprise Edition (patch PT-163015 → 9.1.0.20250807), backward-compatible with V9.0 / V8.x. Classic WebAPI only; the OpenAPI gateway is not supported.
 - Credentials are environment-variable references resolved through the DSH credential seam, never literal config values.
 - `user` mode uses `AuthService.ValidateUser`. `app` mode uses `AuthService.LoginByAppSecret` and requires `appId`, `appSecretRef` and `userNameRef` (the integration user).
@@ -111,7 +111,7 @@ pnpm test        # 15 tests, Node built-in test runner
 node scripts/check-docs-language.ts
 ```
 
-`pnpm test` passes 15 tests, `pnpm typecheck` is clean, and `pnpm build` is clean against DSH 0.2.2-rc.3. No live profile boot and no live Kingdee tenant verification were performed.
+`pnpm test` passes 15 tests, `pnpm typecheck` is clean, and `pnpm build` is clean against DSH 0.2.2-rc.5. No live profile boot and no live Kingdee tenant verification were performed.
 
 ## Known limitations
 

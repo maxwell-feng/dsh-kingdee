@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.md) | 中文
 
-本文档列出 `dsh-kingdee` 0.20.0（DSH 基线 0.2.2-rc.3）注册的全部 `kingdee_*` 工具。每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
+本文档列出 `dsh-kingdee` 0.21.0（DSH 基线 0.2.2-rc.5）注册的全部 `kingdee_*` 工具。每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
 
 ## 调用约定
 
@@ -97,7 +97,7 @@
 
 ## kingdee_unsubmit
 
-反提交记录，撤销提交。服务名可能随版本而异，见 [CONFIG.zh.md](./CONFIG.zh.md) 的 `serviceEndpoints`。
+反提交记录，撤销提交。`UnSubmit` 操作名可能随版本而异；它无法通过 `serviceEndpoints` 覆盖，请在账套的 WebAPI 定义中确认。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
@@ -154,7 +154,7 @@
 
 ## kingdee_delete_draft
 
-删除创建状态（`FDocumentStatus` 为 `Z`、尚未提交）的草稿记录。
+删除暂存状态（`FDocumentStatus` 为 `Z`、尚未提交）的草稿记录。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
