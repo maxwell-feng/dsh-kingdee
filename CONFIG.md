@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.zh.md)
 
-All configuration for `dsh-kingdee` 0.20.0 on DeepSeek Harness (DSH) 0.2.2-rc.3. The config is a volatile schema checked by `@deepseek-ai/schemastery`: the Host discovers the exported `Config` schema, renders the entry's settings form (keyed by the profile row id, normally `kingdee`), and passes one live reference per field. Each operation captures all references once at its start, so a saved edit reaches the next operation without a restart.
+All configuration for `dsh-kingdee` 0.21.0 on DeepSeek Harness (DSH) 0.2.2-rc.5. The config is a volatile schema checked by `@deepseek-ai/schemastery`: the Host discovers the exported `Config` schema, renders the entry's settings form (keyed by the profile row id, normally `kingdee`), and passes one live reference per field. Each operation captures all references once at its start, so a saved edit reaches the next operation without a restart.
 
 ## Fields
 
@@ -16,7 +16,7 @@ All configuration for `dsh-kingdee` 0.20.0 on DeepSeek Harness (DSH) 0.2.2-rc.3.
 | `userNameRef` | `string` | `"DSH_KINGDEE_USER"` | credential-ref | Credential reference holding the account-set username, or the integration user in `app` mode. Required in both modes. |
 | `passwordRef` | `string` | `"DSH_KINGDEE_PASSWORD"` | credential-ref | Credential reference holding the account-set password. Used by `user` mode only. |
 | `lcid` | `number` | `2052` | normal | Locale id sent to both login services. `2052` is zh-CN. |
-| `organization` | `string` | `undefined` | normal | Optional default organization id or FNumber for queries. |
+| `organization` | `string` | `undefined` | normal | Optional organization id or FNumber. The query tools send only the per-call `organization` argument; this config value is not applied. |
 | `timeoutMs` | `number` | `30000` | normal | Request timeout in milliseconds, range 0–300000. |
 | `mock` | `boolean` | `false` | normal | Use the local mock transport instead of a real Kingdee server. |
 | `serviceEndpoints` | `object` | `undefined` | advanced | Optional overrides for WebAPI service names. |
@@ -102,7 +102,7 @@ Add the row to `cordis.yml` or a `cordis.patch.yml` layer. `user` mode:
 
 In `app` mode, set `authMode: "app"`, `appId`, `appSecretRef` and `userNameRef` (the integration user) instead.
 
-The same fields are editable in **Settings → Plugins → kingdee**. The Host renders the schema form and the plugin adds its browser card (`src/client/settings-card.ts`, built to `lib/client.js`), which binds `plugins.row.config` and `plugins.bundle.config`. Writes are revision-fenced: a Host refusal reloads Host state instead of guessing.
+Most fields are editable on the **Plugins → kingdee** page; `mock` and `serviceEndpoints` are configuration-only. The Host renders the schema form and the plugin adds its browser card (`src/client/settings-card.ts`, built to `lib/client.js`), which binds `plugins.row.config` and `plugins.bundle.config`. Writes are revision-fenced: a Host refusal reloads Host state instead of guessing.
 
 ## Kingdee V9.1
 

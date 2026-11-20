@@ -38,7 +38,7 @@ whenToUse: >-
 
 没有独立的“登录”工具：会话由任意业务工具在首个调用时按需建立并自动复用，`kingdee_logout` 用于显式释放。
 
-> **端点名随版本有差异**：`LogOut`、`ListDataCenter`、`UnSubmit`、`DeleteDraft` 等接口的服务名随星空版本/部署可能不同。所有 stub 路径默认以 `.common.kdsvc` 结尾（V9.1 规范形式）。若某工具报业务错误或网络错误，请在配置 `serviceEndpoints` 中按该账套覆盖对应端点名（见 INSTALL / CONFIG）；该账套的权威端点与参数说明在 **公共设置 → 动态服务定义 → WebAPI**。
+> **端点名随版本有差异**：`LogOut`、`ListDataCenter` 等接口的服务名随星空版本/部署可能不同；`UnSubmit`、`DeleteDraft` 等动态表单操作名目前不可单独覆盖。所有 stub 路径默认以 `.common.kdsvc` 结尾（V9.1 规范形式）。若某工具报业务错误或网络错误，请在 `serviceEndpoints` 配置项中按该账套覆盖已提供的端点名（见 INSTALL / CONFIG）；该账套的权威端点与参数说明在 **公共设置 → 动态服务定义 → WebAPI**。
 
 ## 常用单据/基础资料 FormId（示例，按你的账套配置）
 
@@ -54,7 +54,7 @@ whenToUse: >-
 
 ## 关键字段与枚举约定
 
-- **FDocumentStatus**（单据状态）：`Z`=创建/暂存，`A`=已提交，`C`=已审核，`D`=已作废，`E`=重新审核。
+- **FDocumentStatus**（单据状态）：`Z`=暂存，`A`=创建（已保存），`B`=审核中（已提交），`C`=已审核，`D`=重新审核。部分单据另有 `E`=作废，或以单独的作废状态字段表示。
 - **单据编号**：`FBillNo`；**内码**：`FID`。
 - **物料**：`FMATERIALID`（内码引用）、`FMaterialNumber`（编码）；**客户/供应商**：`FCUSTID`/`FSUPPLIERID`。
 - **组织**：`FUSEORGID`（使用组织），业务对象常按组织/单据类型隔离。
@@ -65,20 +65,20 @@ whenToUse: >-
 
 ## 单据状态机
 
-`创建(暂存)` → `提交` → `审核` → `反审核` → `反提交` → `删除草稿/作废`。典型约束：
+`暂存(Z)` → `保存/创建(A)` → `提交/审核中(B)` → `审核/已审核(C)` → `反审核/重新审核(D)`；反提交后退回创建，草稿可删除，作废仅适用于已审核单据。典型约束：
 
 - **提交前**：必须完成保存并具有合法编号；缺必填项时提交/审核会失败并返回 `Message`。
 - **审核**：只有已提交的单据可审核；审核后多数单据不可直接编辑/删除。
 - **反审核**：通常在单据状态 `C`（已审核）时执行；有下游单据引用时可能被拒。
-- **反提交**：把已提交但未审核的单据退回；对应 `kingdee_unsubmit`。
-- **删草稿**：删除已保存但未提交的暂存/创建单；对应 `kingdee_delete_draft`，注意别与 `kingdee_delete`（删除已提交单据）混淆。
+- **反提交**：把已提交、仍在审核中（`B`）的单据退回创建状态；对应 `kingdee_unsubmit`。
+- **删草稿**：删除已保存但未提交的暂存/创建单；对应 `kingdee_delete_draft`，注意别与 `kingdee_delete`（删除普通单据，通常需先反审核、反提交）混淆。
 - 调用 `kingdee_save` 时若 `interaction: true` 会**跳过**平台表单插件校验——慎用，仅当你明确要绕过校验时。批量可用 `kingdee_batch_save`（多条一次），结构化查询优先用 `kingdee_query_business_data`。
 
 ## 查询与分页（V9.1 规范）
 
 - **稳定游标三件套**：`orderString` + `limit` + `startRow`。**分页必须给 `orderString` 一个全序字段**（如 `FModifyDate ASC` 或 `FBillNo ASC`）；不排序时分页会跳行/重行，这是工程硬要求而非接口硬要求。
 - **判定末页**：返回行数 **< `limit`** 即到末页；不要依赖总行数。
-- **单页行数**：默认取 `limit` 时请自取上限（社区一致经验值约 2000 行/页，官方未公布硬上限）；**不要**用 `topCount` 做分页控制，也不要指望超大 `limit` 一次取全量。
+- **单页行数**：未指定 `limit` 时请自行设定安全上限（社区经验值约 2000 行/页，官方未公布硬上限）；**不要**用 `topCount` 做分页控制，也不要指望超大 `limit` 一次取全量。
 - **增量同步**：用 `filter` 按修改时间做增量（如 `FModifyDate >= '...'`），比纯大偏移分页更稳。字符串字面量按金蝶约定处理转义。
 - **FieldKeys 必须真实存在**：写了不存在的字段标识会导致**整次调用失败**，而不是该字段为空——先 `kingdee_query` 小样本核对字段。
 - **权限**：V9.1 收紧了 WebAPI 外部用户访问权限管控，缺权限时可能返回**空结果而非报错**。若查询意外为空，先确认集成用户对该 `FormId` 有查询权限，不要直接判定“没有数据”。
@@ -98,7 +98,7 @@ whenToUse: >-
 4. 用 `kingdee_invoke` 调用你二开创建的 BOS 自定义服务完成平台插件层逻辑（如校验、回写、触发流程）。`serviceName` 传**该账套真实的 stub 路径**，格式为 `{命名空间}.{类名}.{方法},{组件名}`（例：`GetCust.GetCust.ExecuteService,GetCust`）——它**替换**URL 中的 `DynamicFormService` 段，`.common.kdsvc` 由插件自动补全。
 5. 用 `kingdee_query` 回查结果核对。
 
-> 自定义 BOS 服务需在金蝶侧继承 `AbstractWebApiBusinessService`、构造函数取 `KDServiceContext`，并把 DLL 部署到 `WebSite\bin` 后重启 IIS；服务收到的业务参数即 `payload` 对象。
+> 自定义 BOS 服务需在金蝶侧继承 `AbstractWebApiBusinessService`、构造函数接收 `KDServiceContext`，并把 DLL 部署到 `WebSite\bin` 后重启 IIS；服务收到的业务参数即 `payload` 对象。
 
 ## 平台插件层边界（重要）
 

@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.zh.md)
 
-This guide installs **dsh-kingdee** 0.20.0 (DSH baseline 0.2.2-rc.3) in a DeepSeek Harness profile.
+This guide installs **dsh-kingdee** 0.21.0 (DSH baseline 0.2.2-rc.5) in a DeepSeek Harness profile.
 
 ## Prerequisites
 
@@ -36,7 +36,7 @@ Use **Plugins → kingdee** in DSH, or a `config:` block in `cordis.yml` / `cord
 | `mock` | Use the local mock transport; default `false` |
 | `serviceEndpoints` | Optional WebAPI service-name overrides; see [CONFIG.md](./CONFIG.md) |
 
-`authMode: "app"` is required on public-cloud tenants opened after 2022-11-29, where Kingdee refuses account/password login. It needs `appId` + `appSecretRef` + `userNameRef` (the integration user).
+`authMode: "app"` is required on V8.1 or later public-cloud tenants opened after 2022-11-29, where Kingdee refuses account/password login. It needs `appId` + `appSecretRef` + `userNameRef` (the integration user).
 
 ## 3. Provide the secrets
 
@@ -93,7 +93,7 @@ config:
 
 ## Troubleshooting
 
-- **`kd/auth-failed`** — check `acctId`, `appId`, `appSecretRef` and the integration user (`userNameRef`), and confirm that the WebAPI is enabled. On a public-cloud tenant opened after 2022-11-29, switch `authMode` to `"app"`. A tenant that only exposes the OpenAPI gateway cannot be used.
+- **`kd/auth-failed`** — check `acctId`, `appId`, `appSecretRef` and the integration user (`userNameRef`), and confirm that the WebAPI is enabled. On a V8.1 or later public-cloud tenant opened after 2022-11-29, switch `authMode` to `"app"`. A tenant that only exposes the OpenAPI gateway cannot be used.
 - **`kd/network` / `kd/invalid-config`** — confirm that `baseUrl` is reachable, is a valid `http:` / `https:` URL, and is not a localhost, loopback or private address.
 - **`kd/business-error`** — the tenant rejected the call; read `message` for the missing field or the status that blocks the action.
 - **A query returns no rows instead of an error** — a missing query permission can surface as an empty result. Validate a probe query per `FormId` and put the host's egress IP on the WebAPI rate-limit whitelist.

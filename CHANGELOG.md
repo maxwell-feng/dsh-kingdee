@@ -4,6 +4,27 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGE
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.21.0] - 2026-11-20
+
+**DeepSeek Harness 0.2.2-rc.5 alignment** — dependency and documentation release, with no API, configuration or behavior change.
+
+### Changed
+
+- Moved every `@deepseek-ai/dsh-*` devDependency from `0.2.2-rc.3` to `0.2.2-rc.5`; regenerated the lockfile and refreshed the workspace supply-chain exemption.
+- `engines.dsh` stays `>=0.1.7-alpha.2 <0.3.0`, so 0.20.0 remains admitted on the `0.2.x` line; this upgrade is optional.
+- DSH 0.2.2-rc.4 and 0.2.2-rc.5 have no plugin-facing breaking changes for this package. The 0.2.2-rc.5 web-search default change does not touch the Kingdee tools.
+
+### Documentation
+
+- Updated every DSH baseline reference to `0.2.2-rc.5` (released 2026-11-18) and the plugin version to 0.21.0.
+- Proofread both languages and corrected unclear wording and ordering, the `FDocumentStatus` mapping, the `organization` config note, the settings-page field coverage, and the `UnSubmit` override note.
+- Rewrote `docs/RELEASE.md` / `docs/RELEASE.zh.md` for 0.21.0.
+
+### Verification
+
+- `pnpm typecheck`, `pnpm build` and `pnpm test` (15 tests) pass against DeepSeek Harness 0.2.2-rc.5.
+- No live profile boot and no live Kingdee tenant verification were performed.
+
 ## [0.20.0] - 2026-11-13
 
 **DeepSeek Harness 0.2.2-rc.3 alignment** — dependency-only release, with no API, configuration or behavior change. DSH 0.2.2-rc.3 has no plugin-facing breaking changes.
@@ -20,7 +41,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Verification
 
 - `pnpm typecheck`, `pnpm build` and `pnpm test` (15 tests) pass against DeepSeek Harness 0.2.2-rc.3.
-- No live profile boot and no live Kingdee tenant verification was performed.
+- No live profile boot and no live Kingdee tenant verification were performed.
 
 ## [0.19.0] - 2026-11-12
 
@@ -558,6 +579,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.21.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.21.0
 [0.20.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.20.0
 [0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0
 [0.18.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.18.0
