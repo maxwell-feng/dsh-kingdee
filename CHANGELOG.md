@@ -2,7 +2,38 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CHANGELOG.zh.md)
 
-All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/).
+All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
+
+## [0.22.0] - 2026-11-24
+
+**DeepSeek Harness 0.2.3-alpha.2 alignment** — dependency, Node.js-requirement and documentation release. No plugin API or configuration-field change; normal tenant behavior is unchanged, while configuration validation now raises typed `kd/invalid-config` errors. Tenant compatibility is unchanged: Kingdee Cloud Starry Sky V9.1 Enterprise Edition, backward-compatible with V9.0 / V8.x.
+
+### Changed
+
+- Moved every `@deepseek-ai/dsh-*` devDependency from `0.2.2-rc.5` to `0.2.3-alpha.2`, including the host-side tools/credentials packages and the settings, renderer, slots and plugin-manager packages used by both halves.
+- Moved `@deepseek-ai/cordis` to `4.2.0-alpha.1` and `@deepseek-ai/schemastery` to `3.20.0-alpha.1`; the peer ranges add the 0.2.3 cordis/schemastery line while keeping the older ranges; `engines.dsh` still admits earlier 0.2.x hosts.
+- Raised `engines.node` to `^24.22.3 || >=26.13.1` to match DSH 0.2.3, and pinned the CI, release and publish jobs to Node.js 24.22.3.
+- `engines.dsh` stays `>=0.1.7-alpha.2 <0.3.0`; regenerated the lockfile and refreshed the workspace supply-chain exemption for the `0.2.3-alpha.2` package set.
+
+### Fixed
+
+- `validateConfig` now throws `kd/invalid-config` for missing connection fields instead of a plain `Error`, keeping tool-facing failures on the documented error contract.
+- Rewrote the SSRF description around the actual literal-host check and documented that DNS is not resolved.
+
+### Documentation
+
+- Updated every current-version and DSH-baseline reference to `0.22.0` / `0.2.3-alpha.2`, including README, INSTALL, CONFIG, USAGE, UPDATE and the release notes.
+- The Chinese and English tool tables follow the same order as the per-tool chapters in USAGE.
+- Changed the Plugin Manager title to the official Kingdee product name and stated the environment-variable credential reference in both locale descriptions.
+- Replaced the automatic skill-loading claim with manual skill-catalog instructions; rewrote the uninstall guide; removed the unsupported settings-UI credential claim; split the invalid unaudit→unsubmit workflow chain; corrected Node.js, PowerShell, SSRF, `acctId`/`acctID`, product-name and UI-path wording.
+
+### Verification
+
+- `pnpm typecheck` clean.
+- `pnpm build` clean, including the browser client bundle.
+- `pnpm test`: 15 tests passing.
+- `node scripts/check-docs-language.ts` clean.
+- No live profile boot and no live Kingdee tenant verification were performed.
 
 ## [0.21.0] - 2026-11-20
 
@@ -579,6 +610,7 @@ Initial release.
 - The platform-plugin layer (server-side C# form/list plugins, UI layout) is **not** reachable through the WebAPI and is documented as an explicit boundary in the `kingdee-bos` skill.
 - The DSH host/plugin half is compiled inside a DSH profile (its `@deepseek-ai/*` peers resolve there); only `kd-core` is built and tested standalone.
 
+[0.22.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.22.0
 [0.21.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.21.0
 [0.20.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.20.0
 [0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0

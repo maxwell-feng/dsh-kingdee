@@ -2,14 +2,15 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.zh.md)
 
-This guide documents every `kingdee_*` tool registered by `dsh-kingdee` 0.21.0 (DSH baseline 0.2.2-rc.5). Each tool is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
+This guide documents every `kingdee_*` tool registered by `dsh-kingdee` 0.22.0 (DSH baseline 0.2.3-alpha.2). Each tool is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 
 ## Conventions
 
 - Every tool returns a normalized canonical value rendered as compact JSON text (output schema `type: 'json'`).
-- A Kingdee `IsSuccess=false` response becomes a typed error: `kd/business-error`, `kd/auth-failed`, `kd/invalid-config`, `kd/network`, `kd/timeout` or `kd/unknown`.
+- A Kingdee `IsSuccess=false` response becomes `kd/business-error` or `kd/auth-failed`; client-side failures use `kd/invalid-config`, `kd/network`, `kd/timeout` or `kd/unknown`.
 - Credentials are resolved per operation, so a rotation reaches the next call without a restart.
-- Login is implicit. The first operation logs in, and the session is attached to every business call as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`). No `KDAuthentication` header is used.
+- Login is implicit for business operations. The first such operation logs in, and the session is attached to every business call as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`). No `KDAuthentication` header is used.
+- `kingdee_list_datacenters` is the exception: it calls the data-center service directly and works without an existing session.
 - The login stubs return `{"LoginResultType": 1}`, not the `Result` / `IsSuccess` business envelope. A non-`1` value surfaces as `kd/auth-failed`.
 - `formId` is the Kingdee form id, e.g. `SAL_SaleOrder`.
 - Workflow tools accept `ids` or `numbers` (bill numbers such as `SO-20260901`). `kingdee_view` accepts `id` or `number`. From product version `9.1.0.20250807` on, `Delete` also returns a trustworthy `Number` in its success entities.
@@ -190,9 +191,16 @@ List the data centers / tenants reachable at the configured WebAPI base URL. Tak
 
 ## Typical flow
 
+Already-audited bills (`C`):
+
 ```text
-kingdee_save → kingdee_submit → kingdee_audit
-kingdee_unaudit → kingdee_unsubmit → kingdee_save → kingdee_submit
+kingdee_unaudit → kingdee_save → kingdee_submit → kingdee_audit
+```
+
+Bills still submitted / auditing (`B`):
+
+```text
+kingdee_unsubmit → kingdee_save → kingdee_submit
 ```
 
 To try the flow without a tenant, set `mock: true` in the plugin config. See [INSTALL.md](./INSTALL.md) for setup and [CONFIG.md](./CONFIG.md) for all configuration keys.

@@ -1,6 +1,6 @@
 ---
 name: Setup or configuration problem
-about: Install, credential, network or SSRF allow-list trouble — the plugin never gets as far as a working call.
+about: Install, credential, network or SSRF protection trouble — the plugin never gets as far as a working call.
 title: "[Setup] "
 labels: ["setup", "question"]
 assignees: ""
@@ -47,7 +47,7 @@ assignees: ""
 
 ## What you already checked
 - [ ] Credentials are stored under the exact key the config references
-- [ ] The tenant host is on the SSRF allow-list (see CONFIG.md)
+- [ ] The tenant host is not blocked by the literal-host filter (not localhost, a loopback, or a private literal address; DNS is not resolved; see CONFIG.md)
 - [ ] `mock` mode works, so the plugin itself loads
 - [ ] DNS and any proxy in front of DSH can reach the tenant host
 

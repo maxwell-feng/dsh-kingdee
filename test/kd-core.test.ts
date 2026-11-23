@@ -58,7 +58,7 @@ test('login payloads carry the V9.1 named keys and the lcid', () => {
 })
 
 test('validateConfig enforces per-mode requirements and SSRF safety', () => {
-  assert.throws(() => validateConfig({ baseUrl: '', acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }), /baseUrl/)
+  assert.throws(() => validateConfig({ baseUrl: '', acctId: 'A1', authMode: 'user', userName: 'u', password: 'p' }), (err: any) => err.code === 'kd/invalid-config' && /baseUrl/.test(err.message))
   // app mode needs the integration user as well as the application credentials
   assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', appId: 'id', appSecret: 'sec' }), /integration user/)
   assert.throws(() => validateConfig({ baseUrl, acctId: 'A1', authMode: 'app', userName: 'u', appId: 'id' }), /appSecret/)

@@ -2,14 +2,14 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.zh.md)
 
-This guide installs **dsh-kingdee** 0.21.0 (DSH baseline 0.2.2-rc.5) in a DeepSeek Harness profile.
+This guide installs **dsh-kingdee** 0.22.0 (DSH baseline 0.2.3-alpha.2) in a DeepSeek Harness profile.
 
 ## Prerequisites
 
 - DeepSeek Harness with the web GUI, plus the `tools`, `credentials` and `settings` peers.
-- Node.js ≥ 22 for the core library and tests. DSH 0.2.2 hosts themselves require Node.js 24.9 or newer.
+- Node.js `^24.22.3 || >=26.13.1`. DSH 0.2.3 itself requires Node.js 24.22.3 or newer in the 24.x line, or Node.js 26.13.1 or newer.
 - Kingdee Cloud Starry Sky V9.1 Enterprise Edition (backward-compatible with V9.0 / V8.x) with the classic WebAPI enabled and a valid account. A tenant reachable only through the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) is not supported.
-- `baseUrl` must use `http:` or `https:`. Requests to localhost, loopback, RFC1918, link-local, CGNAT, IPv6 ULA, and multicast/reserved addresses are blocked. Use a public domain such as `https://erp.example.com/K3Cloud`.
+- `baseUrl` must use `http:` or `https:`. The literal host is checked against localhost, loopback, RFC1918, link-local, CGNAT, IPv6 ULA, and multicast/reserved ranges; DNS is not resolved. Use a trusted public domain such as `https://erp.example.com/K3Cloud` and keep egress controls in front of the host.
 
 ## 1. Add the bundle
 
@@ -36,7 +36,7 @@ Use **Plugins → kingdee** in DSH, or a `config:` block in `cordis.yml` / `cord
 | `mock` | Use the local mock transport; default `false` |
 | `serviceEndpoints` | Optional WebAPI service-name overrides; see [CONFIG.md](./CONFIG.md) |
 
-`authMode: "app"` is required on V8.1 or later public-cloud tenants opened after 2022-11-29, where Kingdee refuses account/password login. It needs `appId` + `appSecretRef` + `userNameRef` (the integration user).
+`authMode: "app"` is required on public-cloud tenants that run V8.1 or later and were opened after 2022-11-29, where Kingdee refuses account/password login. It needs `appId` + `appSecretRef` + `userNameRef` (the integration user).
 
 ## 3. Provide the secrets
 
@@ -66,7 +66,7 @@ $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
 
-For Command Prompt, use `set NAME=value` in the current session and `setx NAME value` to persist. The DSH credential store works on every OS: set each value once in the settings UI (write-only) or edit `$DSH_HOME/.credentials.yaml`.
+For Command Prompt, use `set NAME=value` in the current session and `setx NAME value` to persist. The DSH credential store works on every OS: add the value under `refs:` in `$DSH_HOME/.credentials.yaml`; the config carries only the reference name.
 
 Default reference names are `DSH_KINGDEE_USER`, `DSH_KINGDEE_PASSWORD` and `DSH_KINGDEE_APP_SECRET`; change them with `userNameRef`, `passwordRef` and `appSecretRef`. `DSH_KINGDEE_USER` is the account-set username in `user` mode and the integration user in `app` mode. `DSH_KINGDEE_PASSWORD` is used only by `user` mode.
 
@@ -80,7 +80,7 @@ Ask the agent to run a query against a known form id:
 Query Kingdee Cloud sales orders (SAL_SaleOrder) with FBillNo starting with SO-202607.
 ```
 
-The agent loads the `kingdee-bos` skill and calls `kingdee_query`. A successful call returns normalized rows; a failure returns a typed `kd/*` error. The bundle patch also shows up as a `# == dsh-kingdee` layer in `dsh --profile <name> --dump-config`.
+If the companion `kingdee-bos` skill is installed, the agent can load it and call `kingdee_query`. A successful call returns normalized rows; a failure returns a typed `kd/*` error. The plugin ships the skill under `skills/kingdee-bos/SKILL.md` but does not register it automatically; copy the `skills/kingdee-bos` directory to `$DSH_HOME/skills/kingdee-bos` to add it to the session catalog. The bundle patch also shows up as a `# == dsh-kingdee` layer in `dsh --profile <name> --dump-config`.
 
 ## Optional: offline mock
 
@@ -93,7 +93,7 @@ config:
 
 ## Troubleshooting
 
-- **`kd/auth-failed`** — check `acctId`, `appId`, `appSecretRef` and the integration user (`userNameRef`), and confirm that the WebAPI is enabled. On a V8.1 or later public-cloud tenant opened after 2022-11-29, switch `authMode` to `"app"`. A tenant that only exposes the OpenAPI gateway cannot be used.
+- **`kd/auth-failed`** — check `acctId`, `appId`, `appSecretRef` and the integration user (`userNameRef`), and confirm that the WebAPI is enabled. On a public-cloud tenant that runs V8.1 or later and was opened after 2022-11-29, switch `authMode` to `"app"`. A tenant that only exposes the OpenAPI gateway cannot be used.
 - **`kd/network` / `kd/invalid-config`** — confirm that `baseUrl` is reachable, is a valid `http:` / `https:` URL, and is not a localhost, loopback or private address.
 - **`kd/business-error`** — the tenant rejected the call; read `message` for the missing field or the status that blocks the action.
 - **A query returns no rows instead of an error** — a missing query permission can surface as an empty result. Validate a probe query per `FormId` and put the host's egress IP on the WebAPI rate-limit whitelist.
