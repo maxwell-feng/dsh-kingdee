@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.md) | 中文
 
-本文档说明 `dsh-kingdee` 0.21.0 在 DeepSeek Harness（DSH）0.2.2-rc.5 上的全部配置。配置由 `@deepseek-ai/schemastery` 校验，采用易变（volatile）schema：宿主读取导出的 `Config` schema，渲染该条目的设置表单（以 profile 行 id 为键，通常为 `kingdee`），并为每个字段传入一个活引用。每次操作开始时一次性捕获全部引用，因此保存的修改无需重启即可在下一次操作生效。
+本文档说明 `dsh-kingdee` 0.22.0 在 DeepSeek Harness（DSH）0.2.3-alpha.2 上的全部配置。配置由 `@deepseek-ai/schemastery` 校验，采用易变（volatile）schema：宿主读取导出的 `Config` schema，渲染该条目的设置表单（以 profile 行 id 为键，通常为 `kingdee`），并为每个字段传入一个活引用。每次操作开始时一次性捕获全部引用，因此保存的修改无需重启即可在下一次操作生效。
 
 ## 配置字段
 
@@ -34,9 +34,9 @@
 
 服务名随金蝶版本和部署方式而异。若工具报告未知服务，请覆盖对应名称，并在「公共设置 → 动态服务定义 → WebAPI」中核实真实端点。
 
-## 网络与 SSRF 基线
+## 网络与主机过滤
 
-请求发出前会经过校验：
+请求发出前会经过校验。检查只针对 URL 中的字面量主机名/IP，不解析 DNS，因此解析到私网地址的公网域名不会被拦截。
 
 1. 仅允许 `http:` 与 `https:`。
 2. 以下目标会被拒绝：
@@ -47,7 +47,7 @@
    - 运营商级 NAT（`100.64.0.0/10`）
    - IPv6 唯一本地地址（`fc00::/7`）
    - 组播、广播与保留网段
-3. 请使用企业域名或授权的网关，例如 `https://erp.example.com/K3Cloud`。
+3. 请使用可信的企业域名或授权网关，例如 `https://erp.example.com/K3Cloud`，并在主机前保留出口网络管控。
 
 ## 凭据
 
@@ -59,7 +59,9 @@
 # Linux / macOS
 export DSH_KINGDEE_USER="your_username"
 export DSH_KINGDEE_PASSWORD="your_password"
+```
 
+```powershell
 # Windows PowerShell（当前会话）
 $env:DSH_KINGDEE_USER = "your_username"
 $env:DSH_KINGDEE_PASSWORD = "your_password"
@@ -71,8 +73,10 @@ $env:DSH_KINGDEE_PASSWORD = "your_password"
 # Linux / macOS
 export DSH_KINGDEE_USER="your_integration_user"
 export DSH_KINGDEE_APP_SECRET="your_app_secret"
+```
 
-# Windows PowerShell
+```powershell
+# Windows PowerShell（当前会话）
 $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
@@ -100,7 +104,7 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
         mock: false
 ```
 
-`app` 模式改为设置 `authMode: "app"`、`appId`、`appSecretRef` 与 `userNameRef`（集成用户）。
+`app` 模式在保留连接字段的基础上，改设 `authMode: "app"`、`appId`、`appSecretRef` 与 `userNameRef`（集成用户）。
 
 大多数字段可在 **插件 → kingdee** 页面编辑；`mock` 与 `serviceEndpoints` 仅能在配置文件中设置。宿主渲染 schema 表单，插件叠加自带的浏览器卡片（`src/client/settings-card.ts`，构建为 `lib/client.js`），绑定 `plugins.row.config` 与 `plugins.bundle.config`。写入按修订号校验：宿主拒绝时会重新加载宿主状态，而不是猜测。
 
@@ -115,4 +119,4 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 - 权限更严格：缺少查询权限可能表现为空结果。请针对每个 `FormId` 跑探针查询。
 - 请把宿主出口 IP 加入 WebAPI 限流白名单。
 
-登录请求键（`acctID`、`username`、`appid`、`appsecret`、`lcid`）、`Limit` 行数上限（约 2000）以及 `listDataCenterService` 默认服务名均为社区经验值，并非金蝶官方发布。请在具体账套的「公共设置 → 动态服务定义 → WebAPI」中核对。
+登录请求键（`acctID`、`username`、`appid`、`appsecret`、`lcid`）、`Limit` 行数上限（约 2000）以及 `listDataCenterService` 默认服务名均为社区经验值，并非金蝶官方公布。请在具体账套的「公共设置 → 动态服务定义 → WebAPI」中核对。

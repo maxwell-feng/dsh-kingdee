@@ -4,11 +4,11 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/README
 
 Kingdee Cloud Starry Sky secondary-development plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH). It gives the agent typed `kingdee_*` tools over the classic Kingdee WebAPI: query, save, submit, audit, un-audit, view, delete, and invoke BOS custom services. A companion skill (`kingdee-bos`) documents the field, enum and status conventions.
 
-- Plugin version: 0.21.0. DSH baseline: 0.2.2-rc.5 (released 2026-11-18).
+- Plugin version: 0.22.0. DSH baseline: 0.2.3-alpha.2 (released 2026-11-22).
 - Target: Kingdee Cloud Starry Sky V9.1 Enterprise Edition (patch PT-163015 → 9.1.0.20250807), backward-compatible with V9.0 / V8.x. Classic WebAPI only; the OpenAPI gateway is not supported.
 - Credentials are environment-variable references resolved through the DSH credential seam, never literal config values.
 - `user` mode uses `AuthService.ValidateUser`. `app` mode uses `AuthService.LoginByAppSecret` and requires `appId`, `appSecretRef` and `userNameRef` (the integration user).
-- SSRF protection allows `http:` / `https:` only and blocks localhost, loopback, RFC1918, link-local, CGNAT, IPv6 ULA, and multicast/reserved addresses.
+- The URL host filter allows `http:` / `https:` only and blocks a literal localhost, loopback, RFC1918, link-local, CGNAT, IPv6 ULA, or multicast/reserved host. It does not resolve DNS, so a public hostname that resolves to a private address is not blocked; use a trusted enterprise hostname and egress controls.
 
 ## Install
 
@@ -19,7 +19,7 @@ dsh plugin --profile web add dsh-kingdee
 
 `--profile <name>` must come before `add`, `remove` or `update`. Putting it after the subcommand forwards it to pnpm and fails.
 
-The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.2 hosts require Node.js 24.9 or newer; this package's own `engines.node` is `>=22`.
+The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.3 requires Node.js 24.22.3 or newer in the 24.x line, or Node.js 26.13.1 or newer; this package declares the same `engines.node` floor.
 
 ## Quick start
 
@@ -48,7 +48,7 @@ The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.2 hosts req
    set DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
 
-   To use the DSH credential store instead, set each value once in the settings UI (values are write-only) or edit `$DSH_HOME/.credentials.yaml`. The config carries only the reference name.
+   To use the DSH credential store instead, add each value under `refs:` in `$DSH_HOME/.credentials.yaml` (for example `DSH_KINGDEE_USER: your_username`). The config carries only the reference name.
 
 3. Ask the agent to query something:
 
@@ -56,7 +56,7 @@ The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.2 hosts req
    Query sales order SO-20260701 on Kingdee Cloud.
    ```
 
-   The agent loads the `kingdee-bos` skill and calls `kingdee_query` with `formId=SAL_SaleOrder`.
+   If the companion `kingdee-bos` skill is installed (see [Companion skill](#companion-skill)), the agent can load it and call `kingdee_query` with `formId=SAL_SaleOrder`.
 
 For a demo without a tenant, set `mock: true` in the plugin config. The settings card does not expose `mock`.
 
@@ -64,6 +64,10 @@ For a demo without a tenant, set `mock: true` in the plugin config. The settings
 config:
   mock: true
 ```
+
+## Companion skill
+
+The package ships `skills/kingdee-bos/SKILL.md`, but the plugin does not register it automatically. To make it discoverable, copy the `skills/kingdee-bos` directory to `$DSH_HOME/skills/kingdee-bos` (or add the package's `skills` directory to `customSkillDirs` in `@deepseek-ai/dsh-skill-filesystem`). Without that step the tools still work; only the field, enum and status guidance is absent from the session catalog.
 
 ## Tools
 
@@ -86,7 +90,7 @@ config:
 
 The table follows the same order as the per-tool reference in [USAGE.md](./USAGE.md).
 
-Every tool returns a normalized canonical value. A Kingdee `IsSuccess=false` message becomes a typed error (`kd/business-error`, `kd/auth-failed`, `kd/invalid-config`, `kd/network`, `kd/timeout`, `kd/unknown`) instead of prose.
+Every tool returns a normalized canonical value. A Kingdee `IsSuccess=false` message becomes `kd/business-error` (or `kd/auth-failed` for a login refusal); client-side failures use `kd/invalid-config`, `kd/network`, `kd/timeout` or `kd/unknown`, instead of prose.
 
 ## Kingdee V9.1
 
@@ -111,18 +115,18 @@ pnpm test        # 15 tests, Node built-in test runner
 node scripts/check-docs-language.ts
 ```
 
-`pnpm test` passes 15 tests, `pnpm typecheck` is clean, and `pnpm build` is clean against DSH 0.2.2-rc.5. No live profile boot and no live Kingdee tenant verification were performed.
+`pnpm test` passes 15 tests, `pnpm typecheck` is clean, and `pnpm build` is clean against DSH 0.2.3-alpha.2. No live profile boot and no live Kingdee tenant verification were performed.
 
 ## Known limitations
 
-- **OpenAPI gateway not implemented.** The plugin speaks the classic `kdsvc` session protocol only. A tenant that only exposes the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) cannot be used: every operation fails at login.
+- **OpenAPI gateway not implemented.** The plugin speaks the classic `kdsvc` session protocol only. A tenant that only exposes the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) cannot be used: every operation that needs a login fails at login (`kingdee_list_datacenters` does not log in, but the OpenAPI-only tenant still does not expose the classic service).
 - **Platform-plugin layer out of reach.** Server-side C# form/list plugins, UI layout and background events belong to the BOS integration development environment and are not accessible through the WebAPI.
 - **No live-tenant verification.** Behaviour is covered by the type checker, the build and the unit tests, not by a running Kingdee tenant.
 
 ## Documentation
 
 - [INSTALL.md](./INSTALL.md) — installation and first connection
-- [CONFIG.md](./CONFIG.md) — configuration fields, auth modes, credentials, SSRF baseline
+- [CONFIG.md](./CONFIG.md) — configuration fields, auth modes, credentials, host filter
 - [USAGE.md](./USAGE.md) — tool reference
 - [UPDATE.md](./UPDATE.md) — upgrading
 - [UNINSTALL.md](./UNINSTALL.md) — removal

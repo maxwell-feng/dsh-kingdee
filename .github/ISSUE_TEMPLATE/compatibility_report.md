@@ -34,7 +34,7 @@ assignees: ""
 ## Result
 > Which tools were called, and what came back. Paste any `kd/*` error code or Kingdee `Message` (redacted).
 
-## Relevant `acctID` / form ids
+## Relevant `acctId` / form ids (the login payload key is `acctID`)
 > If a specific form or base-data entity behaves differently on this version, name it here.
 
 ## Reference

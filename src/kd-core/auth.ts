@@ -24,6 +24,7 @@
  */
 
 import type { KdConfig } from './types.ts'
+import { KdError } from './errors.ts'
 import { assertSafePublicUrl } from './security.ts'
 
 /** Default locale id: `2052` is zh-CN, Kingdee's own default. */
@@ -62,17 +63,17 @@ export function buildAppSecretLoginPayload(config: KdConfig): Record<string, unk
 
 /** Validate the parts a mode needs before an authenticated call. */
 export function validateConfig(config: KdConfig): void {
-  if (!config.baseUrl) throw new Error('KdConfig.baseUrl is required')
+  if (!config.baseUrl) throw new KdError('kd/invalid-config', 'KdConfig.baseUrl is required')
   assertSafePublicUrl(config.baseUrl)
-  if (!config.acctId) throw new Error('KdConfig.acctId is required')
+  if (!config.acctId) throw new KdError('kd/invalid-config', 'KdConfig.acctId is required')
 
   if ((config.authMode ?? 'user') === 'user') {
-    if (!config.userName) throw new Error('KdConfig.userName is required for authMode "user"')
-    if (!config.password) throw new Error('KdConfig.password is required for authMode "user"')
+    if (!config.userName) throw new KdError('kd/invalid-config', 'KdConfig.userName is required for authMode "user"')
+    if (!config.password) throw new KdError('kd/invalid-config', 'KdConfig.password is required for authMode "user"')
   } else {
-    if (!config.userName) throw new Error('KdConfig.userName (the integration user) is required for authMode "app"')
-    if (!config.appId) throw new Error('KdConfig.appId is required for authMode "app"')
-    if (!config.appSecret) throw new Error('KdConfig.appSecret is required for authMode "app"')
+    if (!config.userName) throw new KdError('kd/invalid-config', 'KdConfig.userName (the integration user) is required for authMode "app"')
+    if (!config.appId) throw new KdError('kd/invalid-config', 'KdConfig.appId is required for authMode "app"')
+    if (!config.appSecret) throw new KdError('kd/invalid-config', 'KdConfig.appSecret is required for authMode "app"')
   }
 }
 

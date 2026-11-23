@@ -4,7 +4,37 @@
 
 **dsh-kingdee** 的所有关键版本演进记录均归档于此。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，并严格遵循 [语义化版本规范](https://semver.org/lang/zh-CN/)。
 
----
+
+## [0.22.0] - 2026-11-24
+
+**对齐 DeepSeek Harness 0.2.3-alpha.2** —— 依赖、Node.js 门槛与文档更新。插件 API 与配置字段不变，正常租户行为不变；配置校验现在抛出类型化 `kd/invalid-config` 错误。租户兼容性不变：金蝶云·星空 V9.1 企业版，向下兼容 V9.0 / V8.x。
+
+### 变更
+
+- 全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.2-rc.5` 移至 `0.2.3-alpha.2`，包括宿主侧 tools/credentials 包，以及两侧使用的设置、渲染、slots 与插件管理器包。
+- `@deepseek-ai/cordis` 升至 `4.2.0-alpha.1`，`@deepseek-ai/schemastery` 升至 `3.20.0-alpha.1`；peer 区间新增 0.2.3 的 cordis/schemastery 线并保留旧区间；`engines.dsh` 仍接纳更早的 0.2.x 宿主。
+- `engines.node` 提高为 `^24.22.3 || >=26.13.1`，与 DSH 0.2.3 一致；CI、发行与发布任务固定使用 Node.js 24.22.3。
+- `engines.dsh` 保持 `>=0.1.7-alpha.2 <0.3.0`；重新生成锁文件，并按 `0.2.3-alpha.2` 包集合刷新工作区供应链豁免。
+
+### 修复
+
+- `validateConfig` 在缺少连接字段时改为抛出 `kd/invalid-config`，而不是普通 `Error`，使工具侧失败保持文档约定的错误契约。
+- 按实际的字面量主机检查重写 SSRF 说明，并写明不解析 DNS。
+
+### 文档
+
+- 全部当前版本与 DSH 基线引用更新为 `0.22.0` / `0.2.3-alpha.2`，包括 README、INSTALL、CONFIG、USAGE、UPDATE 与发行说明。
+- 中英文工具表顺序均与 USAGE 的逐工具章节一致。
+- 插件管理器标题改用官方产品名「金蝶云·星空」，两语言说明均写明凭据经环境变量引用解析。
+- 把自动加载技能的表述改为手动加入技能目录的步骤；重写卸载指南；删除不受支持的“设置界面填写凭据”说法；拆开不可执行的反审核→反提交流程链；修正 Node.js、PowerShell、SSRF、`acctId`/`acctID`、产品名与页面路径等表述。
+
+### 验证
+
+- `pnpm typecheck` 无错误。
+- `pnpm build` 构建干净，含浏览器 client bundle。
+- `pnpm test`：15 项测试通过。
+- `node scripts/check-docs-language.ts` 零发现通过。
+- 未做真实 profile 启动验证，也未做真实金蝶账套联调验证。
 
 ## [0.21.0] - 2026-11-20
 
@@ -117,7 +147,6 @@
 - `0.2.1-rc.5` 线（`cordis` 4.0.5 / `schemastery` 3.18.5）：同样三项检查干净，15/15 通过。
 - 未验证项：在真实 0.2.2-rc.1 或 0.2.1-rc.5 profile 中的实际启动；宿主自带的插件兼容性准入校验（需真实 profile）；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.17.0] - 2026-11-02
 
@@ -152,7 +181,6 @@
 - `node scripts/check-docs-language.ts` 与结构/文字排版检查器均为零发现。
 - 未验证项：在真实 rc.5 或 alpha.2 profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.16.0] - 2026-10-28
 
@@ -186,7 +214,6 @@
 - **15** 项单元测试（`npm test`）在 DeepSeek Harness 0.2.2-alpha.2 上全部通过。
 - 未验证项：在真实 `0.2.2-alpha.2` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.15.1] - 2026-10-18
 
@@ -203,7 +230,6 @@
 - `pnpm run typecheck` 零错误、`pnpm run build` 构建干净，**15** 项单元测试全部通过。
 - `node scripts/check-docs-language.ts` 在全部文档对上通过，零发现。
 
----
 
 ## [0.15.0] - 2026-10-18
 
@@ -228,7 +254,6 @@
 - `node scripts/check-docs-language.ts` 检查全部通过，零语言混淆或链接跳转错误。
 - 未验证项：在真实 `0.2.1-rc.2` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.14.0] - 2026-10-16
 
@@ -252,7 +277,6 @@
 - `node scripts/check-docs-language.ts` 检查全部通过，零语言混淆或链接跳转错误。
 - 未验证项：在真实 `0.2.1-alpha.4` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.13.0] - 2026-10-11
 
@@ -275,7 +299,6 @@
 - `pnpm run typecheck` 零错误、`pnpm run build` 构建干净，**15** 项单元测试（`pnpm test`）在 DeepSeek Harness 0.2.1-alpha.2 上全部通过。
 - `node scripts/check-docs-language.ts` 检查全部通过，零语言混淆或链接跳转错误。
 
----
 
 ## [0.12.0] - 2026-09-29
 
@@ -294,7 +317,6 @@
 - 宿主自带的已发布实现 `evaluatePluginCompatibility` / `getDshRuntimeVersion`（来自 `@deepseek-ai/dsh-app-boot@0.2.0-rc.2`）报告运行时为 `0.2.0-rc.2`，在 `0.2.0-rc.2`、`0.2.0-rc.1`、`0.2.0`、`0.1.7-rc.2`、`0.1.7-alpha.2` 上均准入 `dsh-kingdee@0.12.0`；对 `0.1.6-alpha.2` 上的 `0.12.0` 则拒绝。更早的 `dsh-kingdee@0.10.0`（peer 为 `^0.1.7-alpha.2`）在 `0.2.0-rc.2` 上仍被拒绝。
 - 未验证项：在真实 `0.2.0-rc.2` profile 中的实际启动（验证机器上没有 `dsh` CLI）；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.11.1] - 2026-09-28
 
@@ -314,7 +336,6 @@
 - `pnpm run typecheck` 零错误、`pnpm run build` 干净，**15** 项单元测试在 DeepSeek Harness 0.2.0-rc.1 上全部通过；`package.json` 仅版本号变化，peer 声明与已被闸门准入的 0.11.0 相同。
 - `node scripts/check-docs-language.ts` 通过；另对全部双语文档做了两遍机械校对（结构与代码围栏对齐、乱码与控制字符扫描、更新日志由新到旧排序、链接引用覆盖、逐节条目对应）。
 
----
 
 ## [0.11.0] - 2026-09-28
 
@@ -339,7 +360,6 @@
 - 实际打包的 0.11.0 压缩包含构建产物 `lib/`、`cordis.patch.yml`、`skills/kingdee-bos` 技能与中英双语指南，其清单即上述闸门所准入的那一份。
 - 未验证项：在真实 `0.2.0-rc.1` profile 中的实际启动；以及一如既往，未做真实金蝶账套联调。
 
----
 
 ## [0.10.0] - 2026-09-24
 
@@ -364,7 +384,6 @@
 - 声明的 peer 依赖经宿主自带的兼容性校验在 rc.2、rc.1、alpha.2 上均准入，无需豁免。
 - 实际发布的 0.10.0 压缩包可装入真实的 0.1.7-rc.2 profile，并以行 id kingdee 组合出 dsh-kingdee 图层，各项 schema 默认值均已生效。
 
----
 
 ## [0.9.1] - 2026-09-23
 
@@ -386,7 +405,6 @@
 - `pnpm run typecheck` 零错误（现覆盖 `scripts/`）、构建干净（`tsc` + `tsdown`）、**15** 项单元测试在 DeepSeek Harness `0.1.7-rc.1` 上全部通过。
 - `node scripts/check-docs-language.ts` 通过；发现上述缺陷的文档审计已无剩余发现。
 
----
 
 ## [0.9.0] - 2026-09-23
 
@@ -414,7 +432,6 @@
 - `pnpm run typecheck` 零错误、**15** 项单元测试通过（`pnpm test`）、构建干净（`tsc` + `tsdown`），且 `node scripts/check-docs-language.mjs` 全绿。
 - `pnpm install --frozen-lockfile` 通过 pnpm 的供应链策略校验；声明的 DSH peer 依赖经 DeepSeek Harness 自带的 `evaluatePluginCompatibility` 对运行时 `0.1.7-rc.1` 校验通过。
 
----
 
 ## [0.8.1] - 2026-09-18
 
@@ -427,7 +444,6 @@
 
 - `scripts/check-docs-language.mjs` 在本地与 CI 中检查文档、源码文案与配对（CI 在安装依赖前运行）。
 
----
 
 ## [0.8.0] - 2026-09-18
 
@@ -439,7 +455,6 @@
   - **依赖与引擎范围更新**：所有 `@deepseek-ai/dsh-*` peer 依赖更新为 `^0.1.6-alpha.2`，开发依赖锁定至 `0.1.6-alpha.2`，`engines.dsh` 更新为 `^0.1.6-alpha.2`；新增 `@deepseek-ai/dsh-client-ui-plugin-manager` 开发依赖；
   - **全面刷新双语文档**（`README`、`INSTALL`、`USAGE`、`CONFIG`、`UPDATE`、`UNINSTALL`、`CHANGELOG`、`docs/RELEASE`），对齐 `0.1.6-alpha.2` 适配与验证。
 
----
 
 ## [0.7.0] - 2026-09-16
 
@@ -472,7 +487,6 @@
 
 - 从 `kd-core` 子路径 API 移除 `buildAppAuthHeader`（由 `buildAppSecretLoginPayload` 取代）。
 
----
 ## [0.6.1] - 2026-09-13
 
 ### 移除
@@ -483,7 +497,6 @@
   - 移除 `src/kd-core/errors.ts` 中从未被业务或捕获层消费的死错误码 `'kd/not-found'`；
   - 精简 `pnpm-workspace.yaml` 中的历史多版本白名单规则，统一锁定为 `0.1.5-rc.2`。
 
----
 
 ## [0.6.0] - 2026-09-13
 
@@ -504,7 +517,6 @@
   - **网络边界拦截**：全面拦截并拒绝指向 `localhost`、环回地址（`127.0.0.0/8`、`::1`）、RFC1918 私网网段（`10.0.0.0/8`、`172.16.0.0/12`、`192.168.0.0/16`、`169.254.0.0/16` 链路本地）、运营商 NAT（`100.64.0.0/10`）、IPv6 链路本地（`fe80::/10`）以及唯一本地地址（`fc00::/7`）的请求；
   - 在配置验证层（`validateConfig`）与网络请求实际发出层（`HttpTransport.request`）双重设防，杜绝内网横向扫描与伪造请求风险。
 
----
 ## [0.5.0] - 2026-09-11
 
 ### 变更
@@ -516,7 +528,6 @@
   - 全面刷新双语文档，标注针对 `0.1.5-rc.2` 的验证。
 - **许可证改回 MIT。** `0.2.0` 引入的专有许可被替换为 MIT 许可证，使本包与 harness 核心及其姊妹插件保持一致；自此 `LICENSE` 与 `package.json.license` 均为 MIT。本条是该回退的首次更新日志记录。下方 `0.2.0` 条目仍描述该版本实际发布的状态，而 `README` 的许可证章节误留专有措辞，直至 `0.14.0` 才修正。
 
----
 ## [0.4.0] - 2026-09-10
 
 ### 变更
@@ -528,7 +539,6 @@
 
 - 新增独立双语使用说明文档（`USAGE.md` / `USAGE.zh.md`），详述 14 个 `kingdee_*` 工具参数与示例。
 
----
 ## [0.3.0] - 2026-09-09
 
 ### 变更
@@ -540,7 +550,6 @@
 
 - **独立双语配置说明文档**（`CONFIG.md` / `CONFIG.zh.md`）。
 
----
 ## [0.2.4] - 2026-09-03
 
 ### 变更
@@ -553,20 +562,17 @@
 - **设置卡片的浏览器半端现已真正构建并对外提供。** 新增 `dsh.client` 清单（`platform: web`，注入语言包与客户端设置包）、`./client` 导出，以及一份自包含的 `tsdown.config.ts`，用以复现客户端模块系统的懒加载 CJS 工厂产物（`window.__ModuleLoader__.load(...)`、`lib/client.js`）。卡片绑定 `ctx.settingsScope`（命名空间 `kingdee`），注册到 `settings.plugin.item` 槽位，注册自己的 `settings.kingdee` 语言字典，并自行渲染卡片外观（不做跨插件取值导入 —— bundle 纯净性闸门）。
 - **修正 `installSection` 钩子用法**：按设置缝契约，`setSource` 接收一个返回权威配置的 thunk（`() => Config`）；插件现经由该 thunk 重新读取，因此设置修改（或提供方脱离）都能对下一次工具调用生效。测试 7/7 通过；构建产出 `lib/`（Node 半端经 tsc，浏览器半端经 tsdown）。
 
----
 ## [0.2.3] - 2026-09-02
 
 ### 变更
 - **已在 deepseek-harness `0.1.2-alpha.5` 最新 `master` 上验证。** 自 `0.1.2-alpha.4` 以来无影响本插件的 DSH 缝变更 —— `defineTool` / `ctx.credentials` / `ctx.settings` 契约及 WebAPI 传输保持稳定，无需代码改动。版本升至 `0.2.3`，并刷新双语文档（发行版 / 更新说明 / 安装 / 卸载 / 使用 / 配置）。
 
----
 
 ## [0.2.2] - 2026-09-02
 
 ### 变更
 - **已在 deepseek-harness `0.1.2-alpha.4` 最新 `master` 上验证。** 自 `0.1.2-alpha.3` 以来无影响本插件的 DSH 缝变更 —— `defineTool` / `ctx.credentials` / `ctx.settings` 契约及 WebAPI 传输保持稳定，无需代码改动。版本升至 `0.2.2`，并刷新双语文档（发行版 / 更新说明 / 安装 / 卸载 / 使用 / 配置）。
 
----
 
 ## [0.2.1] - 2026-09-01
 
@@ -574,7 +580,6 @@
 
 - 重写 README 的功能要点（英文 + 中文），使 `kingdee_*` 工具列表在 npm 上渲染正确（避免过长的逗号分隔行内代码段）。完整列表见工具表。
 
----
 
 ## [0.2.0] - 2026-09-01
 
@@ -595,7 +600,6 @@
 - 在 `INSTALL.md` / `INSTALL.zh.md` 与 `README.md` / `README.zh.md` 中补充跨平台密钥配置说明 —— Linux/macOS 的 `export`、Windows PowerShell 的 `$env:`、Windows CMD 的 `set` / `setx`，以及 DSH 凭据存储。
 - 许可证由 MIT 变更为**专有许可（保留所有权利）**，仓库仅供阅读/评估：未经所有者事先书面许可，禁止在整体或部分上复制、复刻/fork、再托管、再发布、修改或制作衍生作品。**该授权已在 `0.5.0` 中撤销，并恢复为 MIT 许可证。**
 
----
 
 
 ## [0.1.0] - 2026-09-01
@@ -626,6 +630,7 @@
 - 平台插件层（服务端 C# 表单/列表插件、UI 布局）**无法**经 WebAPI 触达，已在 `kingdee-bos` 技能中明确记录该边界。
 - DSH host/插件半区需在 DSH profile 内编译（其 `@deepseek-ai/*` peer 在其中解析）；仅 `kd-core` 可独立构建与测试。
 
+[0.22.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.22.0
 [0.21.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.21.0
 [0.20.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.20.0
 [0.19.0]: https://github.com/maxwell-feng/dsh-kingdee/releases/tag/v0.19.0

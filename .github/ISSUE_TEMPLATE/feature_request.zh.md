@@ -1,5 +1,5 @@
 ---
-name: 功能添加（中文）
+name: 功能建议（中文）
 about: 建议新增或增强一个功能。
 title: "[功能] "
 labels: ["enhancement"]
@@ -19,7 +19,7 @@ assignees: ""
 - [ ] 示例：新增 `kingdee_xxx` 工具，可在 Mock 和真实账套下调用
 - [ ] …
 
-## 系统边界（金蝶层次）
+## 范围（金蝶层次）
 - [ ] 数据/服务层（WebAPI，可做）
 - [ ] 平台插件层（C# BOS 插件，超出 WebAPI）
 

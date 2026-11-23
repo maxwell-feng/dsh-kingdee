@@ -50,7 +50,7 @@ export interface Config {
   lcid: Volatile<number | undefined>
   /** Optional default organization (org) id / FNumber applied to queries. */
   organization: Volatile<string | undefined>
-  /** Optional per-request timeout multiplier. */
+  /** Request timeout in milliseconds. */
   timeoutMs: Volatile<number | undefined>
   /** When true, the plugin uses a local mock transport (no real Kingdee connection). */
   mock: Volatile<boolean | undefined>

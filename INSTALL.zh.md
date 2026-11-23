@@ -2,14 +2,14 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/INSTALL.md) | 中文
 
-本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装 **dsh-kingdee** 0.21.0（DSH 基线 0.2.2-rc.5）。
+本指南介绍如何在 DeepSeek Harness（DSH）profile 中安装 **dsh-kingdee** 0.22.0（DSH 基线 0.2.3-alpha.2）。
 
 ## 前置条件
 
 - 已安装带 Web GUI 的 DeepSeek Harness，并具备 `tools`、`credentials`、`settings` 这三个 peer 包。
-- 核心库与测试需要 Node.js ≥ 22。DSH 0.2.2 宿主自身要求 Node.js 24.9 或更新版本。
+- Node.js `^24.22.3 || >=26.13.1`。DSH 0.2.3 自身要求 Node.js 24.22.3 或更高的 24.x 版本，或 Node.js 26.13.1 或更高版本。
 - 一个可访问、已启用经典 WebAPI 的金蝶云·星空 V9.1 企业版实例（向下兼容 V9.0 / V8.x），以及有效账套账号。仅提供 OpenAPI 网关（`https://api.kingdee.com/galaxyapi/`）的账套不在支持范围内。
-- `baseUrl` 必须使用 `http:` 或 `https:`。指向 localhost、环回、RFC1918 私网、链路本地、CGNAT、IPv6 唯一本地地址以及组播/保留地址的请求会被拦截。请使用公网域名，例如 `https://erp.example.com/K3Cloud`。
+- `baseUrl` 必须使用 `http:` 或 `https:`。插件检查 URL 中的字面量主机，拦截 localhost、环回、RFC1918 私网、链路本地、CGNAT、IPv6 唯一本地地址以及组播/保留地址；不解析 DNS。请使用可信的公网域名，例如 `https://erp.example.com/K3Cloud`，并在主机前保留出口网络管控。
 
 ## 1. 添加 bundle
 
@@ -21,7 +21,7 @@ dsh plugin --profile web add dsh-kingdee
 
 ## 2. 配置连接
 
-在 DSH 的 **Plugins → kingdee** 页面配置，或在 `cordis.yml` / `cordis.patch.yml` 中写 `config:` 块。主要字段如下：
+在 DSH 的 **插件 → kingdee** 页面配置，或在 `cordis.yml` / `cordis.patch.yml` 中写 `config:` 块。主要字段如下：
 
 | 键 | 说明 |
 |---|---|
@@ -36,7 +36,7 @@ dsh plugin --profile web add dsh-kingdee
 | `mock` | 使用本地 mock 传输；默认 `false` |
 | `serviceEndpoints` | 可选的 WebAPI 服务名覆盖，详见 [CONFIG.zh.md](./CONFIG.zh.md) |
 
-在 2022-11-29 之后开通的 V8.1 及以后公有云账套上必须使用 `authMode: "app"`，因为金蝶拒绝账号密码登录。该模式需要 `appId` + `appSecretRef` + `userNameRef`（集成用户）。
+产品版本为 V8.1 及以后、且在 2022-11-29 之后开通的公有云账套必须使用 `authMode: "app"`，因为金蝶拒绝账号密码登录。该模式需要 `appId` + `appSecretRef` + `userNameRef`（集成用户）。
 
 ## 3. 提供密钥
 
@@ -66,7 +66,7 @@ $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
 
-命令提示符下用 `set NAME=value` 设置当前会话，用 `setx NAME value` 永久保存。DSH 凭据库适用于所有系统：在设置界面填写一次（只写不读），或编辑 `$DSH_HOME/.credentials.yaml`。
+命令提示符下用 `set NAME=value` 设置当前会话，用 `setx NAME value` 永久保存。DSH 凭据库适用于所有系统：在 `$DSH_HOME/.credentials.yaml` 的 `refs:` 下写入对应值；配置中只保存引用名。
 
 默认引用名为 `DSH_KINGDEE_USER`、`DSH_KINGDEE_PASSWORD` 与 `DSH_KINGDEE_APP_SECRET`，可用 `userNameRef`、`passwordRef`、`appSecretRef` 更改。`DSH_KINGDEE_USER` 在 `user` 模式下为账套用户名，在 `app` 模式下为集成用户。`DSH_KINGDEE_PASSWORD` 仅 `user` 模式使用。
 
@@ -77,10 +77,10 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 让 agent 对已知单据类型发起查询：
 
 ```
-查询金蝶云星空销售订单（SAL_SaleOrder），单据编号以 SO-202607 开头。
+查询金蝶云·星空销售订单（SAL_SaleOrder），单据编号以 SO-202607 开头。
 ```
 
-agent 会加载 `kingdee-bos` 技能并调用 `kingdee_query`。成功时返回规范化行数据；失败时返回类型化 `kd/*` 错误。bundle 补丁也会出现在 `dsh --profile <name> --dump-config` 的输出中，表现为 `# == dsh-kingdee` 覆盖层。
+若已安装配套的 `kingdee-bos` 技能，agent 可加载它并调用 `kingdee_query`。成功时返回规范化行数据；失败时返回类型化 `kd/*` 错误。插件随附 `skills/kingdee-bos/SKILL.md`，但不会自动注册；把 `skills/kingdee-bos` 目录复制到 `$DSH_HOME/skills/kingdee-bos` 后，它才会进入会话技能目录。bundle 补丁也会出现在 `dsh --profile <name> --dump-config` 的输出中，表现为 `# == dsh-kingdee` 覆盖层。
 
 ## 可选：离线 mock
 
@@ -93,7 +93,7 @@ config:
 
 ## 常见问题排查
 
-- **`kd/auth-failed`** —— 检查 `acctId`、`appId`、`appSecretRef` 与集成用户（`userNameRef`），并确认账套已启用 WebAPI。2022-11-29 之后开通的 V8.1 及以后公有云账套需把 `authMode` 切换为 `"app"`。仅开放 OpenAPI 网关的账套无法使用。
+- **`kd/auth-failed`** —— 检查 `acctId`、`appId`、`appSecretRef` 与集成用户（`userNameRef`），并确认账套已启用 WebAPI。产品版本为 V8.1 及以后、且在 2022-11-29 之后开通的公有云账套需把 `authMode` 切换为 `"app"`。仅开放 OpenAPI 网关的账套无法使用。
 - **`kd/network` / `kd/invalid-config`** —— 确认 `baseUrl` 可达、是合法的 `http:` / `https:` 地址，且不是 localhost、环回或私网地址。
 - **`kd/business-error`** —— 账套拒绝了调用；查看 `message` 中的缺失字段或阻止该操作的单据状态。
 - **查询无结果且不报错** —— 可能缺少查询权限。请针对每个 `FormId` 跑探针查询，并把宿主出口 IP 加入 WebAPI 限流白名单。

@@ -2,7 +2,7 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.zh.md)
 
-All configuration for `dsh-kingdee` 0.21.0 on DeepSeek Harness (DSH) 0.2.2-rc.5. The config is a volatile schema checked by `@deepseek-ai/schemastery`: the Host discovers the exported `Config` schema, renders the entry's settings form (keyed by the profile row id, normally `kingdee`), and passes one live reference per field. Each operation captures all references once at its start, so a saved edit reaches the next operation without a restart.
+All configuration for `dsh-kingdee` 0.22.0 on DeepSeek Harness (DSH) 0.2.3-alpha.2. The config is a volatile schema checked by `@deepseek-ai/schemastery`: the Host discovers the exported `Config` schema, renders the entry's settings form (keyed by the profile row id, normally `kingdee`), and passes one live reference per field. Each operation captures all references once at its start, so a saved edit reaches the next operation without a restart.
 
 ## Fields
 
@@ -34,9 +34,9 @@ Defaults come from `src/kd-core/client.ts`:
 
 Service names vary by Kingdee version and deployment. If a tool reports an unknown service, override the matching name and confirm the real endpoint under Common Settings → Dynamic Service Definition → WebAPI.
 
-## Network and SSRF baseline
+## Network and host filter
 
-Requests are validated before they are sent:
+Requests are validated before they are sent. The check inspects only the literal hostname/IP in the URL; it does not resolve DNS, so a public hostname that resolves to a private address is not blocked.
 
 1. Only `http:` and `https:` are allowed.
 2. These targets are refused:
@@ -47,7 +47,7 @@ Requests are validated before they are sent:
    - Carrier-grade NAT (`100.64.0.0/10`)
    - IPv6 unique-local (`fc00::/7`)
    - Multicast, broadcast and reserved ranges
-3. Use an enterprise domain or an authorized gateway, e.g. `https://erp.example.com/K3Cloud`.
+3. Use a trusted enterprise domain or an authorized gateway, e.g. `https://erp.example.com/K3Cloud`, and keep egress controls in front of the host.
 
 ## Credentials
 
@@ -59,7 +59,9 @@ Never store passwords or app secrets in a config file. Credentials are resolved 
 # Linux / macOS
 export DSH_KINGDEE_USER="your_username"
 export DSH_KINGDEE_PASSWORD="your_password"
+```
 
+```powershell
 # Windows PowerShell (current session)
 $env:DSH_KINGDEE_USER = "your_username"
 $env:DSH_KINGDEE_PASSWORD = "your_password"
@@ -71,8 +73,10 @@ $env:DSH_KINGDEE_PASSWORD = "your_password"
 # Linux / macOS
 export DSH_KINGDEE_USER="your_integration_user"
 export DSH_KINGDEE_APP_SECRET="your_app_secret"
+```
 
-# Windows PowerShell
+```powershell
+# Windows PowerShell (current session)
 $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
@@ -100,7 +104,7 @@ Add the row to `cordis.yml` or a `cordis.patch.yml` layer. `user` mode:
         mock: false
 ```
 
-In `app` mode, set `authMode: "app"`, `appId`, `appSecretRef` and `userNameRef` (the integration user) instead.
+In `app` mode, keep the connection fields and set `authMode: "app"`, `appId`, `appSecretRef` and `userNameRef` (the integration user).
 
 Most fields are editable on the **Plugins → kingdee** page; `mock` and `serviceEndpoints` are configuration-only. The Host renders the schema form and the plugin adds its browser card (`src/client/settings-card.ts`, built to `lib/client.js`), which binds `plugins.row.config` and `plugins.bundle.config`. Writes are revision-fenced: a Host refusal reloads Host state instead of guessing.
 

@@ -2,14 +2,15 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.md) | 中文
 
-本文档列出 `dsh-kingdee` 0.21.0（DSH 基线 0.2.2-rc.5）注册的全部 `kingdee_*` 工具。每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
+本文档列出 `dsh-kingdee` 0.22.0（DSH 基线 0.2.3-alpha.2）注册的全部 `kingdee_*` 工具。每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
 
 ## 调用约定
 
 - 每个工具返回统一格式的规范化结果，以紧凑 JSON 文本呈现（输出 schema 为 `type: 'json'`）。
-- 金蝶 `IsSuccess=false` 的返回会转成类型化错误：`kd/business-error`、`kd/auth-failed`、`kd/invalid-config`、`kd/network`、`kd/timeout` 或 `kd/unknown`。
+- 金蝶 `IsSuccess=false` 的返回会转成 `kd/business-error` 或 `kd/auth-failed`；客户端侧失败使用 `kd/invalid-config`、`kd/network`、`kd/timeout` 或 `kd/unknown`。
 - 凭据在每次操作时解析，轮换后下一次调用即生效，无需重启。
-- 登录是隐式的。首次操作会自动登录，随后每次业务调用都会同时附带裸 `kdservice-sessionid` 请求头与 `Cookie`（`kdservice-sessionid=…; kdsvc=…`）。不使用 `KDAuthentication` 请求头。
+- 业务操作的登录是隐式的。首次业务操作会自动登录，随后每次业务调用都会同时附带裸 `kdservice-sessionid` 请求头与 `Cookie`（`kdservice-sessionid=…; kdsvc=…`）。不使用 `KDAuthentication` 请求头。
+- 例外是 `kingdee_list_datacenters`：它直接调用数据中心服务，无需已建立的会话。
 - 登录 stub 返回 `{"LoginResultType": 1}`，不是 `Result` / `IsSuccess` 业务信封。非 `1` 的值会以 `kd/auth-failed` 呈现。
 - `formId` 为金蝶表单 id，例如 `SAL_SaleOrder`。
 - 工作流工具接受 `ids` 或 `numbers`（业务单据编号，如 `SO-20260901`）；`kingdee_view` 接受 `id` 或 `number`。自产品版本 `9.1.0.20250807` 起，`Delete` 的成功实体中会返回可信的 `Number`。
@@ -190,9 +191,16 @@
 
 ## 典型流程
 
+已审核（`C`）的单据：
+
 ```text
-kingdee_save → kingdee_submit → kingdee_audit
-kingdee_unaudit → kingdee_unsubmit → kingdee_save → kingdee_submit
+kingdee_unaudit → kingdee_save → kingdee_submit → kingdee_audit
+```
+
+仍在已提交/审核中（`B`）的单据：
+
+```text
+kingdee_unsubmit → kingdee_save → kingdee_submit
 ```
 
 在没有真实账套时，可在插件配置中设置 `mock: true` 试用该流程。安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，全部配置键见 [CONFIG.zh.md](./CONFIG.zh.md)。

@@ -26,5 +26,5 @@ assignees: ""
 - [ ] Other
 
 ## Checked against
-- [ ] The source file the doc describes, at commit:
+- [ ] The source file the doc describes, at commit: ____
 - [ ] The other language of the same document

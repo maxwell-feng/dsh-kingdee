@@ -4,40 +4,44 @@ English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/UNINST
 
 How to remove **dsh-kingdee** from a DSH profile.
 
-## 1. Disable the plugin
-
-There is no disable verb. Set the row's `enabled` flag to `false` in your profile's `cordis.patch.yml` (the shipped bundle patch sets it to `true`), then restart DSH:
-
-```yaml
-- insert:
-    - id: kingdee
-      name: dsh-kingdee
-      enabled: false
-```
-
-## 2. Remove the bundle
+## 1. Remove the bundle
 
 ```sh
 dsh plugin --profile web remove dsh-kingdee
 ```
 
-This removes the installed npm package and its composition layer. `--profile <name>` must precede `remove`.
+This removes the installed npm package and its composition layer, so the `kingdee_*` tools stop being registered. `--profile <name>` must precede `remove`. The command also removes the bundle from `dsh.profile.bundles`; you do not need a separate disable step.
 
-## 3. Remove your configuration
+## 2. Remove your configuration
 
-Connection settings live in the profile's `cordis.yml` or settings document. Delete the `kingdee` row inserted in step 1 and any `kingdee.*` config keys.
+Connection settings live in the profile's `cordis.yml` or in a `kingdee` override in `cordis.patch.yml`. Delete that row and any `kingdee.*` config keys. A row that only set `enabled: false` can be deleted outright.
 
-## 4. Remove the secrets
+## 3. Remove the secrets
 
-Secrets live outside the plugin: in environment variables, or in the DSH credential store at `$DSH_HOME/.credentials.yaml` / the write-only fields in the settings UI. Remove them:
+Secrets live outside the plugin: in environment variables, or under `refs:` in the DSH credential store at `$DSH_HOME/.credentials.yaml`. Remove them:
 
 ```sh
+# Linux / macOS
 unset DSH_KINGDEE_USER DSH_KINGDEE_PASSWORD DSH_KINGDEE_APP_SECRET
 ```
 
-If the values are in the DSH credential store, delete the same reference names there. The store has no CLI verb; use the settings UI or edit `$DSH_HOME/.credentials.yaml`.
+```powershell
+# Windows PowerShell
+Remove-Item Env:\DSH_KINGDEE_USER -ErrorAction SilentlyContinue
+Remove-Item Env:\DSH_KINGDEE_PASSWORD -ErrorAction SilentlyContinue
+Remove-Item Env:\DSH_KINGDEE_APP_SECRET -ErrorAction SilentlyContinue
+```
 
-## 5. Restart
+```bat
+REM Windows Command Prompt
+set DSH_KINGDEE_USER=
+set DSH_KINGDEE_PASSWORD=
+set DSH_KINGDEE_APP_SECRET=
+```
+
+If the values are in the DSH credential store, delete the same reference names from `$DSH_HOME/.credentials.yaml`. The store has no CLI verb.
+
+## 4. Restart
 
 Stop and start the DSH process (relaunch the `dsh` app or your host). There is no restart verb. After the restart the `kingdee_*` tools are gone from the agent's tool set.
 

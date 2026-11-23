@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Kingdee Cloud Starry Sky",
-    "description": "Kingdee Cloud Starry Sky WebAPI plugin for DeepSeek Harness. Typed tools for querying, saving, submitting, auditing, viewing and deleting bills and base data, plus BOS custom services."
+    "description": "Kingdee Cloud Starry Sky WebAPI plugin for DeepSeek Harness. Typed tools for querying, saving, submitting, auditing, viewing and deleting bills and base data, plus BOS custom services. Credentials are resolved from environment-variable references."
   }
 }
