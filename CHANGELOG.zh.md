@@ -7,34 +7,34 @@
 
 ## [0.22.0] - 2026-11-24
 
-**对齐 DeepSeek Harness 0.2.3-alpha.2** —— 依赖、Node.js 门槛与文档更新。插件 API 与配置字段不变，正常租户行为不变；配置校验现在抛出类型化 `kd/invalid-config` 错误。租户兼容性不变：金蝶云·星空 V9.1 企业版，向下兼容 V9.0 / V8.x。
+**对齐 DeepSeek Harness 0.2.3-alpha.2** —— 依赖、Node.js 门槛与文档更新。插件 API、配置字段与租户行为不变；`validateConfig` 现在抛出 `kd/invalid-config`。租户兼容性不变：金蝶云·星空 V9.1 企业版，兼容 V9.0/V8.x。
 
 ### 变更
 
-- 全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.2-rc.5` 移至 `0.2.3-alpha.2`，包括宿主侧 tools/credentials 包，以及两侧使用的设置、渲染、slots 与插件管理器包。
-- `@deepseek-ai/cordis` 升至 `4.2.0-alpha.1`，`@deepseek-ai/schemastery` 升至 `3.20.0-alpha.1`；peer 区间新增 0.2.3 的 cordis/schemastery 线并保留旧区间；`engines.dsh` 仍接纳更早的 0.2.x 宿主。
-- `engines.node` 提高为 `^24.22.3 || >=26.13.1`，与 DSH 0.2.3 一致；CI、发行与发布任务固定使用 Node.js 24.22.3。
-- `engines.dsh` 保持 `>=0.1.7-alpha.2 <0.3.0`；重新生成锁文件，并按 `0.2.3-alpha.2` 包集合刷新工作区供应链豁免。
+- 全部 `@deepseek-ai/dsh-*` 开发依赖由 `0.2.2-rc.5` 移至 `0.2.3-alpha.2`，包括宿主侧 tools/credentials 与客户端设置/渲染/slots/插件管理器包。
+- `@deepseek-ai/cordis` 升至 `4.2.0-alpha.1`，schemastery 升至 `3.20.0-alpha.1`；peer 区间新增 0.2.3 线并保留旧区间；`engines.dsh` 仍接纳更早的 0.2.x 宿主。
+- `engines.node` 提高为 `^24.22.3 || >=26.13.1`，与 DSH 0.2.3 一致；CI/发行/发布固定 Node.js 24.22.3。
+- `engines.dsh` 保持 `>=0.1.7-alpha.2 <0.3.0`；锁文件与供应链豁免按 `0.2.3-alpha.2` 刷新。
 
 ### 修复
 
-- `validateConfig` 在缺少连接字段时改为抛出 `kd/invalid-config`，而不是普通 `Error`，使工具侧失败保持文档约定的错误契约。
-- 按实际的字面量主机检查重写 SSRF 说明，并写明不解析 DNS。
+- `validateConfig` 在缺少连接字段时改为抛出 `kd/invalid-config`，而非普通 `Error`，保持文档约定的错误契约。
+- 按字面量主机检查重写 SSRF 说明；不解析 DNS。
 
 ### 文档
 
-- 全部当前版本与 DSH 基线引用更新为 `0.22.0` / `0.2.3-alpha.2`，包括 README、INSTALL、CONFIG、USAGE、UPDATE 与发行说明。
-- 中英文工具表顺序均与 USAGE 的逐工具章节一致。
-- 插件管理器标题改用官方产品名「金蝶云·星空」，两语言说明均写明凭据经环境变量引用解析。
-- 把自动加载技能的表述改为手动加入技能目录的步骤；重写卸载指南；删除不受支持的“设置界面填写凭据”说法；拆开不可执行的反审核→反提交流程链；修正 Node.js、PowerShell、SSRF、`acctId`/`acctID`、产品名与页面路径等表述。
+- 版本/基线引用更新为 `0.22.0` / `0.2.3-alpha.2`，覆盖 README、INSTALL、CONFIG、USAGE、UPDATE 与发行说明。
+- 中英文工具表顺序与 USAGE 的逐工具章节一致。
+- 插件管理器用官方名「金蝶云·星空」；两语言说明均写明凭据经环境变量引用解析。
+- 把自动加载技能改为手动加入目录；重写卸载；删除“设置界面填写凭据”说法；拆开无效的反审核→反提交流程；修正 Node.js、PowerShell、SSRF、`acctId`/`acctID`、产品名与页面路径。
 
 ### 验证
 
 - `pnpm typecheck` 无错误。
-- `pnpm build` 构建干净，含浏览器 client bundle。
+- `pnpm build` 构建干净，含浏览器 bundle。
 - `pnpm test`：15 项测试通过。
 - `node scripts/check-docs-language.ts` 零发现通过。
-- 未做真实 profile 启动验证，也未做真实金蝶账套联调验证。
+- 未做真实 profile 启动或金蝶账套联调验证。
 
 ## [0.21.0] - 2026-11-20
 

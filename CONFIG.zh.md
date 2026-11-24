@@ -2,7 +2,7 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/CONFIG.md) | 中文
 
-本文档说明 `dsh-kingdee` 0.22.0 在 DeepSeek Harness（DSH）0.2.3-alpha.2 上的全部配置。配置由 `@deepseek-ai/schemastery` 校验，采用易变（volatile）schema：宿主读取导出的 `Config` schema，渲染该条目的设置表单（以 profile 行 id 为键，通常为 `kingdee`），并为每个字段传入一个活引用。每次操作开始时一次性捕获全部引用，因此保存的修改无需重启即可在下一次操作生效。
+`dsh-kingdee` 0.22.0 在 DeepSeek Harness（DSH）0.2.3-alpha.2 上的配置。配置使用 `@deepseek-ai/schemastery` volatile schema：宿主按 profile 行 id（通常为 `kingdee`）渲染表单，每个字段传入活引用。每次操作捕获引用，保存的修改下次即生效。
 
 ## 配置字段
 
@@ -29,14 +29,14 @@
 - `loginByAppSecretService` —— 应用登录 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LoginByAppSecret`）
 - `logOutService` —— 登出 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.AuthService.LogOut`）
 - `dynamicFormService` —— 动态表单服务前缀，不含操作名（默认 `Kingdee.BOS.WebApi.ServicesStub.DynamicFormService`）
-- `listDataCenterService` —— 数据中心列表 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`；服务名随版本而异，见下方说明）
-- `stubSuffix` —— 追加到每个生成 stub 路径末尾的后缀（默认 `.common.kdsvc`；若覆盖值已带该后缀则不重复追加）
+- `listDataCenterService` —— 数据中心列表 stub（默认 `Kingdee.BOS.WebApi.ServicesStub.DataCenterService.List`；服务名随版本而异，见下）
+- `stubSuffix` —— 追加到每个 stub 路径末尾的后缀（默认 `.common.kdsvc`；已带该后缀则不重复追加）
 
-服务名随金蝶版本和部署方式而异。若工具报告未知服务，请覆盖对应名称，并在「公共设置 → 动态服务定义 → WebAPI」中核实真实端点。
+服务名随版本/部署而异；若工具报告未知服务，请覆盖对应名称，并在「公共设置 → 动态服务定义 → WebAPI」中核实端点。
 
 ## 网络与主机过滤
 
-请求发出前会经过校验。检查只针对 URL 中的字面量主机名/IP，不解析 DNS，因此解析到私网地址的公网域名不会被拦截。
+发送前校验。检查只针对 URL 中的字面量主机名/IP，不解析 DNS，解析到私网地址的公网域名不会被拦截。
 
 1. 仅允许 `http:` 与 `https:`。
 2. 以下目标会被拒绝：
@@ -47,11 +47,11 @@
    - 运营商级 NAT（`100.64.0.0/10`）
    - IPv6 唯一本地地址（`fc00::/7`）
    - 组播、广播与保留网段
-3. 请使用可信的企业域名或授权网关，例如 `https://erp.example.com/K3Cloud`，并在主机前保留出口网络管控。
+3. 请使用可信企业域名或授权网关（如 `https://erp.example.com/K3Cloud`），并保留出口管控。
 
 ## 凭据
 
-不要把密码或应用密钥写进配置文件。凭据在每次操作时按引用解析，轮换无需重启。
+不要把密码或应用密钥写进配置；凭据按引用在每次操作时解析，轮换无需重启。
 
 `user` 模式：
 
@@ -81,7 +81,7 @@ $env:DSH_KINGDEE_USER = "your_integration_user"
 $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 ```
 
-两个登录 stub 返回 `{"LoginResultType": 1}`，不是 `Result` / `IsSuccess` 业务信封。数字型 `LoginResultType` 决定结果（`1` 成功，其他值抛出 `kd/auth-failed`）；没有该字段时回退到业务信封。
+两个登录 stub 返回 `{"LoginResultType": 1}`，不是 `Result` / `IsSuccess` 业务信封。数字型 `LoginResultType` 决定结果（`1` 成功，其他值抛 `kd/auth-failed`）；无该字段时回退到业务信封。
 
 ## Profile 配置
 
@@ -106,17 +106,17 @@ $env:DSH_KINGDEE_APP_SECRET = "your_app_secret"
 
 `app` 模式在保留连接字段的基础上，改设 `authMode: "app"`、`appId`、`appSecretRef` 与 `userNameRef`（集成用户）。
 
-大多数字段可在 **插件 → kingdee** 页面编辑；`mock` 与 `serviceEndpoints` 仅能在配置文件中设置。宿主渲染 schema 表单，插件叠加自带的浏览器卡片（`src/client/settings-card.ts`，构建为 `lib/client.js`），绑定 `plugins.row.config` 与 `plugins.bundle.config`。写入按修订号校验：宿主拒绝时会重新加载宿主状态，而不是猜测。
+大多数字段可在 **插件 → kingdee** 页面编辑；`mock` 与 `serviceEndpoints` 仅能在配置文件设置。宿主渲染 schema 表单；插件卡片（`src/client/settings-card.ts`，构建为 `lib/client.js`）绑定 `plugins.row.config` 与 `plugins.bundle.config`。写入按修订号校验：宿主拒绝时重新加载状态，而不是猜测。
 
 ## 金蝶 V9.1
 
-`dsh-kingdee` 面向金蝶云·星空 V9.1 企业版（补丁 PT-163015 → `9.1.0.20250807`），向下兼容 V9.0 / V8.x。V9.1 没有破坏性 WebAPI 变更。经典 `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` 协议保持不变。
+`dsh-kingdee` 面向金蝶云·星空 V9.1 企业版（补丁 PT-163015 → `9.1.0.20250807`），兼容 V9.0/V8.x。V9.1 没有破坏性 WebAPI 变更；经典 `{baseUrl}/{stub path}.common.kdsvc` + `kdservice-sessionid` 协议不变。
 
 运维要点：
 
 - `Delete` 返回正确的 `FNumber`；自 `9.1.0.20250807` 起可直接信任 `SuccessEntitys[].Number`。
 - 服务端会记录 WebAPI 请求体。条件允许时优先用 `app` 模式。
-- 权限更严格：缺少查询权限可能表现为空结果。请针对每个 `FormId` 跑探针查询。
+- 权限更严格：缺少查询权限可能表现为空结果。请对每个 `FormId` 跑探针查询。
 - 请把宿主出口 IP 加入 WebAPI 限流白名单。
 
-登录请求键（`acctID`、`username`、`appid`、`appsecret`、`lcid`）、`Limit` 行数上限（约 2000）以及 `listDataCenterService` 默认服务名均为社区经验值，并非金蝶官方公布。请在具体账套的「公共设置 → 动态服务定义 → WebAPI」中核对。
+登录键（`acctID`、`username`、`appid`、`appsecret`、`lcid`）、`Limit` 上限（约 2000）与 `listDataCenterService` 默认名均为社区经验值，并非金蝶官方公布；请在具体账套的「公共设置 → 动态服务定义 → WebAPI」中核对。

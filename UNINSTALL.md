@@ -10,15 +10,15 @@ How to remove **dsh-kingdee** from a DSH profile.
 dsh plugin --profile web remove dsh-kingdee
 ```
 
-This removes the installed npm package and its composition layer, so the `kingdee_*` tools stop being registered. `--profile <name>` must precede `remove`. The command also removes the bundle from `dsh.profile.bundles`; you do not need a separate disable step.
+This removes the npm package and its composition layer, unregistering the `kingdee_*` tools. `--profile <name>` must precede `remove`. It also removes the bundle from `dsh.profile.bundles`; no separate disable step is needed.
 
 ## 2. Remove your configuration
 
-Connection settings live in the profile's `cordis.yml` or in a `kingdee` override in `cordis.patch.yml`. Delete that row and any `kingdee.*` config keys. A row that only set `enabled: false` can be deleted outright.
+Connection settings live in `cordis.yml` or a `kingdee` override in `cordis.patch.yml`; delete that row and any `kingdee.*` keys. A row that only set `enabled: false` can be deleted.
 
 ## 3. Remove the secrets
 
-Secrets live outside the plugin: in environment variables, or under `refs:` in the DSH credential store at `$DSH_HOME/.credentials.yaml`. Remove them:
+Secrets live outside the plugin: in environment variables, or under `refs:` in `$DSH_HOME/.credentials.yaml`. Remove them:
 
 ```sh
 # Linux / macOS
@@ -39,12 +39,12 @@ set DSH_KINGDEE_PASSWORD=
 set DSH_KINGDEE_APP_SECRET=
 ```
 
-If the values are in the DSH credential store, delete the same reference names from `$DSH_HOME/.credentials.yaml`. The store has no CLI verb.
+If the values are in the DSH credential store, delete the same reference names from `$DSH_HOME/.credentials.yaml`; it has no CLI verb.
 
 ## 4. Restart
 
-Stop and start the DSH process (relaunch the `dsh` app or your host). There is no restart verb. After the restart the `kingdee_*` tools are gone from the agent's tool set.
+Stop and start the DSH process (relaunch the app or host); there is no restart verb. After the restart the `kingdee_*` tools are gone.
 
 ## What stays
 
-System logs and any cached session may still record past calls; remove them if your policy requires it. If you installed from a Git checkout, delete the repository directory (e.g. `dsh-kingdee/`) after the steps above. Removing the folder does not edit your DSH profile.
+Logs and cached sessions may still record past calls; remove them if policy requires. For a Git checkout, delete the repository directory (e.g. `dsh-kingdee/`) afterwards; this does not edit the DSH profile.

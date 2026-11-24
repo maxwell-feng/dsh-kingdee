@@ -1,6 +1,6 @@
 ---
 name: Setup or configuration problem
-about: Install, credential, network or SSRF protection trouble — the plugin never gets as far as a working call.
+about: Install, credential, network or SSRF trouble before the first working call.
 title: "[Setup] "
 labels: ["setup", "question"]
 assignees: ""
@@ -13,7 +13,7 @@ assignees: ""
 - [ ] Adding or enabling the plugin in the DSH profile
 - [ ] Credential lookup (`dsh-credentials`)
 - [ ] Login to the Kingdee tenant
-- [ ] First tool call after a login that looked successful
+- [ ] First tool call after a seemingly successful login
 - [ ] Other (explain below)
 
 ## Steps to reproduce
@@ -46,8 +46,8 @@ assignees: ""
 ```
 
 ## What you already checked
-- [ ] Credentials are stored under the exact key the config references
-- [ ] The tenant host is not blocked by the literal-host filter (not localhost, a loopback, or a private literal address; DNS is not resolved; see CONFIG.md)
+- [ ] Credentials use the exact reference key in config
+- [ ] The tenant host passes the literal-host filter (not localhost, loopback or a private literal; DNS is not resolved; see CONFIG.md)
 - [ ] `mock` mode works, so the plugin itself loads
 - [ ] DNS and any proxy in front of DSH can reach the tenant host
 
