@@ -6,34 +6,34 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [0.22.0] - 2026-11-24
 
-**DeepSeek Harness 0.2.3-alpha.2 alignment** — dependency, Node.js-requirement and documentation release. No plugin API or configuration-field change; normal tenant behavior is unchanged, while configuration validation now raises typed `kd/invalid-config` errors. Tenant compatibility is unchanged: Kingdee Cloud Starry Sky V9.1 Enterprise Edition, backward-compatible with V9.0 / V8.x.
+**DeepSeek Harness 0.2.3-alpha.2 alignment** — dependency, Node.js-requirement and docs release. Plugin API, config fields and tenant behavior are unchanged; `validateConfig` now raises `kd/invalid-config`. Tenant compatibility is unchanged: Kingdee Cloud Starry Sky V9.1 Enterprise, compatible with V9.0/V8.x.
 
 ### Changed
 
-- Moved every `@deepseek-ai/dsh-*` devDependency from `0.2.2-rc.5` to `0.2.3-alpha.2`, including the host-side tools/credentials packages and the settings, renderer, slots and plugin-manager packages used by both halves.
-- Moved `@deepseek-ai/cordis` to `4.2.0-alpha.1` and `@deepseek-ai/schemastery` to `3.20.0-alpha.1`; the peer ranges add the 0.2.3 cordis/schemastery line while keeping the older ranges; `engines.dsh` still admits earlier 0.2.x hosts.
-- Raised `engines.node` to `^24.22.3 || >=26.13.1` to match DSH 0.2.3, and pinned the CI, release and publish jobs to Node.js 24.22.3.
-- `engines.dsh` stays `>=0.1.7-alpha.2 <0.3.0`; regenerated the lockfile and refreshed the workspace supply-chain exemption for the `0.2.3-alpha.2` package set.
+- Moved every `@deepseek-ai/dsh-*` devDependency from `0.2.2-rc.5` to `0.2.3-alpha.2`, including host-side tools/credentials and client settings/renderer/slots/plugin-manager packages.
+- Moved `@deepseek-ai/cordis` to `4.2.0-alpha.1` and schemastery to `3.20.0-alpha.1`; peer ranges add the 0.2.3 line and keep older ranges; `engines.dsh` still admits earlier 0.2.x hosts.
+- Raised `engines.node` to `^24.22.3 || >=26.13.1` to match DSH 0.2.3; CI/release/publish pin Node.js 24.22.3.
+- `engines.dsh` stays `>=0.1.7-alpha.2 <0.3.0`; lockfile and supply-chain exemption refreshed for `0.2.3-alpha.2`.
 
 ### Fixed
 
-- `validateConfig` now throws `kd/invalid-config` for missing connection fields instead of a plain `Error`, keeping tool-facing failures on the documented error contract.
-- Rewrote the SSRF description around the actual literal-host check and documented that DNS is not resolved.
+- `validateConfig` now throws `kd/invalid-config` for missing connection fields, not plain `Error`, keeping tool failures on the documented contract.
+- Rewrote SSRF docs around the literal-host check; DNS is not resolved.
 
 ### Documentation
 
-- Updated every current-version and DSH-baseline reference to `0.22.0` / `0.2.3-alpha.2`, including README, INSTALL, CONFIG, USAGE, UPDATE and the release notes.
-- The Chinese and English tool tables follow the same order as the per-tool chapters in USAGE.
-- Changed the Plugin Manager title to the official Kingdee product name and stated the environment-variable credential reference in both locale descriptions.
-- Replaced the automatic skill-loading claim with manual skill-catalog instructions; rewrote the uninstall guide; removed the unsupported settings-UI credential claim; split the invalid unaudit→unsubmit workflow chain; corrected Node.js, PowerShell, SSRF, `acctId`/`acctID`, product-name and UI-path wording.
+- Updated version/baseline refs to `0.22.0` / `0.2.3-alpha.2` across README, INSTALL, CONFIG, USAGE, UPDATE and release notes.
+- Chinese and English tool tables follow the per-tool order in USAGE.
+- Plugin Manager uses the official Kingdee name; both locales state the environment-variable credential reference.
+- Replaced automatic skill loading with manual catalog steps; rewrote uninstall; removed the settings-UI credential claim; split the invalid unaudit→unsubmit chain; corrected Node.js, PowerShell, SSRF, `acctId`/`acctID`, product-name and UI-path wording.
 
 ### Verification
 
 - `pnpm typecheck` clean.
-- `pnpm build` clean, including the browser client bundle.
+- `pnpm build` clean, including the browser bundle.
 - `pnpm test`: 15 tests passing.
 - `node scripts/check-docs-language.ts` clean.
-- No live profile boot and no live Kingdee tenant verification were performed.
+- No live profile boot or Kingdee tenant verification was performed.
 
 ## [0.21.0] - 2026-11-20
 

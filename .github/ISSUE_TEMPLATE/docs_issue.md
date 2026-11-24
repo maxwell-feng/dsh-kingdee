@@ -1,6 +1,6 @@
 ---
 name: Documentation issue
-about: A doc contradicts the code, a translation is wrong, or a link is broken.
+about: Doc contradicts code, translation is wrong, or link is broken.
 title: "[Docs] "
 labels: ["documentation"]
 assignees: ""
@@ -16,7 +16,7 @@ assignees: ""
 > Quote the current text, then describe the problem.
 
 ## What it should say
-> The corrected wording, or the fact you are unsure about.
+> Proposed wording, or the fact you are unsure about.
 
 ## Kind
 - [ ] Contradicts the implementation

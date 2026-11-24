@@ -2,13 +2,13 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/README.zh.md)
 
-Kingdee Cloud Starry Sky secondary-development plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH). It gives the agent typed `kingdee_*` tools over the classic Kingdee WebAPI: query, save, submit, audit, un-audit, view, delete, and invoke BOS custom services. A companion skill (`kingdee-bos`) documents the field, enum and status conventions.
+Kingdee Cloud Starry Sky secondary-development plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH), exposing typed `kingdee_*` tools over the classic Kingdee WebAPI: query, save, submit, audit, un-audit, view, delete and BOS custom services. The companion `kingdee-bos` skill documents fields, enums and status conventions.
 
 - Plugin version: 0.22.0. DSH baseline: 0.2.3-alpha.2 (released 2026-11-22).
-- Target: Kingdee Cloud Starry Sky V9.1 Enterprise Edition (patch PT-163015 → 9.1.0.20250807), backward-compatible with V9.0 / V8.x. Classic WebAPI only; the OpenAPI gateway is not supported.
-- Credentials are environment-variable references resolved through the DSH credential seam, never literal config values.
-- `user` mode uses `AuthService.ValidateUser`. `app` mode uses `AuthService.LoginByAppSecret` and requires `appId`, `appSecretRef` and `userNameRef` (the integration user).
-- The URL host filter allows `http:` / `https:` only and blocks a literal localhost, loopback, RFC1918, link-local, CGNAT, IPv6 ULA, or multicast/reserved host. It does not resolve DNS, so a public hostname that resolves to a private address is not blocked; use a trusted enterprise hostname and egress controls.
+- Target: Kingdee Cloud Starry Sky V9.1 Enterprise Edition (patch PT-163015 → 9.1.0.20250807), compatible with V9.0/V8.x. Classic WebAPI only; OpenAPI gateway unsupported.
+- Credentials are environment-variable references resolved through the DSH credential seam; config holds no literals.
+- `user` mode logs in via `AuthService.ValidateUser`; `app` mode via `AuthService.LoginByAppSecret`, with `appId`, `appSecretRef` and `userNameRef` (the integration user).
+- The host filter allows only `http:` / `https:` and rejects literal localhost, loopback, RFC1918, link-local, CGNAT, IPv6 ULA and multicast/reserved hosts. It does not resolve DNS, so a public hostname resolving to a private address is not blocked; use a trusted hostname and egress controls.
 
 ## Install
 
@@ -17,14 +17,14 @@ Kingdee Cloud Starry Sky secondary-development plugin for [DeepSeek Harness](htt
 dsh plugin --profile web add dsh-kingdee
 ```
 
-`--profile <name>` must come before `add`, `remove` or `update`. Putting it after the subcommand forwards it to pnpm and fails.
+`--profile <name>` must precede `add`, `remove` or `update`; after the subcommand pnpm receives it and fails.
 
-The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.3 requires Node.js 24.22.3 or newer in the 24.x line, or Node.js 26.13.1 or newer; this package declares the same `engines.node` floor.
+The package's `engines.dsh` is `>=0.1.7-alpha.2 <0.3.0`; its `engines.node` matches DSH 0.2.3: `^24.22.3 || >=26.13.1` (Node 24.22.3+ on 24.x, or 26.13.1+).
 
 ## Quick start
 
-1. Open **Plugins → kingdee** in DSH and set the WebAPI base URL, `acctId` and `authMode`. The same fields can be set in `cordis.yml`; see [CONFIG.md](./CONFIG.md).
-2. Put the secrets in the environment or the credential store under the reference names you configured:
+1. Open **Plugins → kingdee** and set the WebAPI base URL, `acctId` and `authMode`; these fields also work in `cordis.yml` (see [CONFIG.md](./CONFIG.md)).
+2. Put secrets in the environment or credential store under the configured reference names:
 
    ```sh
    # Linux / macOS (sh)
@@ -48,7 +48,7 @@ The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.3 requires 
    set DSH_KINGDEE_APP_SECRET=your_app_secret
    ```
 
-   To use the DSH credential store instead, add each value under `refs:` in `$DSH_HOME/.credentials.yaml` (for example `DSH_KINGDEE_USER: your_username`). The config carries only the reference name.
+   For the DSH credential store, add each value under `refs:` in `$DSH_HOME/.credentials.yaml`; config keeps only the reference name.
 
 3. Ask the agent to query something:
 
@@ -56,9 +56,9 @@ The package declares `engines.dsh` `>=0.1.7-alpha.2 <0.3.0`. DSH 0.2.3 requires 
    Query sales order SO-20260701 on Kingdee Cloud.
    ```
 
-   If the companion `kingdee-bos` skill is installed (see [Companion skill](#companion-skill)), the agent can load it and call `kingdee_query` with `formId=SAL_SaleOrder`.
+   If the `kingdee-bos` skill is installed (see [Companion skill](#companion-skill)), the agent can load it and call `kingdee_query` with `formId=SAL_SaleOrder`.
 
-For a demo without a tenant, set `mock: true` in the plugin config. The settings card does not expose `mock`.
+For a tenant-free demo, set `mock: true`; the settings card does not expose it.
 
 ```yaml
 config:
@@ -67,7 +67,7 @@ config:
 
 ## Companion skill
 
-The package ships `skills/kingdee-bos/SKILL.md`, but the plugin does not register it automatically. To make it discoverable, copy the `skills/kingdee-bos` directory to `$DSH_HOME/skills/kingdee-bos` (or add the package's `skills` directory to `customSkillDirs` in `@deepseek-ai/dsh-skill-filesystem`). Without that step the tools still work; only the field, enum and status guidance is absent from the session catalog.
+The package ships `skills/kingdee-bos/SKILL.md` but does not register it. Copy `skills/kingdee-bos` to `$DSH_HOME/skills/kingdee-bos`, or add the package's `skills` directory to `customSkillDirs` in `@deepseek-ai/dsh-skill-filesystem`. Without this, tools work but the guidance is absent from the catalog.
 
 ## Tools
 
@@ -88,23 +88,23 @@ The package ships `skills/kingdee-bos/SKILL.md`, but the plugin does not registe
 | `kingdee_logout` | Log out of the current session | — |
 | `kingdee_list_datacenters` | List data centers / tenants at the base URL | — |
 
-The table follows the same order as the per-tool reference in [USAGE.md](./USAGE.md).
+The table matches the per-tool order in [USAGE.md](./USAGE.md).
 
-Every tool returns a normalized canonical value. A Kingdee `IsSuccess=false` message becomes `kd/business-error` (or `kd/auth-failed` for a login refusal); client-side failures use `kd/invalid-config`, `kd/network`, `kd/timeout` or `kd/unknown`, instead of prose.
+Every tool returns a normalized value as JSON. `IsSuccess=false` becomes `kd/business-error` (or `kd/auth-failed` for a login refusal); client-side failures use `kd/invalid-config`, `kd/network`, `kd/timeout` or `kd/unknown`, not prose.
 
 ## Kingdee V9.1
 
-`dsh-kingdee` targets Kingdee Cloud Starry Sky V9.1 Enterprise Edition (patch PT-163015 → `9.1.0.20250807`) and stays backward-compatible with V9.0 / V8.x. V9.1 has no breaking WebAPI changes: no renamed or removed operation, no cookie rename, no URL-convention change, no new required header.
+`dsh-kingdee` targets Kingdee Cloud Starry Sky V9.1 Enterprise Edition (patch PT-163015 → `9.1.0.20250807`) and remains compatible with V9.0/V8.x. V9.1 has no breaking WebAPI changes: no renamed/removed operation, cookie rename, URL change or new required header.
 
-Interface changes that matter in practice:
+Practical changes:
 
 - `Delete` returns a correct `FNumber`; `SuccessEntitys[].Number` can be trusted from `9.1.0.20250807` on.
 - Multi-file attachment fields may be assigned by file ID alone.
-- The server now logs WebAPI request bodies. Prefer `app` mode over account/password where possible.
-- Permissions were tightened, so a missing query permission can surface as an empty result rather than an error. Run a probe query per `FormId` before trusting an empty row set.
+- The server logs WebAPI request bodies; prefer `app` mode over account/password.
+- Permissions are tighter: a missing query permission can look like an empty result. Probe each `FormId` before trusting an empty set.
 - Put the plugin host's egress IP on the WebAPI rate-limit whitelist.
 
-The login request keys (`acctID`, `username`, `appid`, `appsecret`, `lcid`), the `Limit` row cap (~2000) and the `listDataCenterService` default name are community-reported, not published by Kingdee. Confirm them per tenant under Common Settings → Dynamic Service Definition → WebAPI.
+Login keys (`acctID`, `username`, `appid`, `appsecret`, `lcid`), the `Limit` cap (~2000) and the `listDataCenterService` default are community-reported, not published by Kingdee; confirm them per tenant under Common Settings → Dynamic Service Definition → WebAPI.
 
 ## Build and test
 
@@ -115,13 +115,13 @@ pnpm test        # 15 tests, Node built-in test runner
 node scripts/check-docs-language.ts
 ```
 
-`pnpm test` passes 15 tests, `pnpm typecheck` is clean, and `pnpm build` is clean against DSH 0.2.3-alpha.2. No live profile boot and no live Kingdee tenant verification were performed.
+Tests (15), typecheck and build pass against DSH 0.2.3-alpha.2. No live profile boot or Kingdee tenant verification was performed.
 
 ## Known limitations
 
-- **OpenAPI gateway not implemented.** The plugin speaks the classic `kdsvc` session protocol only. A tenant that only exposes the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) cannot be used: every operation that needs a login fails at login (`kingdee_list_datacenters` does not log in, but the OpenAPI-only tenant still does not expose the classic service).
-- **Platform-plugin layer out of reach.** Server-side C# form/list plugins, UI layout and background events belong to the BOS integration development environment and are not accessible through the WebAPI.
-- **No live-tenant verification.** Behaviour is covered by the type checker, the build and the unit tests, not by a running Kingdee tenant.
+- **OpenAPI gateway not implemented.** The plugin uses only the classic `kdsvc` session protocol. A tenant exposing only the OpenAPI gateway (`https://api.kingdee.com/galaxyapi/`) cannot be used: login-gated operations fail at login, and `kingdee_list_datacenters` still finds no classic service.
+- **Platform-plugin layer out of reach.** Server-side C# form/list plugins, UI layout and background events belong to the BOS integration environment and are not reachable through the WebAPI.
+- **No live-tenant verification.** Behaviour is covered by typecheck, build and unit tests, not a running Kingdee tenant.
 
 ## Documentation
 

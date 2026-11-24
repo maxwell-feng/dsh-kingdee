@@ -2,22 +2,22 @@
 
 [英文](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.md) | 中文
 
-本文档列出 `dsh-kingdee` 0.22.0（DSH 基线 0.2.3-alpha.2）注册的全部 `kingdee_*` 工具。每个工具都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
+本文档列出 `dsh-kingdee` 0.22.0（DSH 基线 0.2.3-alpha.2）的全部 `kingdee_*` 工具；每个都是 `src/kd-core/` 中 `KdClient` 操作的薄类型化包装。
 
 ## 调用约定
 
-- 每个工具返回统一格式的规范化结果，以紧凑 JSON 文本呈现（输出 schema 为 `type: 'json'`）。
+- 每个工具返回规范化结果，以紧凑 JSON 呈现（输出 schema 为 `type: 'json'`）。
 - 金蝶 `IsSuccess=false` 的返回会转成 `kd/business-error` 或 `kd/auth-failed`；客户端侧失败使用 `kd/invalid-config`、`kd/network`、`kd/timeout` 或 `kd/unknown`。
 - 凭据在每次操作时解析，轮换后下一次调用即生效，无需重启。
-- 业务操作的登录是隐式的。首次业务操作会自动登录，随后每次业务调用都会同时附带裸 `kdservice-sessionid` 请求头与 `Cookie`（`kdservice-sessionid=…; kdsvc=…`）。不使用 `KDAuthentication` 请求头。
+- 业务操作隐式登录；每次业务调用同时附带裸 `kdservice-sessionid` 请求头与 `Cookie`（`kdservice-sessionid=…; kdsvc=…`）。不使用 `KDAuthentication` 请求头。
 - 例外是 `kingdee_list_datacenters`：它直接调用数据中心服务，无需已建立的会话。
 - 登录 stub 返回 `{"LoginResultType": 1}`，不是 `Result` / `IsSuccess` 业务信封。非 `1` 的值会以 `kd/auth-failed` 呈现。
 - `formId` 为金蝶表单 id，例如 `SAL_SaleOrder`。
-- 工作流工具接受 `ids` 或 `numbers`（业务单据编号，如 `SO-20260901`）；`kingdee_view` 接受 `id` 或 `number`。自产品版本 `9.1.0.20250807` 起，`Delete` 的成功实体中会返回可信的 `Number`。
+- 工作流工具接受 `ids` 或 `numbers`（如 `SO-20260901`）；`kingdee_view` 接受 `id` 或 `number`。自 `9.1.0.20250807` 起，`Delete` 的成功实体返回可信 `Number`。
 
 ## kingdee_query
 
-查询单据与基础资料（`DynamicFormService.ExecuteBillQuery`），返回命中的行。
+查询单据/基础资料（`DynamicFormService.ExecuteBillQuery`），返回命中行。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
@@ -43,7 +43,7 @@
 
 ## kingdee_query_business_data
 
-用结构化 `QueryBusinessData` 接口查询单据与基础资料，返回对象形态的行。入参与 `kingdee_query` 完全一致。
+结构化 `QueryBusinessData` 查询，返回对象形态的行；入参与 `kingdee_query` 一致。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
@@ -58,7 +58,7 @@
 
 ## kingdee_save
 
-保存表单：新增或更新单据、基础资料。返回记录 id 与编号。
+新增或更新单据/基础资料；返回记录 id 与编号。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
@@ -98,7 +98,7 @@
 
 ## kingdee_unsubmit
 
-反提交记录，撤销提交。`UnSubmit` 操作名可能随版本而异；它无法通过 `serviceEndpoints` 覆盖，请在账套的 WebAPI 定义中确认。
+反提交记录，撤销提交。`UnSubmit` 可能随版本而异，且无法通过 `serviceEndpoints` 覆盖；请在账套的 WebAPI 定义中确认。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
@@ -165,7 +165,7 @@
 
 ## kingdee_invoke
 
-调用通过 WebAPI 注册的 BOS 自定义服务。自定义服务路径会替换 stub URL 中的动态表单段。
+调用通过 WebAPI 注册的 BOS 自定义服务；服务路径替换 stub URL 中的动态表单段。
 
 | 入参 | 必填 | 类型 | 说明 |
 |---|---|---|---|
@@ -183,11 +183,11 @@
 
 ## kingdee_logout
 
-退出当前金蝶云会话并清除保存的会话 Cookie。无入参。
+退出当前金蝶云会话并清除保存的 Cookie。无入参。
 
 ## kingdee_list_datacenters
 
-列出配置的 WebAPI 基址下可达的数据中心/账套。无入参。
+列出配置基址下可达的数据中心/账套。无入参。
 
 ## 典型流程
 
@@ -203,4 +203,4 @@ kingdee_unaudit → kingdee_save → kingdee_submit → kingdee_audit
 kingdee_unsubmit → kingdee_save → kingdee_submit
 ```
 
-在没有真实账套时，可在插件配置中设置 `mock: true` 试用该流程。安装步骤见 [INSTALL.zh.md](./INSTALL.zh.md)，全部配置键见 [CONFIG.zh.md](./CONFIG.zh.md)。
+无真实账套时，可设 `mock: true` 试用；安装见 [INSTALL.zh.md](./INSTALL.zh.md)，配置键见 [CONFIG.zh.md](./CONFIG.zh.md)。

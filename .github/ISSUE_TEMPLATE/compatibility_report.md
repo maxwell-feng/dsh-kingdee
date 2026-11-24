@@ -1,13 +1,13 @@
 ---
 name: Tenant compatibility report
-about: Tell us which Kingdee tenant, version and API gateway this plugin does or does not work against.
+about: Report the Kingdee tenant, version and API gateway where this plugin works or fails.
 title: "[Compatibility] "
 labels: ["compatibility"]
 assignees: ""
 ---
 
 ## Summary
-> One sentence: does the plugin work against this tenant, or where does it stop?
+> One sentence: does the plugin work here, or where does it fail?
 
 ## Outcome
 - [ ] Everything I tried works
@@ -32,10 +32,10 @@ assignees: ""
 ```
 
 ## Result
-> Which tools were called, and what came back. Paste any `kd/*` error code or Kingdee `Message` (redacted).
+> Tools called and results; paste any `kd/*` error code or Kingdee `Message` (redacted).
 
 ## Relevant `acctId` / form ids (the login payload key is `acctID`)
-> If a specific form or base-data entity behaves differently on this version, name it here.
+> Name any form or base-data entity that behaves differently here.
 
 ## Reference
-> Related entries in `docs/RELEASE.md` or the known-limitations section of the README.
+> Related `docs/RELEASE.md` or README known-limitations entries.

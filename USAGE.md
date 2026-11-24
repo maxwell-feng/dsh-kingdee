@@ -2,22 +2,22 @@
 
 English | [Chinese](https://github.com/maxwell-feng/dsh-kingdee/blob/main/USAGE.zh.md)
 
-This guide documents every `kingdee_*` tool registered by `dsh-kingdee` 0.22.0 (DSH baseline 0.2.3-alpha.2). Each tool is a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
+This guide covers all `kingdee_*` tools in `dsh-kingdee` 0.22.0 (DSH baseline 0.2.3-alpha.2); each a thin typed wrapper over a `KdClient` operation in `src/kd-core/`.
 
 ## Conventions
 
-- Every tool returns a normalized canonical value rendered as compact JSON text (output schema `type: 'json'`).
+- Every tool returns a normalized value as compact JSON (output schema `type: 'json'`).
 - A Kingdee `IsSuccess=false` response becomes `kd/business-error` or `kd/auth-failed`; client-side failures use `kd/invalid-config`, `kd/network`, `kd/timeout` or `kd/unknown`.
 - Credentials are resolved per operation, so a rotation reaches the next call without a restart.
-- Login is implicit for business operations. The first such operation logs in, and the session is attached to every business call as both a bare `kdservice-sessionid` request header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`). No `KDAuthentication` header is used.
+- Business operations log in implicitly; the session is sent on every business call as both a bare `kdservice-sessionid` header and a `Cookie` (`kdservice-sessionid=…; kdsvc=…`). No `KDAuthentication` header is used.
 - `kingdee_list_datacenters` is the exception: it calls the data-center service directly and works without an existing session.
 - The login stubs return `{"LoginResultType": 1}`, not the `Result` / `IsSuccess` business envelope. A non-`1` value surfaces as `kd/auth-failed`.
 - `formId` is the Kingdee form id, e.g. `SAL_SaleOrder`.
-- Workflow tools accept `ids` or `numbers` (bill numbers such as `SO-20260901`). `kingdee_view` accepts `id` or `number`. From product version `9.1.0.20250807` on, `Delete` also returns a trustworthy `Number` in its success entities.
+- Workflow tools accept `ids` or `numbers` (e.g. `SO-20260901`); `kingdee_view` accepts `id` or `number`. From `9.1.0.20250807`, `Delete` returns a trustworthy `Number` in its success entities.
 
 ## kingdee_query
 
-Query bills and base data (`DynamicFormService.ExecuteBillQuery`). Returns matching rows.
+Query bills/base data (`DynamicFormService.ExecuteBillQuery`); returns matching rows.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
@@ -43,7 +43,7 @@ Query bills and base data (`DynamicFormService.ExecuteBillQuery`). Returns match
 
 ## kingdee_query_business_data
 
-Query bills and base data with the structured `QueryBusinessData` endpoint. Returns object-shaped rows. Parameters are identical to `kingdee_query`.
+Structured `QueryBusinessData` query; returns object-shaped rows. Parameters match `kingdee_query`.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
@@ -58,7 +58,7 @@ Query bills and base data with the structured `QueryBusinessData` endpoint. Retu
 
 ## kingdee_save
 
-Save a form: create or update a bill or base record. Returns the record id and number.
+Create or update a bill/base record; returns the id and number.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
@@ -98,7 +98,7 @@ Submit one or more records.
 
 ## kingdee_unsubmit
 
-Un-submit records, reversing a submit. The `UnSubmit` operation name may be version-specific; it cannot be overridden through `serviceEndpoints`, so confirm it in the tenant's WebAPI definition.
+Un-submit records, reversing a submit. `UnSubmit` may be version-specific and cannot be overridden via `serviceEndpoints`; confirm it in the tenant's WebAPI definition.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
@@ -165,7 +165,7 @@ Delete draft records in the temporary state (`FDocumentStatus` `Z`, not yet subm
 
 ## kingdee_invoke
 
-Invoke a BOS custom service registered through the WebAPI. The custom service path replaces the dynamic-form segment of the stub URL.
+Invoke a BOS custom service registered through the WebAPI; its path replaces the dynamic-form segment of the stub URL.
 
 | Parameter | Required | Type | Description |
 |---|---|---|---|
@@ -183,11 +183,11 @@ Invoke a BOS custom service registered through the WebAPI. The custom service pa
 
 ## kingdee_logout
 
-Log out of the current Kingdee Cloud session and clear the stored session cookie. Takes no parameters.
+Log out of the current Kingdee Cloud session and clear the stored cookie. No parameters.
 
 ## kingdee_list_datacenters
 
-List the data centers / tenants reachable at the configured WebAPI base URL. Takes no parameters.
+List data centers/tenants reachable at the configured WebAPI base URL. No parameters.
 
 ## Typical flow
 
@@ -203,4 +203,4 @@ Bills still submitted / auditing (`B`):
 kingdee_unsubmit → kingdee_save → kingdee_submit
 ```
 
-To try the flow without a tenant, set `mock: true` in the plugin config. See [INSTALL.md](./INSTALL.md) for setup and [CONFIG.md](./CONFIG.md) for all configuration keys.
+To try this without a tenant, set `mock: true`; see [INSTALL.md](./INSTALL.md) for setup and [CONFIG.md](./CONFIG.md) for all keys.

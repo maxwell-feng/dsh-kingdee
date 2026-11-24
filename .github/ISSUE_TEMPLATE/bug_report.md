@@ -1,13 +1,13 @@
 ---
 name: Bug report
-about: Report a defect so we can diagnose and fix it.
+about: Report a defect for diagnosis and repair.
 title: "[Bug] "
 labels: ["bug"]
 assignees: ""
 ---
 
 ## Summary
-> One sentence describing the issue. If the plugin never loads or cannot log in at all, use the setup template instead.
+> One sentence on the issue. If the plugin never loads or cannot log in, use the setup template.
 
 ## Steps to reproduce
 1. …
